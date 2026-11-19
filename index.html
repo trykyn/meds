@@ -12,7 +12,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,thermometer,upload,warning&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,thermometer,upload,warning&display=block">
 <style>
 :root {
   --red: #d9443a; --red2: #b8352d; --cream: #f7efe1; --ink: #3a2a20; --mut: #8a7562; --line: #eadfcd; --card: #fff;
@@ -191,6 +191,12 @@ textarea.in { min-height: 76px; resize: vertical; }
 .sug svg { height: 26px; width: 18px; flex: none; }
 .sug span { font-weight: 700; font-size: 14px; } .sug small { display: block; font-weight: 500; color: var(--mut); font-size: 11px; }
 .info .src { color: var(--mut); font-family: -apple-system, sans-serif; font-size: 12px; }
+.ph { display: block; margin: 0 auto; object-fit: cover; border-radius: 8px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+.lr .ph, .mp .ph, .sug .ph { margin: 0; flex: none; }
+.phrow { display: flex; gap: 12px; align-items: center; }
+.phbig { width: 110px; height: 110px; object-fit: cover; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.15); flex: none; }
+.phnone { width: 110px; height: 110px; display: grid; place-items: center; background: #f4ece0; border-radius: 14px; flex: none; }
+.phbtns { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .boxes { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 0; scrollbar-width: none; }
 .boxes::-webkit-scrollbar { display: none; }
 .boxes button { flex: none; border: 0; background: #fff; border-radius: 12px; padding: 6px 12px; font: 400 15px var(--jua); color: var(--ink); box-shadow: inset 0 -2px 0 #e7dccb; }
@@ -424,6 +430,7 @@ const T = {
     krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    photoTitle: '사진', photoAdd: '사진 찍기·고르기', photoChange: '사진 바꾸기', photoHint: '상자 앞면을 찍어 두면 서랍에서 찾기 쉬워요. 한국 약은 바코드를 찍으면, 다른 약은 설명서 링크를 넣으면 사진을 자동으로 가져와요.',
     boxDefault: '우리집 약상자', boxAll: '전체', boxesTitle: '약상자 목록', boxesInfo: '거실, 냉장고, 차, 여행 가방처럼 약을 두는 곳을 나눠요. 약마다 어느 약상자에 있는지 고를 수 있어요.', boxNewPh: '새 약상자 이름 (예: 냉장고)', fBox: '어느 약상자에 둘까요',
     confirmBoxDel: (n, to) => `이 약상자를 지울까요? 안에 있던 약 ${n}개는 "${to}"(으)로 옮겨요.`,
     stockTitle: '남은 양', units: { tab: '정', pc: '개', bag: '포', ml: 'ml' }, unitNames: { tab: '알약 수', pc: '개수', bag: '포', ml: 'ml', level: '대충', none: '안 셈' },
@@ -503,6 +510,7 @@ const T = {
     krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    photoTitle: 'Foto', photoAdd: 'Foto aufnehmen/wählen', photoChange: 'Foto ändern', photoHint: 'Ein Foto der Packung hilft beim Finden. Bei koreanischen Mitteln kommt es mit dem Barcode, sonst mit dem Link zur Produktseite.',
     boxDefault: 'Hausapotheke', boxAll: 'Alle', boxesTitle: 'Aufbewahrungsorte', boxesInfo: 'Z. B. Wohnzimmer, Kühlschrank, Auto, Reisetasche. Jedes Medikament bekommt seinen Ort.', boxNewPh: 'Neuer Ort (z. B. Kühlschrank)', fBox: 'Wo liegt es?',
     confirmBoxDel: (n, to) => `Diesen Ort löschen? ${n} Medikamente kommen nach „${to}“.`,
     stockTitle: 'Vorrat', units: { tab: 'Tabl.', pc: 'Stück', bag: 'Beutel', ml: 'ml' }, unitNames: { tab: 'Tabletten', pc: 'Stück', bag: 'Beutel', ml: 'ml', level: 'grob', none: 'nicht zählen' },
@@ -613,6 +621,8 @@ function qMatch(m) {
 const PAL = ['#e04848', '#f08a24', '#2f7fd8', '#3a9a6a', '#8e44ad', '#16a085', '#e9b100', '#c0392b', '#5dade2', '#d35400'];
 const colorOf = m => { let h = 0; for (const ch of String(m.code || m.name || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return PAL[h % PAL.length]; };
 function art(m, h = 58) {
+  const ph = photoOf(m);
+  if (ph) return `<img class="ph" src="${ph}" alt="" style="height:${h}px;width:${Math.round(h * 0.8)}px">`;
   const c = colorOf(m), k = m.kind, st = `style="height:${h}px"`;
   const label = (x, w) => `<rect x="${x}" y="44" width="${w}" height="22" rx="3" fill="#fff"/><rect x="${x + 4}" y="49" width="${w - 12}" height="3" rx="1.5" fill="${c}"/><rect x="${x + 4}" y="56" width="${w - 20}" height="3" rx="1.5" fill="#ccc"/>`;
   if (k === 'syrup') return `<svg viewBox="0 0 60 90" ${st}><rect x="20" y="4" width="20" height="12" rx="3" fill="#fff" stroke="#d9cbb5"/><rect x="23" y="16" width="14" height="10" fill="#9a5a1c"/><path d="M14 34 q0-8 9-8 h14 q9 0 9 8 v46 q0 6-6 6 h-20 q-6 0-6-6z" fill="#b8661f"/><path d="M18 36 v40" stroke="#dc8b45" stroke-width="3" stroke-linecap="round"/>${label(14, 32)}</svg>`;
@@ -818,6 +828,7 @@ function formHtml() {
     <div class="leafrow"><button type="button" class="btn ghost small" data-act="leaf-pdf">${ms('upload')}${esc(l.leafPdf)}</button></div>
     <div class="inrow" style="margin-top:8px"><input class="in" id="leafurl" type="url" inputmode="url" placeholder="${esc(l.leafUrlPh)}" value="${esc(m.leaflet || '')}" autocomplete="off" autocapitalize="off"><button type="button" class="mini" data-act="leaf-url">${esc(l.leafGet)}</button></div>
     ${ui.leafNote ? `<p class="hint ${ui.leafNote.ok ? 'ok' : ''}">${esc(ui.leafNote.t)}</p>` : ''}</div>
+  ${photoFormHtml(m)}
   <div class="box">
     <label class="f">${esc(l.fName)}</label><input class="in" name="name" value="${esc(m.name || '')}" placeholder="${esc(l.fNamePh)}"><div id="sugg" class="sugg"></div>
     <label class="f">${esc(l.fKind)}</label><div class="wrapchips">${kinds}</div>
@@ -948,6 +959,7 @@ async function fillKorean(id, ean) {
   if (!d.name) d.name = hit.name;
   if (!d.kind) d.kind = kindFromName(hit.name);
   d.itemSeq = hit.itemSeq; d.entp = hit.entp; if (hit.atc) d.atc = hit.atc;
+  if (canFetch()) photoIntoDraft(id, () => nedrugPhoto(hit.itemSeq));
   note({ t: l.krFound, ok: true });
   // Beschreibung von 의약품안전나라 (nur angemeldet) / 의약품안전나라 설명(로그인했을 때만)
   if (!canFetch()) return note({ t: `${l.krFound} ${l.krNoLogin}`, ok: true });
@@ -1017,8 +1029,12 @@ async function leafletFromUrl(url) {
   const r = await viaWorker(url), type = r.headers.get('Content-Type') || '', final = r.headers.get('X-Final-Url') || url;
   if (/pdf/i.test(type) || /\.pdf(\?|$)/i.test(final)) return MedLeaflet.parse(await pdfText(await r.arrayBuffer()));
   const { text, doc } = htmlText(await r.text());
+  // Vorschaubild der Seite (og:image) als Foto-Vorschlag / 페이지 대표 사진
+  const og = doc.querySelector('meta[property="og:image"],meta[name="og:image"],meta[name="twitter:image"]');
+  let ogUrl = '';
+  try { ogUrl = og && og.content ? new URL(og.content, final).href : ''; } catch (e) {}
   const p = MedLeaflet.parse(text);
-  if (p) return p;
+  if (p) { p.photoUrl = ogUrl; return p; }
   const links = [...doc.querySelectorAll('a[href]')]
     .filter(a => /\.pdf(\?|#|$)/i.test(a.getAttribute('href')) || /beipackzettel|packungsbeilage|gebrauchsinformation|설명서|첨부문서|e-?라벨/i.test(a.textContent + ' ' + a.getAttribute('href')))
     .map(a => { try { return new URL(a.getAttribute('href'), final).href; } catch (e) { return ''; } })
@@ -1027,7 +1043,7 @@ async function leafletFromUrl(url) {
     try {
       const r2 = await viaWorker(h), t2 = r2.headers.get('Content-Type') || '';
       const p2 = /pdf/i.test(t2) ? MedLeaflet.parse(await pdfText(await r2.arrayBuffer())) : MedLeaflet.parse(htmlText(await r2.text()).text);
-      if (p2) return p2;
+      if (p2) { p2.photoUrl = ogUrl; return p2; }
     } catch (e) { console.warn(e); }
   }
   return null;
@@ -1055,6 +1071,7 @@ function applyLeaflet(p, src) {
   if (src) d.leaflet = src;
   ui.leafNote = { t: got.length ? l.leafGot(got.join(', ')) : l.leafNone, ok: true };
   renderSheet();
+  if (p.photoUrl && /^https:/.test(p.photoUrl) && canFetch()) photoIntoDraft(d.id, () => photoFromUrl(p.photoUrl));
 }
 async function leafRun(job, src) {
   const l = L(), id = ui.draft && ui.draft.id;
@@ -1158,6 +1175,8 @@ function saveForm() {
   m.name = (m.name || '').trim();
   if (!m.name) { toast(l.needName); const n = $('#medform [name=name]'); if (n) n.focus(); return; }
   delete m.copied; delete m.expScan; delete m.drawerAuto;
+  const photo = m.photo, photoNew = m.photoNew;
+  delete m.photo; delete m.photoNew;
   ui.krNote = null;
   if (!m.drawer) m.drawer = guessDrawer(`${m.use || ''} ${m.name}`);
   m.openDays = +m.openDays || 0;
@@ -1175,6 +1194,10 @@ function saveForm() {
   for (const k of Object.keys(m)) if (m[k] === '' || m[k] == null) delete m[k];
   // Sorten-Angaben ins Lexikon; die lange Beschreibung liegt nur dort. / 제품 정보는 사전에, 긴 설명은 사전에만.
   toCat(m);
+  // Foto zur Sorte / 제품 사진
+  const ce = S.cat[catKey(m)];
+  if (ce && photo === '') { ce.img = 0; dropPhoto(imgKey(m)); }
+  else if (ce && photo && photoNew) { ce.img = Date.now(); storePhoto(imgKey(m), photo); }
   delete m.info;
   commit(m);
   openDrawerOf(m);
@@ -1470,6 +1493,88 @@ function stockFromForm(m) {
   delete m.qtyUnit; delete m.qtyTotal; delete m.qtyLeft;
 }
 
+// ---------- Fotos der Packungen / 약 사진 ----------
+// Je Sorte ein kleines JPEG (längste Seite 360 px, ~30 KB). Gespeichert im Cache „meds-img“ des Geräts und – angemeldet –
+// in einem eigenen Familien-Dokument households/{Code}_img_{Schlüssel}. Im Lexikon steht nur e.img = Zeitstempel.
+// 제품마다 작은 JPEG 한 장(긴 쪽 360px, 약 30KB). 기기의 'meds-img' 저장소와(로그인 시) 가족 문서
+// households/{코드}_img_{열쇠}에 저장. 사전에는 e.img = 시간만 적어서 다른 휴대폰도 사진이 있는 걸 앎.
+const imgKey = m => hashId(catKey(m) || m.name || '');
+const imgMem = new Map(), imgLoading = new Set();
+async function imgCache() { try { return await caches.open('meds-img'); } catch (e) { return null; } }
+async function storePhoto(k, data) {
+  imgMem.set(k, data);
+  const c = await imgCache();
+  if (c) await c.put('img/' + k, new Response(data)).catch(() => {});
+  if (canFetch() && window.cloud.putImg) await window.cloud.putImg(k, data).catch(e => console.warn('img', e));
+}
+async function dropPhoto(k) {
+  imgMem.delete(k);
+  const c = await imgCache();
+  if (c) await c.delete('img/' + k).catch(() => {});
+}
+// Foto einer Packung (oder null); lädt im Hintergrund nach und zeichnet dann neu. / 사진(없으면 null). 없으면 뒤에서 불러와 다시 그림.
+function photoOf(m) {
+  const e = catOf(m);
+  if (!e || !e.img) return null;
+  const k = imgKey(m);
+  if (imgMem.has(k)) return imgMem.get(k);
+  if (!imgLoading.has(k)) {
+    imgLoading.add(k);
+    (async () => {
+      let data = null;
+      const c = await imgCache(), r = c && await c.match('img/' + k);
+      if (r) data = await r.text();
+      if (!data && canFetch() && window.cloud.getImg) {
+        data = await window.cloud.getImg(k).catch(() => null);
+        if (data && c) await c.put('img/' + k, new Response(data)).catch(() => {});
+      }
+      if (data) { imgMem.set(k, data); render(); if (ui.sheet && ui.sheet.type === 'detail') renderSheet(); }
+    })().finally(() => setTimeout(() => imgLoading.delete(k), 60000));
+  }
+  return null;
+}
+// Bild verkleinern → JPEG-Daten-URL / 사진 줄이기
+async function shrink(src, max = 360) {
+  const bmp = await createImageBitmap(src instanceof Blob ? src : await (await fetch(src)).blob());
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height)), c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+  x.drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.78);
+}
+// Foto aus dem Netz über den Abruf-Server / 인터넷 사진을 가져오기 서버로
+async function photoFromUrl(url) {
+  const r = await viaWorker(url), type = r.headers.get('Content-Type') || '';
+  if (!/^image\//i.test(type)) return null;
+  return shrink(await r.blob());
+}
+// Koreanisch: Packungsfoto von 의약품안전나라 (steht als Bild in der Detailseite) / 의약품안전나라 포장 사진
+async function nedrugPhoto(seq) {
+  const r = await viaWorker(`https://nedrug.mfds.go.kr/pbp/CCBBB01/getItemDetail?itemSeq=${encodeURIComponent(seq)}`);
+  const html = await r.text();
+  const m = html.match(/<img[^>]*src="(data:image\/(?:jpeg|png);base64,[A-Za-z0-9+/=]+)"[^>]*alt="[^"]*(?:포장|용기|제품)[^"]*"/) || html.match(/<img[^>]*alt="[^"]*(?:포장|용기|제품)[^"]*"[^>]*src="(data:image\/(?:jpeg|png);base64,[A-Za-z0-9+/=]+)"/);
+  return m ? shrink(m[1]) : null;
+}
+// Ins Formular übernehmen, wenn dort noch kein Foto ist / 양식에 사진이 없을 때만 넣음
+async function photoIntoDraft(id, job) {
+  try {
+    const data = await job();
+    if (!data || !ui.draft || ui.draft.id !== id || ui.draft.photo || photoOf(ui.draft)) return;
+    readForm();
+    ui.draft.photo = data; ui.draft.photoNew = true;
+    if (ui.sheet && ui.sheet.type === 'form') renderSheet();
+  } catch (e) { console.warn('photo', e); }
+}
+function photoFormHtml(m) {
+  const l = L(), src = m.photo != null ? m.photo : photoOf(m);
+  return `<div class="box"><label class="f">${esc(l.photoTitle)}</label>
+    <div class="phrow">${src ? `<img class="phbig" src="${src}" alt="">` : `<span class="phnone">${art(m, 70)}</span>`}
+      <div class="phbtns"><button type="button" class="btn ghost small" data-act="photo-pick">${ms('photo_camera')}${esc(src ? l.photoChange : l.photoAdd)}</button>
+      ${src ? `<button type="button" class="btn ghost small" data-act="photo-del">${ms('delete')}${esc(l.del)}</button>` : ''}</div></div>
+    <p class="hint">${esc(l.photoHint)}</p></div>`;
+}
+
 // ---------- Ablauf-Erinnerung (Web Push) / 만료 알림 ----------
 // Das Handy rechnet die Tage aus (30 und 7 Tage vorher, am letzten Tag; angebrochene Kurzläufer 3 Tage vorher)
 // und schickt dem Server nur diese Tage. Den Text legt es in den Cache „meds-alerts“, den sw.js beim Push liest.
@@ -1729,6 +1834,16 @@ const ACT = {
     try { await workerPost('/push/test', { endpoint: pushEndpoint() }); toast(L().notiTestSent); }
     catch (e) { console.warn(e); if (/not_registered/.test(e.message)) { try { localStorage.removeItem(PUSHKEY); } catch (x) {} } toast(L().notiFail); renderSheet(); }
   },
+  'photo-pick'() {
+    const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
+    i.onchange = async () => {
+      const f = i.files[0];
+      if (!f || !ui.draft) return;
+      try { const data = await shrink(f); readForm(); ui.draft.photo = data; ui.draft.photoNew = true; renderSheet(); } catch (e) { console.warn(e); toast(L().noCode); }
+    };
+    i.click();
+  },
+  'photo-del'() { readForm(); ui.draft.photo = ''; ui.draft.photoNew = false; renderSheet(); },
   addlog(el) { openAddLog({ who: el.dataset.who, kind: el.dataset.kind, med: el.dataset.med }); },
   loglist(el) { ui.logWho = el.dataset.who || ui.logWho; openSheet({ type: 'loglist' }); },
   lset(el) {
@@ -1898,7 +2013,7 @@ let lastDay = today();
 setInterval(() => { if (today() !== lastDay) { lastDay = today(); render(); } }, 60000);
 // Scanner im Leerlauf vorladen / 쉴 때 스캐너 미리 불러오기
 setTimeout(() => getDetector().catch(() => {}), 2500);
-window.meds = { S: () => S, handleCode, parse: MedCode.parse, render, _t: { htmlText, pdfText, leafRun, MedLeaflet } };
+window.meds = { S: () => S, handleCode, parse: MedCode.parse, render, _t: { htmlText, pdfText, leafRun, MedLeaflet, shrink, storePhoto, photoOf } };
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   let reloaded = false;
@@ -1989,6 +2104,8 @@ if (cfg) {
       const list = Object.values(d.stores || {}).sort((a, b) => rank(a) - rank(b));
       return (list.length ? list : [{ id: "super", key: "super" }]).map(x => ({ id: x.id, label: x.key ? names[x.key] || x.key : x.name || x.id }));
     },
+    async putImg(k, d) { await F.setDoc(F.doc(db, "households", S().house + "_img_" + k), { d, t: Date.now() }); },
+    async getImg(k) { const x = await F.getDoc(F.doc(db, "households", S().house + "_img_" + k)); return x.exists() ? x.data().d : null; },
     async addShop(store, name) {
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
       await F.updateDoc(house(S().house), { [`items.${id}`]: { id, store, name } });
