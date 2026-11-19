@@ -108,5 +108,17 @@ eq('DE ab 6 Jahren', kidDose('Kinder ab 6 Jahren: 1 Hub 3-mal täglich.', kidA).
 eq('DE 2-5 Jahre tabs', kidDose('Kinder von 2 bis 5 Jahren: ½ bis 1 Tablette; Kinder von 6 bis 11 Jahren: 1–2 Tabletten', kidA).amount, '1–2 Tabletten');
 eq('DE bis unter 6', kidDose('Kinder bis unter 6 Jahre: 2,5 ml 2-mal täglich', { months: 72 }), null);
 
+// Kurzfassung / 짧은 요약
+const { brief } = globalThis.MedLeaflet;
+const b = brief(p);
+eq('brief efcy', b.efcy, 'Es wird angewendet zur kurzzeitigen Behandlung von Fieber sowie leichten bis mäßig starken Schmerzen.');
+eq('brief dose no boilerplate', b.dose.includes('Packungsbeilage'), false);
+has('brief dose has amount', b.dose, '7,5 ml');
+eq('brief dose ≤ 3 lines', b.dose.split('\n').length <= 3, true);
+eq('brief store', b.store, 'Nicht über 25 °C lagern.');
+const kb = brief(k);
+has('ko brief efcy', kb.efcy, '발열 및 동통');
+eq('ko brief store', kb.store, '기밀용기, 실온보관');
+
 console.log(fail ? `\n${fail} FAILED` : '\nall passed');
 process.exit(fail ? 1 : 0);

@@ -210,5 +210,28 @@
     return best;
   }
 
-  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, ageRange, amountOf, split: t => split(tidy(t), DE) };
+  // ---------- Kurzfassung für die Anzeige / 화면용 짧은 요약 ----------
+  // Ohne KI: aus jedem Abschnitt nur die Sätze mit dem Wesentlichen (Anwendung, Mengen/Häufigkeit, Temperatur).
+  // AI 없이: 각 항목에서 핵심 문장만(무엇에 쓰나, 양·횟수, 보관 온도).
+  const sents = t => tidy(t).split(/(?<=[.!?])\s+|\n+/).map(s => s.replace(/^\s*(?:\d+\.|[-•·])\s*/, '').trim()).filter(s => s.length > 2);
+  const BOILER = /Packungsbeilage|Fragen Sie|Ihr Arzt hat|immer genau|für Kinder unzugänglich|außer Sicht- und Reichweite|nach dem auf|Verfalldatum|어린이의 손이 닿지|의사.*상의|약사.*상의/i;
+  function briefEfcy(t) {
+    const s = sents(t).filter(x => !BOILER.test(x) && !/^(?:주\s*)?효능[\s·・ㆍ]*효과$|^다음 질환에도/.test(x));
+    const hit = s.find(x => /angewendet|zur Behandlung|zur Linderung|eingesetzt/i.test(x)) || s.find(x => /gegen\s|bei\s/i.test(x)) || s[0] || '';
+    // Koreanisch: oft eine Liste in einer Zeile – die ist schon kurz / 한국어는 보통 한 줄 나열이라 그대로
+    return cut(hit, 160);
+  }
+  function briefDose(t) {
+    const amt = /\d\s*(?:ml|mL|mg|g\b|Tablette|Kapsel|Beutel|Zäpfchen|Hub|Hübe|Sprühstoß|Tropfen|정|캡슐|포|방울|회)/i;
+    const scored = sents(t).map((s, i) => ({ s, i, n: (amt.test(s) ? 2 : 0) + (FREQ.test(s) ? 1 : 0) + (/Erwachsene|Jugendliche|성인|어른|만\s*\d+세\s*이상|höchstens|maximal|최대|초과/i.test(s) ? 1 : 0) - (/\|/.test(s) ? 2 : 0) - (BOILER.test(s) ? 3 : 0) }))
+      .filter(x => x.n > 0).sort((a, b) => b.n - a.n || a.i - b.i).slice(0, 3).sort((a, b) => a.i - b.i);
+    return scored.map(x => cut(x.s, 110)).join('\n');
+  }
+  function briefStore(t) {
+    const s = sents(t).filter(x => /°\s*C|Grad|Kühlschrank|kühl|Raumtemperatur|Licht|Feuchtigkeit|einfrieren|실온|냉장|차광|습기|기밀|밀폐|서늘|\d+\s*℃/i.test(x) && !BOILER.test(x));
+    return s.slice(0, 2).map(x => cut(x, 110)).join('\n');
+  }
+  const brief = i => !i ? {} : { efcy: briefEfcy(i.efcy || ''), dose: briefDose(i.use || ''), store: briefStore(i.store || '') };
+
+  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, brief, briefDose, ageRange, amountOf, split: t => split(tidy(t), DE) };
 })(typeof window !== 'undefined' ? window : globalThis);
