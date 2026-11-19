@@ -244,7 +244,7 @@ details.orig p { color: var(--mut); font-size: 13px; }
 <script src="leaflet.js"></script>
 <script>
 // ---------- Hausapotheke / 약상자 ----------
-// Daten: S.meds = { id → Packung }. Eine Packung = { name, kind, use, drawer, who, exp, bought, opened, openDays,
+// Daten: S.meds = { id → Packung }. Eine Packung = { name, kind, use, drawer, who, exp, opened, openDays,
 // dose, doseK1, doseK2, note, pzn, ean, code, batch, serial, gone, created, updated }.
 // Gilt bis = früheres Datum aus aufgedrucktem Verfall und (Anbruch + Haltbarkeit nach Anbruch).
 // Aussehen: Erste-Hilfe-Kasten mit „Erst ansehen“-Korb oben und Schubladen nach Anwendung.
@@ -347,7 +347,7 @@ const T = {
     newMed: '새 약', editMed: '약 수정', save: '저장', cancel: '취소', close: '닫기',
     fName: '약 이름', fNamePh: '예: Nurofen Saft für Kinder', fKind: '종류', fUse: '어디에 쓰는 약인가요', fUsePh: '예: 열, 통증', fDrawer: '어느 서랍에 넣을까요',
     fWho: '누구 약', fExp: '유효기간 (상자에 찍힌 날짜)', fExpScan: '바코드에서 읽었어요 ✓', fExpHint: '월까지만 있으면 그 달 마지막 날로 넣으세요.',
-    fBought: '구입일', fOpened: '개봉일', today: '오늘', fOpenDays: '개봉 후 사용 기간', noneOpen: '없음', days: '일', months: n => `${n}개월`, weeks: n => `${n}주`, custom: '직접',
+    fOpened: '개봉일', today: '오늘', fOpenDays: '개봉 후 사용 기간', noneOpen: '없음', days: '일', months: n => `${n}개월`, weeks: n => `${n}주`, custom: '직접',
     fOpenHint: '설명서나 병에서 "Nach Anbruch … haltbar" / "Nach dem Öffnen … verwenden"을 확인하세요.',
     fOpenHintSyrup: '시럽·안약·항생제 물약은 개봉 후 기한이 짧은 경우가 많아요. 꼭 확인하세요.',
     fDose: '먹는 법', fDosePh: '설명서, 의사·약사 안내를 적어 두세요\n예: 6시간마다, 하루 최대 3번', fDoseKid: () => '용량', fDoseKidPh: '예: 5ml, 8시간마다',
@@ -355,7 +355,7 @@ const T = {
     findName: 'PZN으로 찾기', findLeaflet: '설명서 찾기', findNaver: '네이버에서 찾기', findGoogle: '구글에서 찾기',
     needName: '약 이름을 넣어 주세요.', saved: '저장했어요', deleted: '삭제했어요',
     sameBox: '이미 등록된 약이에요', copied: '전에 등록한 같은 약의 정보를 가져왔어요',
-    lPrinted: '상자에 찍힌 기한', lOpened: '개봉한 날', lAfter: '개봉 후', lBought: '산 날', lReal: '실제로 쓸 수 있는 날',
+    lPrinted: '상자에 찍힌 기한', lOpened: '개봉한 날', lAfter: '개봉 후', lReal: '실제로 쓸 수 있는 날',
     until: d => `${d}까지`, whyOpen: '개봉 후 기한이 더 빨라요', noOpenDays: '개봉 후 사용 기간이 입력되지 않았어요',
     once: '한 번에', same: n => `같은 약 ${n}통`, openedOn: '개봉',
     openToday: '오늘 개봉했어요', edit: '수정', gone: '다 썼어요 / 버렸어요', restore: '다시 꺼내기', del: '삭제',
@@ -404,7 +404,7 @@ const T = {
     newMed: 'Neues Medikament', editMed: 'Bearbeiten', save: 'Sichern', cancel: 'Abbrechen', close: 'Schließen',
     fName: 'Name', fNamePh: 'z. B. Nurofen Saft für Kinder', fKind: 'Art', fUse: 'Wofür?', fUsePh: 'z. B. Fieber, Schmerzen', fDrawer: 'In welche Schublade?',
     fWho: 'Für wen', fExp: 'Verfallsdatum (auf der Packung)', fExpScan: 'Aus dem Barcode gelesen ✓', fExpHint: 'Nur Monat angegeben? Dann den letzten Tag des Monats.',
-    fBought: 'Gekauft am', fOpened: 'Angebrochen am', today: 'Heute', fOpenDays: 'Haltbar nach Anbruch', noneOpen: 'keine', days: 'Tage', months: n => `${n} Mon.`, weeks: n => `${n} Wo.`, custom: 'Eigene',
+    fOpened: 'Angebrochen am', today: 'Heute', fOpenDays: 'Haltbar nach Anbruch', noneOpen: 'keine', days: 'Tage', months: n => `${n} Mon.`, weeks: n => `${n} Wo.`, custom: 'Eigene',
     fOpenHint: 'Steht im Beipackzettel: „Nach Anbruch … haltbar“ / „Nach dem Öffnen … verwenden“.',
     fOpenHintSyrup: 'Säfte, Augentropfen und Antibiotika-Säfte sind nach Anbruch oft nur kurz haltbar.',
     fDose: 'Dosierung', fDosePh: 'Aus Beipackzettel oder vom Arzt/Apotheker\nz. B. alle 6 Std., max. 3× täglich', fDoseKid: () => 'Dosis', fDoseKidPh: 'z. B. 5 ml alle 8 Std.',
@@ -412,7 +412,7 @@ const T = {
     findName: 'PZN suchen', findLeaflet: 'Beipackzettel suchen', findNaver: 'Bei Naver suchen', findGoogle: 'Bei Google suchen',
     needName: 'Bitte einen Namen eingeben.', saved: 'Gespeichert', deleted: 'Gelöscht',
     sameBox: 'Diese Packung ist schon eingetragen', copied: 'Angaben von derselben Sorte übernommen',
-    lPrinted: 'Verfall laut Packung', lOpened: 'Angebrochen', lAfter: 'Haltbar nach Anbruch', lBought: 'Gekauft', lReal: 'Wirklich verwendbar bis',
+    lPrinted: 'Verfall laut Packung', lOpened: 'Angebrochen', lAfter: 'Haltbar nach Anbruch', lReal: 'Wirklich verwendbar bis',
     until: d => `bis ${d}`, whyOpen: 'Die Frist nach Anbruch endet früher', noOpenDays: 'Haltbarkeit nach Anbruch fehlt',
     once: 'pro Gabe', same: n => `${n} Packungen dieser Sorte`, openedOn: 'Auf',
     openToday: 'Heute angebrochen', edit: 'Bearbeiten', gone: 'Aufgebraucht / entsorgt', restore: 'Zurückholen', del: 'Löschen',
@@ -666,7 +666,6 @@ function detailHtml(id) {
   if (m.exp) rows.push(['', l.lPrinted, fmt(m.exp)]);
   if (m.opened) rows.push(['', l.lOpened, fmt(m.opened)]);
   if (m.opened && m.openDays) rows.push(['', l.lAfter, openLabel(m.openDays)]);
-  if (m.bought) rows.push(['', l.lBought, fmt(m.bought)]);
   if (lim.end) rows.push([`main ${m.gone ? '' : st}`, l.lReal, fmt(lim.end)]);
   const kids = [['k1', m.doseK1], ['k2', m.doseK2]].filter(x => x[1]);
   const same = active().filter(x => x.id !== m.id && groupKey(x) === groupKey(m)).sort(byLimit);
@@ -720,7 +719,6 @@ function formHtml() {
   <div class="box">
     <label class="f">${esc(l.fExp)}</label><input class="in" type="date" name="exp" value="${esc(m.exp || '')}">
     <p class="hint ${m.expScan && m.exp === m.expScan ? 'ok' : ''}">${esc(m.expScan && m.exp === m.expScan ? l.fExpScan : l.fExpHint)}</p>
-    <label class="f">${esc(l.fBought)}</label><input class="in" type="date" name="bought" value="${esc(m.bought || '')}">
     <label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
     <label class="f">${esc(l.fOpenDays)}</label><div class="wrapchips">${opens}</div>
     ${custom || ui.customDays ? `<div class="inrow" style="margin-top:8px"><input class="in" type="number" inputmode="numeric" min="1" max="3650" name="openDays" value="${od || ''}" style="max-width:120px"><span>${esc(l.days)}</span></div>` : ''}
@@ -769,7 +767,7 @@ function readForm() {
   for (const el of f.elements) if (el.name) ui.draft[el.name] = el.name === 'openDays' ? (+el.value || 0) : el.value;
 }
 function newDraft(extra = {}) {
-  return { id: uid(), name: '', kind: '', use: '', drawer: '', who: '', exp: '', bought: today(), opened: '', openDays: 0, dose: '', doseK1: '', doseK2: '', note: '', pzn: '', ean: '', code: '', batch: '', serial: '', created: Date.now(), ...extra };
+  return { id: uid(), name: '', kind: '', use: '', drawer: '', who: '', exp: '', opened: '', openDays: 0, dose: '', doseK1: '', doseK2: '', note: '', pzn: '', ean: '', code: '', batch: '', serial: '', created: Date.now(), ...extra };
 }
 
 // Ein gelesener Code → bekannte Packung öffnen oder neues Formular (mit Angaben derselben Sorte).
