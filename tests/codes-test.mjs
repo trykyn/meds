@@ -45,5 +45,13 @@ eq('key pzn', key(parse('-01234562')), 'pzn:01234562');
 eq('key ean', key(parse(kr)), 'ean:' + kr);
 eq('bad date', parse(`[)>${RS}06${GS}9N110123456207${GS}D271340`).exp, '');
 
+// QR-Codes / QR 코드
+eq('GS1 Digital Link', pick(parse(`https://id.gs1.org/01/${krGtin}/10/K1/21/S7?17=290131`), ['ean', 'batch', 'serial', 'exp', 'country', 'kind']),
+  { ean: kr, batch: 'K1', serial: 'S7', exp: '2029-01-31', country: 'kr', kind: 'gs1link' });
+eq('Digital Link with PZN NTIN', parse(`https://example.com/01/${gtin}/21/X`).pzn, '01234562');
+eq('plain URL QR', pick(parse('https://www.pharm.example.co.kr/elabel/123'), ['kind', 'url', 'ean']), { kind: 'url', url: 'https://www.pharm.example.co.kr/elabel/123', ean: '' });
+eq('URL with Korean barcode', parse(`https://x.kr/p?code=${kr}`).ean, kr);
+eq('key of plain URL', key(parse('https://x.kr/a')).startsWith('raw:'), true);
+
 console.log(fail ? `\n${fail} FAILED` : '\nall passed');
 process.exit(fail ? 1 : 0);

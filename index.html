@@ -179,6 +179,10 @@ textarea.in { min-height: 76px; resize: vertical; }
 .same { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; padding: 6px 0; border-top: 1px solid #f1e8da; text-align: left; }
 .same:first-of-type { border-top: 0; }
 .same span:first-child { flex: 1; font-size: 14px; }
+.info details { border-top: 1px solid #f1e8da; padding: 6px 0; }
+.info details:first-of-type { border-top: 0; }
+.info summary { font-weight: 700; cursor: pointer; font-size: 14px; }
+.info details p { font-size: 14px; margin-top: 4px; color: #4a3a2e; }
 
 /* Kamera / 카메라 */
 .scan { position: fixed; inset: 0; z-index: 40; background: #000; color: #fff; display: flex; flex-direction: column; }
@@ -266,8 +270,15 @@ const T = {
     openToday: '오늘 개봉했어요', edit: '수정', gone: '다 썼어요 / 버렸어요', restore: '다시 꺼내기', del: '삭제',
     confirmDel: '이 약을 완전히 지울까요?', goneDone: '다 쓴 약으로 옮겼어요', openedDone: '개봉일을 오늘로 적었어요',
     memo: '메모',
+    entp: '업체', findNedrug: '설명서 보기 (의약품안전나라)', openQr: 'QR 링크 열기',
+    krLooking: '한국 약 목록에서 찾는 중…', krFound: '한국 약 목록에서 이름을 찾았어요 ✓', krNotFound: '한국 약 목록에 없는 바코드예요. 이름을 직접 넣어 주세요.',
+    krInfoOk: 'e약은요에서 복용법·효능을 가져왔어요 ✓', krNoInfo: 'e약은요에 없는 약이에요(전문의약품은 대부분 없어요). 설명서 보기 버튼을 눌러 보세요.',
+    krNoKey: '복용법은 아래 "설명서 보기"에서 확인할 수 있어요. 설정에 e약은요 인증키를 넣으면 자동으로 채워져요.', krErr: 'e약은요에 연결하지 못했어요. 인증키를 확인해 주세요.',
+    qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
+    info: '약 설명 (e약은요)', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    keyTitle: '한국 약 설명 자동 채우기', keyInfo: '공공데이터포털(data.go.kr)에서 「식품의약품안전처_의약품개요정보(e약은요)」 활용신청을 하면 받는 일반 인증키(Decoding)를 넣어 주세요. 이 기기에만 저장돼요. 한국 일반의약품의 효능·사용법·주의사항이 자동으로 채워져요.', keyPh: '인증키 붙여넣기', keySaved: '인증키를 저장했어요',
     scanHint: '약 상자의 바코드나 작은 네모 코드를 네모 안에 비춰 주세요', scanSub: '10~15cm 떨어지면 초점이 잘 맞아요',
-    scanLoading: '스캐너 준비 중…', scanLooking2D: '줄 바코드를 찾았어요. 네모 코드(유효기간)도 찾는 중…',
+    scanLoading: '스캐너 준비 중…', scanLooking2D: '코드를 찾았어요. 유효기간이 든 네모 코드도 있는지 보는 중…',
     camFail: '카메라를 열지 못했어요. 브라우저 설정에서 카메라를 허용하거나, 사진·번호로 입력해 주세요.',
     libFail: '바코드 인식기를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.',
     photo: '사진으로', typeNo: '번호 입력', typePh: 'PZN 또는 바코드 번호', ok: '확인', zoom: '확대',
@@ -306,8 +317,15 @@ const T = {
     openToday: 'Heute angebrochen', edit: 'Bearbeiten', gone: 'Aufgebraucht / entsorgt', restore: 'Zurückholen', del: 'Löschen',
     confirmDel: 'Dieses Medikament endgültig löschen?', goneDone: 'Als aufgebraucht markiert', openedDone: 'Anbruch heute eingetragen',
     memo: 'Notiz',
+    entp: 'Firma', findNedrug: 'Beipackzettel (MFDS, koreanisch)', openQr: 'QR-Link öffnen',
+    krLooking: 'Suche in der koreanischen Liste…', krFound: 'Name aus der koreanischen Liste ✓', krNotFound: 'Barcode nicht in der koreanischen Liste. Bitte Namen eingeben.',
+    krInfoOk: 'Wirkung und Anwendung von e약은요 übernommen ✓', krNoInfo: 'Nicht in e약은요 (meist nur rezeptfreie). Siehe Beipackzettel-Link.',
+    krNoKey: 'Anwendung steht im Beipackzettel-Link unten. Mit einem e약은요-Schlüssel in den Einstellungen wird sie automatisch übernommen.', krErr: 'e약은요 nicht erreichbar. Bitte Schlüssel prüfen.',
+    qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
+    info: 'Beschreibung (e약은요, koreanisch)', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    keyTitle: 'Koreanische Beschreibungen', keyInfo: 'Schlüssel (Decoding) für „의약품개요정보(e약은요)“ von data.go.kr. Wird nur auf diesem Gerät gespeichert.', keyPh: 'Schlüssel einfügen', keySaved: 'Schlüssel gespeichert',
     scanHint: 'Barcode oder den kleinen quadratischen Code in den Rahmen halten', scanSub: 'Mit 10–15 cm Abstand wird es scharf',
-    scanLoading: 'Scanner wird geladen…', scanLooking2D: 'Strichcode erkannt. Suche noch den quadratischen Code (Verfall)…',
+    scanLoading: 'Scanner wird geladen…', scanLooking2D: 'Code erkannt. Suche noch den quadratischen Code mit Verfall…',
     camFail: 'Kamera nicht verfügbar. Bitte Kamera erlauben oder Foto/Nummer verwenden.',
     libFail: 'Barcode-Leser konnte nicht geladen werden. Internet prüfen.',
     photo: 'Foto', typeNo: 'Nummer', typePh: 'PZN oder Barcode-Nummer', ok: 'OK', zoom: 'Zoom',
@@ -487,7 +505,7 @@ function render() {
 
 // ---------- Blätter / 시트 ----------
 function openSheet(s) { ui.sheet = s; renderSheet(); }
-function closeSheet() { ui.sheet = null; ui.draft = null; $('#sheet').innerHTML = ''; }
+function closeSheet() { ui.sheet = null; ui.draft = null; ui.krNote = null; $('#sheet').innerHTML = ''; }
 function renderSheet() {
   const s = ui.sheet;
   if (!s) { $('#sheet').innerHTML = ''; return; }
@@ -500,9 +518,15 @@ function renderSheet() {
 
 function codeLinks(m) {
   const l = L(), out = [], g = q => `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+  // Koreanische Arzneimittel: offizielle Seite (의약품안전나라) mit Wirkung, Dosierung, Hinweisen.
+  // 한국 약: 의약품안전나라 공식 상세 페이지(효능·용법·주의사항).
+  if (m.itemSeq) out.push([`https://nedrug.mfds.go.kr/pbp/CCBBB01/getItemDetail?itemSeq=${encodeURIComponent(m.itemSeq)}`, l.findNedrug]);
+  if (m.link && /^https?:\/\//i.test(m.link)) out.push([m.link, l.openQr]);
   if (m.pzn) {
     out.push([g('PZN ' + m.pzn), l.findName]);
     out.push([g(`PZN ${m.pzn} Beipackzettel`), l.findLeaflet]);
+  } else if (m.itemSeq) {
+    // schon oben / 위에서 이미 넣음
   } else if (m.ean && /^880/.test(m.ean)) {
     out.push([`https://search.naver.com/search.naver?query=${encodeURIComponent(m.name ? m.name + ' 복용법' : m.ean)}`, l.findNaver]);
   } else if (m.ean) out.push([g(m.ean), l.findGoogle]);
@@ -513,6 +537,7 @@ function codeInfo(m) {
   const l = L(), bits = [];
   if (m.pzn) bits.push(`PZN <b>${esc(m.pzn)}</b>`);
   if (m.ean) bits.push(`EAN <b>${esc(m.ean)}</b>`);
+  if (m.entp) bits.push(`${esc(l.entp)} <b>${esc(m.entp)}</b>`);
   if (m.batch) bits.push(`${esc(l.batch)} <b>${esc(m.batch)}</b>`);
   if (m.serial) bits.push(`${esc(l.serial)} <b>${esc(m.serial)}</b>`);
   return bits.length ? `<div class="codeline">${bits.map(b => `<span>${b}</span>`).join('')}</div>` : '';
@@ -540,7 +565,8 @@ function detailHtml(id) {
   ${m.dose ? `<div class="box"><h3>${esc(l.fDose)}</h3><p class="pre">${esc(m.dose)}</p></div>` : ''}
   ${m.note ? `<div class="box"><h3>${esc(l.memo)}</h3><p class="pre">${esc(m.note)}</p></div>` : ''}
   ${same.length ? `<div class="box"><h3>${esc(l.same(same.length + 1))}</h3>${same.map(x => `<button class="same" data-act="detail" data-id="${x.id}"><span>${esc(fmt(limitOf(x).end) || l.noExp)}${x.opened ? ` · ${esc(l.openedOn)} ${esc(fmtShort(x.opened))}` : ''}</span><span class="sd ${statusOf(x).st}">${esc(stk(x))}</span></button>`).join('')}</div>` : ''}
-  ${m.pzn || m.ean || m.name ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${codeLinks(m)}</div>` : ''}
+  ${infoHtml(m)}
+  ${m.pzn || m.ean || m.name || m.link ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${codeLinks(m)}</div>` : ''}
   ${!m.gone && !m.opened ? `<div class="btnrow"><button class="btn" data-act="open-today" data-id="${id}">${ms('schedule')}${esc(l.openToday)}</button></div>` : ''}
   <div class="btnrow" style="margin-top:8px">
     ${m.gone ? `<button class="btn ghost" data-act="restore" data-id="${id}">${ms('restore')}${esc(l.restore)}</button>` : `<button class="btn ghost" data-act="gone" data-id="${id}">${ms('check')}${esc(l.gone)}</button>`}
@@ -563,7 +589,7 @@ function formHtml() {
   const kidRow = w => `<label class="f">${whoChip(w)} ${esc(l.fDoseKid())}</label><input class="in" name="dose${w === 'davin' ? 'Davin' : 'Arin'}" value="${esc(m[w === 'davin' ? 'doseDavin' : 'doseArin'] || '')}" placeholder="${esc(l.fDoseKidPh)}">`;
   return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.cancel)}</button><h2>${esc(isNew ? l.newMed : l.editMed)}</h2><button class="txtbtn r" data-act="save">${esc(l.save)}</button></div>
   <form id="medform" autocomplete="off" onsubmit="return false">
-  ${m.pzn || m.ean ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${m.copied ? `<p class="hint ok">${esc(l.copied)}</p>` : ''}${codeLinks(m)}</div>` : ''}
+  ${m.pzn || m.ean || m.link ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${m.copied ? `<p class="hint ok">${esc(l.copied)}</p>` : ''}${ui.krNote ? `<p class="hint ${ui.krNote.ok ? 'ok' : ''}">${esc(ui.krNote.t)}</p>` : ''}${codeLinks(m)}</div>` : ''}
   <div class="box">
     <label class="f">${esc(l.fName)}</label><input class="in" name="name" value="${esc(m.name || '')}" placeholder="${esc(l.fNamePh)}">
     <label class="f">${esc(l.fKind)}</label><div class="wrapchips">${kinds}</div>
@@ -607,6 +633,9 @@ function settingsHtml() {
   <div class="box"><h3>${esc(l.lang)}</h3><div class="wrapchips">
     <button class="chip ${S.lang !== 'de' ? 'on' : ''}" data-act="setlang" data-v="ko">한국어</button><button class="chip ${S.lang === 'de' ? 'on' : ''}" data-act="setlang" data-v="de">Deutsch</button></div></div>
   <div class="box"><h3>${esc(l.sync)}</h3>${sync}</div>
+  <div class="box"><h3>${esc(l.keyTitle)}</h3><p class="note" style="margin-top:0">${esc(l.keyInfo)}</p>
+    <div class="inrow"><input class="in" id="krkey" placeholder="${esc(l.keyPh)}" value="${esc(S.krKey || '')}" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="mini" data-act="save-key">${esc(l.save)}</button></div>
+    <p class="note">한국 약 이름: 건강보험심사평가원 「약가마스터_의약품표준코드」 2026.08 · 공공누리 제1유형(출처표시)</p></div>
   <div class="box"><h3>${esc(l.backup)}</h3><div class="btnrow">
     <button class="btn ghost small" data-act="export">${ms('download')}${esc(l.exportB)}</button>
     <button class="btn ghost small" data-act="import">${ms('upload')}${esc(l.importB)}</button></div></div>
@@ -633,11 +662,87 @@ function handleCode(c) {
     if (same) { toast(l.sameBox); openDrawerOf(same); openSheet({ type: 'detail', id: same.id }); return; }
   }
   const prev = Object.values(S.meds).filter(m => m.code === code).sort((a, b) => (b.updated || 0) - (a.updated || 0))[0];
-  const base = prev ? { name: prev.name, kind: prev.kind, use: prev.use, drawer: prev.drawer, who: prev.who, openDays: prev.openDays, dose: prev.dose, doseDavin: prev.doseDavin, doseArin: prev.doseArin, note: prev.note, copied: true } : {};
-  ui.draft = newDraft({ ...base, pzn: c.pzn, ean: c.ean, code, batch: c.batch, serial: c.serial, exp: c.exp, expScan: c.exp });
+  const base = prev ? { name: prev.name, kind: prev.kind, use: prev.use, drawer: prev.drawer, who: prev.who, openDays: prev.openDays, dose: prev.dose, doseDavin: prev.doseDavin, doseArin: prev.doseArin, note: prev.note,
+    itemSeq: prev.itemSeq, entp: prev.entp, link: prev.link, info: prev.info, copied: true } : {};
+  ui.draft = newDraft({ ...base, pzn: c.pzn, ean: c.ean, code, batch: c.batch, serial: c.serial, exp: c.exp, expScan: c.exp, ...(c.url ? { link: c.url } : {}) });
   ui.customDays = false;
+  ui.krNote = !c.pzn && !c.ean && c.url ? { t: l.qrSaved } : null;
   openSheet({ type: 'form' });
   if (prev) toast(l.copied);
+  if (/^880/.test(c.ean) && !(prev && prev.itemSeq && prev.info)) fillKorean(ui.draft.id, c.ean);
+}
+
+// ---------- Koreanische Arzneimittel / 한국 약 정보 ----------
+// 1) Barcode → Name/Firma/품목기준코드 aus kd/NNN.json (HIRA-Liste, im App-Ordner, kein Schlüssel nötig).
+// 2) Mit e약은요-Schlüssel (nur rezeptfreie): Wirkung, Anwendung, Hinweise, Aufbewahrung.
+// 1) 바코드 → 이름·업체·품목기준코드: kd/NNN.json(심평원 목록, 앱 안에 있음, 키 필요 없음).
+// 2) e약은요 인증키가 있으면(일반의약품만): 효능·사용법·주의사항·보관법.
+async function krByBarcode(ean) {
+  const r = await fetch(`kd/${ean.slice(3, 6)}.json`);
+  if (!r.ok) return null;
+  const j = await r.json(), seq = j.c[ean.slice(6)];
+  if (!seq || !j.i[seq]) return null;
+  const [name, entp, form, rx] = j.i[seq];
+  return { itemSeq: seq, name, entp, form, rx };
+}
+const clean = s => String(s || '').replace(/<br\s*\/?>|<\/p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim();
+async function krEasy(seq) {
+  const key = (S.krKey || '').trim();
+  if (!key) return { nokey: true };
+  const k = /%[0-9A-Fa-f]{2}/.test(key) ? key : encodeURIComponent(key);
+  const r = await fetch(`https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList?serviceKey=${k}&itemSeq=${encodeURIComponent(seq)}&type=json&numOfRows=1`);
+  if (!r.ok) throw new Error('http ' + r.status);
+  const j = await r.json(), items = j && j.body && j.body.items;
+  const x = Array.isArray(items) ? items[0] : items && items.item ? [].concat(items.item)[0] : null;
+  if (!x) return null;
+  return { efcy: clean(x.efcyQesitm), use: clean(x.useMethodQesitm), warn: clean([x.atpnWarnQesitm, x.atpnQesitm, x.intrcQesitm].filter(Boolean).join('\n')), se: clean(x.seQesitm), store: clean(x.depositMethodQesitm) };
+}
+// Darreichungsform aus dem koreanischen Namen raten. / 한국 약 이름으로 종류 추측.
+function kindFromName(n) {
+  n = String(n || '');
+  if (/점안|점이|점비|안약/.test(n)) return 'drops';
+  if (/스프레이|분무|에어로솔|흡입/.test(n)) return 'spray';
+  if (/연고|크림|겔|로션|패치|파스|외용/.test(n)) return 'cream';
+  if (/좌제|좌약|좌산/.test(n)) return 'supp';
+  if (/시럽|현탁|액|드링크|물약/.test(n)) return 'syrup';
+  if (/정|캡슐|환|츄어블|산$|과립/.test(n)) return 'tab';
+  return '';
+}
+async function fillKorean(id, ean) {
+  const l = L(), same = () => ui.draft && ui.draft.id === id && ui.sheet && ui.sheet.type === 'form';
+  // Nur neu zeichnen; Eingaben werden vor jeder Änderung mit readForm() übernommen.
+  // 다시 그리기만 함. 입력값은 바꾸기 전에 readForm()으로 먼저 읽어 둠.
+  const note = n => { if (same()) { ui.krNote = n; renderSheet(); } };
+  readForm();
+  note({ t: l.krLooking });
+  let hit = null;
+  try { hit = await krByBarcode(ean); } catch (e) { console.warn(e); }
+  if (!same()) return;
+  if (!hit) return note({ t: l.krNotFound });
+  readForm();
+  const d = ui.draft;
+  if (!d.name) d.name = hit.name;
+  if (!d.kind) d.kind = kindFromName(hit.name);
+  d.itemSeq = hit.itemSeq; d.entp = hit.entp;
+  note({ t: l.krFound, ok: true });
+  let info = null;
+  try { info = await krEasy(hit.itemSeq); } catch (e) { console.warn(e); if (same()) note({ t: l.krErr }); return; }
+  if (!same()) return;
+  readForm();
+  if (info && info.nokey) return note({ t: `${l.krFound} ${l.krNoKey}`, ok: true });
+  if (!info) return note({ t: `${l.krFound} ${l.krNoInfo}`, ok: true });
+  readForm();
+  d.info = info;
+  if (!d.dose && info.use) d.dose = info.use;
+  if (!d.drawer) { d.drawer = guessDrawer(`${info.efcy} ${d.name}`); d.drawerAuto = true; }
+  note({ t: l.krInfoOk, ok: true });
+}
+// Beschreibung aus e약은요 in der Detailansicht (aufklappbar). / 상세 화면의 e약은요 설명(펼쳐 보기).
+function infoHtml(m) {
+  const l = L(), i = m.info;
+  if (!i) return '';
+  const part = (t, v, open) => v ? `<details ${open ? 'open' : ''}><summary>${esc(t)}</summary><p class="pre">${esc(v)}</p></details>` : '';
+  return `<div class="box info"><h3>${esc(l.info)}</h3>${part(l.iEfcy, i.efcy, true)}${part(l.iUse, i.use)}${part(l.iWarn, i.warn)}${part(l.iSe, i.se)}${part(l.iStore, i.store)}</div>`;
 }
 // Schublade der Packung aufziehen, damit man sie im Schrank wiederfindet. / 그 약의 서랍을 열어 둠.
 function openDrawerOf(m) {
@@ -651,6 +756,7 @@ function saveForm() {
   m.name = (m.name || '').trim();
   if (!m.name) { toast(l.needName); const n = $('#medform [name=name]'); if (n) n.focus(); return; }
   delete m.copied; delete m.expScan; delete m.drawerAuto;
+  ui.krNote = null;
   if (!m.drawer) m.drawer = guessDrawer(`${m.use || ''} ${m.name}`);
   m.openDays = +m.openDays || 0;
   if (!m.code) m.code = m.pzn ? 'pzn:' + m.pzn : m.ean ? 'ean:' + m.ean : '';
@@ -670,17 +776,22 @@ function getDetector() {
     // Die WebAssembly-Datei von cdn.jsdelivr.net laden (wie die Bibliothek; der Service Worker hält sie offline bereit).
     // wasm 파일도 cdn.jsdelivr.net에서 받음(서비스 워커가 오프라인용으로 저장).
     mod.setZXingModuleOverrides({ locateFile: (p, pre) => p.endsWith('.wasm') ? `https://cdn.jsdelivr.net/npm/zxing-wasm@${mod.ZXING_WASM_VERSION}/dist/reader/${p}` : pre + p });
-    return new mod.BarcodeDetector({ formats: ['data_matrix', 'code_39', 'ean_13', 'ean_8', 'code_128'] });
+    return new mod.BarcodeDetector({ formats: ['data_matrix', 'code_39', 'ean_13', 'ean_8', 'code_128', 'qr_code'] });
   }).catch(e => { detectorP = null; throw e; });
   return detectorP;
 }
 const sc = { on: false, stream: null, track: null, timer: 0, busy: false, pending: null, pendingAt: 0, torch: false, err: '', msg: '', typing: false, caps: {} };
 const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-// Nur echte Medikamentencodes: 2D-Code mit Inhalt, gültige PZN oder gültige EAN. / 진짜 약 코드만.
+// Nur echte Medikamentencodes, nach Nutzen geordnet: 3 = mit Verfallsdatum (DataMatrix, GS1-Link),
+// 2 = Strichcode mit PZN/EAN, 1 = QR-Code mit bloßem Link (z. B. koreanisches e-Label).
+// 진짜 약 코드만, 쓸모 순서: 3 = 유효기간 포함(네모 코드, GS1 링크), 2 = PZN/EAN 줄 바코드, 1 = 링크만 있는 QR.
 function pickResult(results) {
-  const parsed = results.map(r => ({ r, c: MedCode.parse(r.rawValue) })).filter(x => x.c && (x.c.pzn || x.c.ean) && x.c.kind !== 'pzn?');
-  return parsed.find(x => x.r.format === 'data_matrix') || parsed[0] || null;
+  const rank = x => (x.c.pzn || x.c.ean) ? (x.c.exp || x.r.format === 'data_matrix' ? 3 : 2) : x.c.url ? 1 : 0;
+  return results.map(r => ({ r, c: MedCode.parse(r.rawValue) }))
+    .filter(x => x.c && x.c.kind !== 'pzn?')
+    .map(x => ({ ...x, rank: rank(x) })).filter(x => x.rank)
+    .sort((a, b) => b.rank - a.rank)[0] || null;
 }
 
 function scanHtml() {
@@ -743,13 +854,16 @@ async function loop() {
       ctx.drawImage(v, (vw - sw) / 2, (vh - sh) / 2, sw, sh, 0, 0, canvas.width, canvas.height);
       const res = await (await getDetector()).detect(canvas);
       const hit = pickResult(res);
-      if (hit && hit.r.format === 'data_matrix') return finish(hit.c);
-      if (hit && !sc.pending) { sc.pending = hit.c; sc.pendingAt = Date.now(); setMsg(L().scanLooking2D); const f = $('.frame'); if (f) f.classList.add('hit'); }
+      if (hit && hit.rank === 3) return finish(hit.c);
+      if (hit && (!sc.pending || hit.rank > sc.pending.rank)) {
+        if (!sc.pending) { sc.pendingAt = Date.now(); setMsg(L().scanLooking2D); const f = $('.frame'); if (f) f.classList.add('hit'); }
+        sc.pending = hit;
+      }
     } catch (e) { console.warn(e); }
     sc.busy = false;
     // Strichcode gefunden: kurz weitersuchen, ob auch ein 2D-Code mit Verfallsdatum da ist.
     // 줄 바코드를 찾았으면 1.3초 더 네모 코드(유효기간 포함)를 찾아봄.
-    if (sc.pending && Date.now() - sc.pendingAt > 1300) return finish(sc.pending);
+    if (sc.pending && Date.now() - sc.pendingAt > 1300) return finish(sc.pending.c);
   }
   sc.timer = setTimeout(loop, 90);
 }
@@ -827,6 +941,7 @@ const ACT = {
   'scan-close'() { closeScan(); },
   'scan-type'() { sc.typing = !sc.typing; sc.err = ''; drawScan(); },
   'scan-photo'() { $('#photo').click(); },
+  'save-key'() { S.krKey = ($('#krkey').value || '').trim(); keep(); toast(L().keySaved); },
   torch() { sc.torch = !sc.torch; sc.track.applyConstraints({ advanced: [{ torch: sc.torch }] }).catch(() => {}); drawScan(); },
   signin() { window.cloud.signIn().catch(e => console.warn(e)); },
   async signout() { await window.cloud.signOut(); renderSheet(); render(); },
