@@ -12,7 +12,7 @@
 const FIREBASE_PROJECT = "shopping-list-ae06d";
 const ORIGINS = ["https://trykyn.github.io", "http://localhost:8774"];
 const MAX = 10 * 1024 * 1024;
-const TYPES = /^(text\/|application\/(pdf|xhtml\+xml|xml|json|download|octet-stream))/i;
+const TYPES = /^(text\/|image\/(jpeg|png|webp|gif)|application\/(pdf|xhtml\+xml|xml|json|download|octet-stream))/i;
 
 export default {
   async fetch(request, env) {
