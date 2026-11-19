@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>약상자 · Hausapotheke</title>
 <meta name="theme-color" content="#f7efe1">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,6 +22,8 @@
   --jua: "Jua", -apple-system, "Apple SD Gothic Neo", sans-serif;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* Kein Zoom durch Doppeltippen / 두 번 터치해도 확대되지 않게 */
+html, body, button, a, input, label, select, textarea, .sheet, .tray, .row-x { touch-action: manipulation; }
 html, body { margin: 0; background: var(--cream); color: var(--ink); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Noto Sans KR", Roboto, sans-serif; }
 body { padding: env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom)); }
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -125,7 +127,11 @@ button { cursor: pointer; }
 .box h3 .ms { font-size: 18px; }
 label.f { display: block; font-size: 13px; color: var(--mut); font-weight: 700; margin: 12px 0 4px; }
 label.f:first-child { margin-top: 0; }
-.in { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fffcf6; outline: 0; min-height: 44px; }
+.in { width: 100%; max-width: 100%; min-width: 0; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fffcf6; outline: 0; min-height: 44px; font-size: 16px; }
+/* iPhone: Datumsfelder haben sonst eine feste Mindestbreite und ragen über den Rand.
+   아이폰: 날짜 칸은 원래 최소 폭이 있어서 테두리 밖으로 넘침 → 기본 모양을 끄고 폭을 맞춤 */
+input.in[type=date], input.in[type=month] { -webkit-appearance: none; appearance: none; display: block; min-width: 0; text-align: left; line-height: 22px; }
+input.in[type=date]::-webkit-date-and-time-value, input.in[type=month]::-webkit-date-and-time-value { text-align: left; }
 .in:focus { border-color: var(--red); background: #fff; }
 textarea.in { min-height: 76px; resize: vertical; }
 .row2 { display: flex; gap: 8px; } .row2 > * { flex: 1; min-width: 0; }
@@ -704,10 +710,8 @@ function formHtml() {
   <div class="box">
     <label class="f">${esc(l.fExp)}</label><input class="in" type="date" name="exp" value="${esc(m.exp || '')}">
     <p class="hint ${m.expScan && m.exp === m.expScan ? 'ok' : ''}">${esc(m.expScan && m.exp === m.expScan ? l.fExpScan : l.fExpHint)}</p>
-    <div class="row2">
-      <div><label class="f">${esc(l.fBought)}</label><input class="in" type="date" name="bought" value="${esc(m.bought || '')}"></div>
-      <div><label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div></div>
-    </div>
+    <label class="f">${esc(l.fBought)}</label><input class="in" type="date" name="bought" value="${esc(m.bought || '')}">
+    <label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
     <label class="f">${esc(l.fOpenDays)}</label><div class="wrapchips">${opens}</div>
     ${custom || ui.customDays ? `<div class="inrow" style="margin-top:8px"><input class="in" type="number" inputmode="numeric" min="1" max="3650" name="openDays" value="${od || ''}" style="max-width:120px"><span>${esc(l.days)}</span></div>` : ''}
     <p class="hint">${esc(['syrup', 'drops'].includes(m.kind) ? l.fOpenHintSyrup : l.fOpenHint)}</p>
