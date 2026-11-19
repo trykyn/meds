@@ -191,6 +191,14 @@ textarea.in { min-height: 76px; resize: vertical; }
 .sug svg { height: 26px; width: 18px; flex: none; }
 .sug span { font-weight: 700; font-size: 14px; } .sug small { display: block; font-weight: 500; color: var(--mut); font-size: 11px; }
 .info .src { color: var(--mut); font-family: -apple-system, sans-serif; font-size: 12px; }
+.brief .br { display: flex; gap: 10px; padding: 7px 0; border-top: 1px solid #f1e8da; }
+.brief .br:first-child { border-top: 0; padding-top: 2px; }
+.brief .br > span { flex: none; width: 58px; color: var(--mut); font-size: 13px; font-weight: 700; padding-top: 1px; }
+.brief .br > div { flex: 1; min-width: 0; font-size: 14px; }
+.brief .br p { margin: 0; }
+details.full { margin-top: 8px; }
+details.full > summary { color: var(--red2); font-weight: 700; font-size: 14px; cursor: pointer; }
+details.full details { margin-left: 4px; }
 .openline { background: #eef8f1; color: #1f7a46; border-radius: 10px; padding: 6px 10px; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
 .openline p { margin: 0; }
 details.orig summary { font-size: 12px; color: var(--mut); font-weight: 500; }
@@ -359,6 +367,7 @@ const T = {
     krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    fullOrig: '설명서 원문 전체 보기', more: '전체 보기',
     leafTitle: '설명서로 채우기', leafInfo: '설명서 PDF를 올리거나 설명서가 있는 웹페이지 주소를 넣으면 용도, 먹는 법, 개봉 후 기간을 채워요.',
     leafPdf: 'PDF 올리기', leafUrlPh: 'https://… 설명서 주소', leafGet: '가져오기', leafBusy: '설명서를 읽는 중…',
     leafGot: s => `설명서에서 채웠어요 ✓ ${s}`, leafNone: '설명서를 읽었어요. 비어 있던 칸이 없어서 설명만 저장했어요.',
@@ -415,6 +424,7 @@ const T = {
     krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    fullOrig: 'Ganzen Beipackzettel anzeigen', more: 'Alles anzeigen',
     leafTitle: 'Aus Beipackzettel füllen', leafInfo: 'PDF hochladen oder Adresse einer Seite mit dem Beipackzettel eingeben – Anwendung, Dosierung und Haltbarkeit nach Anbruch werden übernommen.',
     leafPdf: 'PDF hochladen', leafUrlPh: 'https://… Beipackzettel-Adresse', leafGet: 'Laden', leafBusy: 'Beipackzettel wird gelesen…',
     leafGot: s => `Aus dem Beipackzettel übernommen ✓ ${s}`, leafNone: 'Gelesen. Keine leeren Felder – nur die Beschreibung gespeichert.',
@@ -667,7 +677,7 @@ function detailHtml(id) {
     ${lim.by === 'open' ? `<div class="why">${esc(l.whyOpen)}</div>` : ''}
     ${m.opened && !m.openDays ? `<div class="warn">${ms('info').replace('class="ms"', 'class="ms" style="font-size:15px"')} ${esc(l.noOpenDays)}</div>` : ''}</div>` : ''}
   ${kids.length ? `<div class="kc">${kids.map(([w, t]) => `<div><div class="face ${w}">${esc(l.who[w])}</div><b>${esc(t)}</b></div>`).join('')}</div>` : ''}
-  ${m.dose ? `<div class="box"><h3>${esc(l.fDose)}</h3>${trBlock(m.dose, catOf(m))}</div>` : ''}
+  ${m.dose ? `<div class="box"><h3>${esc(l.fDose)}</h3>${doseHtml(m)}</div>` : ''}
   ${m.note ? `<div class="box"><h3>${esc(l.memo)}</h3><p class="pre">${esc(m.note)}</p></div>` : ''}
   ${same.length ? `<div class="box"><h3>${esc(l.same(same.length + 1))}</h3>${same.map(x => `<button class="same" data-act="detail" data-id="${x.id}"><span>${esc(fmt(limitOf(x).end) || l.noExp)}${x.opened ? ` · ${esc(l.openedOn)} ${esc(fmtShort(x.opened))}` : ''}</span><span class="sd ${statusOf(x).st}">${esc(stk(x))}</span></button>`).join('')}</div>` : ''}
   ${infoHtml(m)}
@@ -832,7 +842,7 @@ async function fillKorean(id, ean) {
   if (!info) return note({ t: `${l.krFound} ${l.krNoInfo}`, ok: true });
   const src = 'nedrug';
   d.info = { efcy: info.efcy, use: info.use, warn: info.warn, se: info.se, store: info.store, open: info.openText || '', lang: 'ko', src };
-  if (!d.dose && (info.dose || info.use)) d.dose = info.dose || info.use;
+  if (!d.dose && info.use) d.dose = MedLeaflet.briefDose(info.use) || info.dose || info.use;
   if (!d.drawer || d.drawerAuto) { d.drawer = guessDrawer(`${info.efcy} ${d.name}`); d.drawerAuto = true; }
   if (!+d.openDays && info.openDays) d.openDays = info.openDays;
   fillKids(d, info.use, false);
@@ -921,7 +931,8 @@ function applyLeaflet(p, src) {
   if (!d.use && labels) { d.use = labels; got.push(l.fUse); }
   if ((!d.drawer || d.drawerAuto) && p.efcy) { d.drawer = guessDrawer(`${p.efcy} ${d.name || ''}`); d.drawerAuto = true; }
   if (!+d.openDays && p.openDays) { d.openDays = p.openDays; got.push(`${l.fOpenDays} ${openLabel(p.openDays)}`); }
-  if (!d.dose && p.dose) { d.dose = p.dose; got.push(l.fDose); }
+  const shortDose = MedLeaflet.briefDose(p.use) || p.dose;
+  if (!d.dose && shortDose) { d.dose = shortDose; got.push(l.fDose); }
   const kidsGot = fillKids(d, p.use, false);
   if (kidsGot.length) got.push(kidsGot.join('·') + ' ' + l.fDoseKid());
   d.info = { efcy: p.efcy, use: p.use, warn: p.warn, se: p.se, store: p.store, open: p.openText || '', lang: p.lang, src: 'leaflet' };
@@ -973,23 +984,36 @@ function trBlock(text, e) {
   if (!t) return `<p class="pre">${esc(text)}</p>`;
   return `<p class="pre">${esc(t)}</p><details class="orig"><summary>${esc(L().orig)}</summary><p class="pre">${esc(text)}</p></details>`;
 }
-const trTexts = (m, i) => [m.dose, i && i.efcy, i && i.open, i && i.store].filter(Boolean);
+// Langer Dosierungstext: kurz zeigen, Rest aufklappbar. / 긴 먹는 법은 짧게, 나머지는 펼쳐 보기
+const doseShort = d => !d || d.length <= 220 ? d : (MedLeaflet.briefDose(d) || d.slice(0, 200) + ' …');
+// Übersetzt werden nur die kurzen Texte (spart das Tageslimit). / 짧은 글만 번역(무료 한도 절약)
+function trTexts(m, i) {
+  const b = MedLeaflet.brief(i);
+  return [doseShort(m.dose), b.efcy, !m.dose && b.dose, i && i.open, b.store].filter(Boolean);
+}
 function needsTr(m, e) {
   const i = (e && e.info) || m.info;
   return S.lang === 'ko' && i && i.lang === 'de' && trTexts(m, i).some(t => !(e && e.tr && e.tr[hashId(t)]));
 }
+function doseHtml(m) {
+  const e = catOf(m), short = doseShort(m.dose);
+  return trBlock(short, e) + (short !== m.dose ? `<details class="full"><summary>${esc(L().more)}</summary><p class="pre">${esc(m.dose)}</p></details>` : '');
+}
 
-// Beschreibung in der Detailansicht (aufklappbar). / 상세 화면의 약 설명(펼쳐 보기).
+// Beschreibung: oben die Kurzfassung, der ganze Beipackzettel zum Aufklappen.
+// 약 설명: 위에는 짧은 요약, 설명서 전체는 접어 둠.
 function infoHtml(m) {
   const l = L(), e = catOf(m), i = (e && e.info) || m.info;
   if (!i) return '';
-  const part = (t, v, open) => v ? `<details ${open ? 'open' : ''}><summary>${esc(t)}</summary>${trBlock(v, e)}</details>` : '';
+  const b = MedLeaflet.brief(i);
+  const row = (t, v) => v ? `<div class="br"><span>${esc(t)}</span><div>${trBlock(v, e)}</div></div>` : '';
+  const part = (t, v) => v ? `<details><summary>${esc(t)}</summary><p class="pre">${esc(v)}</p></details>` : '';
   const srcName = i.src === 'nedrug' ? '의약품안전나라' : i.src === 'easy' ? 'e약은요' : i.src === 'leaflet' ? l.leafSrc : '';
   return `<div class="box info"><h3>${esc(l.info)}${srcName ? ` <small class="src">· ${esc(srcName)}</small>` : ''}</h3>
-    ${i.open ? `<div class="openline">${trBlock(i.open, e)}</div>` : ''}
-    ${part(l.iEfcy, i.efcy, true)}${part(l.iUse, i.use)}${part(l.iWarn, i.warn)}${part(l.iSe, i.se)}${part(l.iStore, i.store)}
+    <div class="brief">${row(l.iEfcy, b.efcy)}${m.dose ? '' : row(l.fDose, b.dose)}${row(l.lAfter, i.open)}${row(l.iStore, b.store)}</div>
     ${needsTr(m, e) ? `<button class="btn ghost small" style="margin-top:8px" data-act="translate" data-id="${m.id}" ${ui.trBusy === m.id ? 'disabled' : ''}>${esc(ui.trBusy === m.id ? l.translating : l.translate)}</button>` : ''}
-    ${S.lang === 'ko' && e && e.tr && i.lang === 'de' ? `<p class="note">${esc(l.trNote)}</p>` : ''}</div>`;
+    ${S.lang === 'ko' && e && e.tr && i.lang === 'de' ? `<p class="note">${esc(l.trNote)}</p>` : ''}
+    <details class="full"><summary>${esc(l.fullOrig)}</summary>${part(l.iEfcy, i.efcy)}${part(l.iUse, i.use)}${part(l.iWarn, i.warn)}${part(l.iSe, i.se)}${part(l.iStore, i.store)}</details></div>`;
 }
 // Lexikon-Eintrag → Formularfelder (ohne Barcode-Daten der Packung). / 사전 → 양식 칸(통의 바코드 정보는 빼고)
 function fromCat(e) {
