@@ -12,7 +12,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,flashlight_off,flashlight_on,history,image,info,keyboard,open_in_new,qr_code_scanner,restore,schedule,search,settings,upload&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,keyboard,notifications,open_in_new,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,thermometer,upload,warning&display=block">
 <style>
 :root {
   --red: #d9443a; --red2: #b8352d; --cream: #f7efe1; --ink: #3a2a20; --mut: #8a7562; --line: #eadfcd; --card: #fff;
@@ -191,6 +191,50 @@ textarea.in { min-height: 76px; resize: vertical; }
 .sug svg { height: 26px; width: 18px; flex: none; }
 .sug span { font-weight: 700; font-size: 14px; } .sug small { display: block; font-weight: 500; color: var(--mut); font-size: 11px; }
 .info .src { color: var(--mut); font-family: -apple-system, sans-serif; font-size: 12px; }
+.care { background: #fff; border-radius: 18px; padding: 10px 12px; margin-top: 12px; border-left: 6px solid var(--pc, var(--red)); }
+.p-k1 { --pc: #f2c200; } .p-k2 { --pc: #c27bd9; } .p-mom { --pc: #f08cb0; } .p-dad { --pc: #4f8fe0; }
+.care.course { --pc: #3aa76d; }
+.ch { display: flex; align-items: center; gap: 8px; }
+.ch b { font: 400 18px var(--jua); }
+.ch small { color: var(--mut); font-size: 12px; }
+.ch .ms { color: #3aa76d; }
+.tp { border-radius: 8px; padding: 1px 7px; font-weight: 800; color: #fff; font-size: 14px; }
+.tp.ok { background: var(--ok); } .tp.warm { background: #e0a800; } .tp.soon { background: var(--soon); } .tp.bad { background: var(--bad); }
+.mini2 { margin-left: auto; border: 0; background: #f4ece0; border-radius: 10px; width: 36px; height: 36px; display: grid; place-items: center; }
+.crow { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; padding: 8px 0; border-top: 1px solid #f1e8da; text-align: left; color: var(--ink); }
+.crow:first-of-type { margin-top: 6px; }
+.cn { flex: 1; min-width: 0; font-weight: 700; font-size: 14px; }
+.cn small { display: block; font-weight: 500; color: var(--mut); font-size: 12px; }
+.nx { flex: none; font: 400 13px var(--jua); border-radius: 999px; padding: 3px 10px; color: #fff; }
+.nx.ok { background: var(--ok); } .nx.soon { background: var(--soon); } .nx.bad { background: var(--bad); }
+.cb { display: flex; gap: 8px; margin-top: 8px; }
+.cb button { flex: 1; height: 42px; border: 0; border-radius: 12px; background: #f4ece0; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.chip.p-k1.on { background: #f2c200; border-color: #f2c200; color: var(--ink); } .chip.p-k2.on { background: #c27bd9; border-color: #c27bd9; }
+.chip.p-mom.on { background: #f08cb0; border-color: #f08cb0; } .chip.p-dad.on { background: #4f8fe0; border-color: #4f8fe0; }
+.seg { display: flex; background: #f1e8da; border-radius: 12px; padding: 3px; }
+.seg button { flex: 1; border: 0; background: none; height: 42px; border-radius: 10px; font-weight: 700; display: flex; gap: 4px; align-items: center; justify-content: center; color: var(--mut); }
+.seg .on { background: #fff; color: var(--red); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.tbig { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 4px 0 12px; }
+.tb { width: 58px; height: 58px; border-radius: 50%; border: 0; background: #f4ece0; font-size: 30px; font-weight: 700; color: var(--ink); }
+.tv { font: 400 54px/1 var(--jua); min-width: 150px; text-align: center; } .tv small { font-size: 22px; }
+.tv.bad { color: var(--bad); } .tv.soon { color: #d97a00; } .tv.warm { color: #b58900; } .tv.ok { color: var(--ok); }
+.medpick { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.mp { display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--line); background: #fffaf0; border-radius: 12px; padding: 6px 10px; text-align: left; color: var(--ink); }
+.mp svg { height: 30px; width: 21px; flex: none; }
+.mp span { font-weight: 700; font-size: 14px; min-width: 0; } .mp small { display: block; font-weight: 500; color: var(--mut); font-size: 12px; }
+.mp.on { border-color: var(--red); background: #fdeeea; }
+.lwarn { background: #fdecec; color: #b42318; border-radius: 12px; padding: 8px 10px; font-size: 14px; font-weight: 600; margin: 8px 0 10px; }
+.lwarn .ms { font-size: 18px; color: #b42318; }
+.lday { font: 400 15px var(--jua); color: var(--red); margin: 10px 0 2px; } .lday:first-child { margin-top: 0; }
+.lrow { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid #f1e8da; flex-wrap: wrap; }
+.lt { font-weight: 700; width: 46px; } .lm { flex: 1; min-width: 0; font-size: 14px; } .lm .ms { font-size: 16px; color: var(--mut); }
+.lrow small { flex-basis: 100%; color: var(--mut); padding-left: 54px; font-size: 12px; }
+.lx { margin-left: auto; border: 0; background: none; color: var(--mut); width: 32px; height: 32px; }
+.tchart { width: 100%; height: auto; display: block; }
+.tchart polyline { fill: none; stroke: var(--red); stroke-width: 2; stroke-linejoin: round; }
+.tchart line.g { stroke: #e7dccb; stroke-dasharray: 3 3; } .tchart line.hot { stroke: #f3b0b0; }
+.tchart text { font-size: 10px; fill: var(--mut); }
+.tchart circle.ok { fill: var(--ok); } .tchart circle.warm { fill: #e0a800; } .tchart circle.soon { fill: var(--soon); } .tchart circle.bad { fill: var(--bad); }
 .brief .br { display: flex; gap: 10px; padding: 7px 0; border-top: 1px solid #f1e8da; }
 .brief .br:first-child { border-top: 0; padding-top: 2px; }
 .brief .br > span { flex: none; width: 58px; color: var(--mut); font-size: 13px; font-weight: 700; padding-top: 1px; }
@@ -312,7 +356,7 @@ function fillKids(d, section, overwrite) {
   }
   return got;
 }
-const PROD = ['name', 'kind', 'use', 'drawer', 'who', 'openDays', 'dose', 'doseK1', 'doseK2', 'note', 'pzn', 'ean', 'code', 'itemSeq', 'entp', 'link', 'leaflet', 'info'];
+const PROD = ['name', 'kind', 'use', 'drawer', 'who', 'openDays', 'dose', 'doseK1', 'doseK2', 'note', 'pzn', 'ean', 'code', 'itemSeq', 'entp', 'atc', 'ingr', 'link', 'leaflet', 'info'];
 const nameKey = n => n ? 'n:' + String(n).trim().toLowerCase() : '';
 const catKey = m => m.code || nameKey(m.name);
 const catOf = m => S.cat[catKey(m)] || S.cat[nameKey(m.name)] || null;
@@ -367,6 +411,18 @@ const T = {
     krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    people: { k1: '첫째', k2: '둘째', mom: '엄마', dad: '아빠' },
+    justNow: '방금', minAgo: n => `${n}분 전`, hAgo: n => `${n}시간 전`, dAgo: n => `${n}일 전`, tomorrow: '내일', todayW: '오늘',
+    maxReached: (n, x) => `오늘 ${n}/${x}번 다 먹음`, nextAt: t => `${t}부터`, canNow: '지금 가능', lastAt: t => `마지막 ${t}`, in24: (n, x) => `24시간 ${n}/${x}번`,
+    diary: '아플 때 기록', addTemp: '체온', addDose: '약 먹음', courseNow: '복용 중인 약', courseDay: (d, n) => `${n}일 중 ${d}일째`, todayN: (n, p) => `오늘 ${n}/${p}번`,
+    tTemp: '체온', tDose: '먹은 약', newLog: '새 기록', amount: '먹은 양', amountPh: '예: 5 ml, 1정', date: '날짜', time: '시간', logNotePh: '예: 토함, 땀 남, 잠듦',
+    wFull: (n, x) => `24시간 안에 벌써 ${n}번 먹었어요(최대 ${x}번).`, wEarly: (last, next) => `마지막으로 ${last}에 먹었어요. 설명서 간격으로는 ${next}부터예요.`,
+    wIngr: (ing, name, t) => `같은 성분(${ing})을 ${t}에 ${name}(으)로 먹었어요. 겹치지 않게 조심하세요.`,
+    noMeds: '이 사람에게 맞는 약이 아직 없어요.', pickMed: '먹은 약을 골라 주세요.', logged: '기록했어요', noLogs: '아직 기록이 없어요.', confirmDelLog: '이 기록을 지울까요?',
+    sameIngr: (ing, names) => `같은 성분(${ing})이 든 약이 또 있어요: ${names}. 함께 먹지 않게 조심하세요.`, ingrIs: ing => `성분: ${ing}`,
+    tookIt: '먹었어요', courseTitle: '처방 복용 기간', optional: '(선택)', courseStartL: '시작일', perDayU: '번/일', courseHint: '항생제처럼 정해진 기간 동안 먹는 약: 시작일, 며칠, 하루 몇 번.',
+    courseFrom: d => `${d}부터 시작`, courseDone: '복용 기간이 끝났어요', courseEnd: d => `끝나는 날 ${d}`, courseTotal: (n, x) => `지금까지 ${n}/${x}번`,
+    shopTitle: '장보기에 추가', shopAsk: '다 쓴 약을 장보기 목록에 넣을까요? 넣을 목록을 고르세요.', shopNo: '아니요', shopLoading: '장보기 목록을 불러오는 중…', shopAdded: '장보기에 넣었어요',
     fullOrig: '설명서 원문 전체 보기', more: '전체 보기',
     leafTitle: '설명서로 채우기', leafInfo: '설명서 PDF를 올리거나 설명서가 있는 웹페이지 주소를 넣으면 용도, 먹는 법, 개봉 후 기간을 채워요.',
     leafPdf: 'PDF 올리기', leafUrlPh: 'https://… 설명서 주소', leafGet: '가져오기', leafBusy: '설명서를 읽는 중…',
@@ -424,6 +480,18 @@ const T = {
     krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    people: { k1: 'K1', k2: 'K2', mom: 'Mama', dad: 'Papa' },
+    justNow: 'gerade', minAgo: n => `vor ${n} Min.`, hAgo: n => `vor ${n} Std.`, dAgo: n => `vor ${n} T.`, tomorrow: 'morgen', todayW: 'Heute',
+    maxReached: (n, x) => `heute ${n}/${x} – genug`, nextAt: t => `ab ${t}`, canNow: 'jetzt möglich', lastAt: t => `zuletzt ${t}`, in24: (n, x) => `24 h: ${n}/${x}`,
+    diary: 'Krankheitstagebuch', addTemp: 'Fieber', addDose: 'Medikament', courseNow: 'Laufende Behandlung', courseDay: (d, n) => `Tag ${d} von ${n}`, todayN: (n, p) => `heute ${n}/${p}`,
+    tTemp: 'Temperatur', tDose: 'Medikament', newLog: 'Neuer Eintrag', amount: 'Menge', amountPh: 'z. B. 5 ml, 1 Tablette', date: 'Datum', time: 'Uhrzeit', logNotePh: 'z. B. erbrochen, geschwitzt, schläft',
+    wFull: (n, x) => `In 24 Stunden schon ${n}× gegeben (höchstens ${x}×).`, wEarly: (last, next) => `Zuletzt um ${last} gegeben. Laut Abstand erst ab ${next}.`,
+    wIngr: (ing, name, t) => `Gleicher Wirkstoff (${ing}) um ${t} mit ${name} gegeben. Nicht doppelt geben!`,
+    noMeds: 'Noch kein passendes Medikament für diese Person.', pickMed: 'Bitte das Medikament wählen.', logged: 'Eingetragen', noLogs: 'Noch keine Einträge.', confirmDelLog: 'Diesen Eintrag löschen?',
+    sameIngr: (ing, names) => `Gleicher Wirkstoff (${ing}) auch in: ${names}. Nicht zusammen geben.`, ingrIs: ing => `Wirkstoff: ${ing}`,
+    tookIt: 'Genommen', courseTitle: 'Behandlungsdauer', optional: '(optional)', courseStartL: 'Beginn', perDayU: '×/Tag', courseHint: 'Für Mittel mit fester Dauer (z. B. Antibiotikum): Beginn, Tage, Gaben pro Tag.',
+    courseFrom: d => `Beginn am ${d}`, courseDone: 'Behandlung beendet', courseEnd: d => `letzter Tag ${d}`, courseTotal: (n, x) => `bisher ${n}/${x}`,
+    shopTitle: 'Auf die Einkaufsliste', shopAsk: 'Aufgebrauchtes Medikament auf die Einkaufsliste setzen? Liste wählen:', shopNo: 'Nein', shopLoading: 'Einkaufslisten werden geladen…', shopAdded: 'Auf der Einkaufsliste',
     fullOrig: 'Ganzen Beipackzettel anzeigen', more: 'Alles anzeigen',
     leafTitle: 'Aus Beipackzettel füllen', leafInfo: 'PDF hochladen oder Adresse einer Seite mit dem Beipackzettel eingeben – Anwendung, Dosierung und Haltbarkeit nach Anbruch werden übernommen.',
     leafPdf: 'PDF hochladen', leafUrlPh: 'https://… Beipackzettel-Adresse', leafGet: 'Laden', leafBusy: 'Beipackzettel wird gelesen…',
@@ -596,9 +664,10 @@ function render() {
   const hadFocus = document.activeElement && document.activeElement.id === 'q';
   $('#app').innerHTML = `<div class="wrap">
     <div class="lid"><div class="t"><span class="wc"></span><b>${esc(l.title)}</b>
+      <button class="lbtn" data-act="loglist" aria-label="${esc(l.diary)}">${ms('thermometer')}</button>
       <button class="lbtn" data-act="lang">${S.lang === 'de' ? '한' : 'DE'}</button>
       <button class="lbtn" data-act="settings" aria-label="${esc(l.settings)}">${window.cloud && window.cloud.user && S.house ? ms('cloud_done') : ms('settings')}</button></div></div>
-    ${top}${bar}${body}${goneHtml}
+    ${careHtml()}${top}${bar}${body}${goneHtml}
   </div>
   <div class="dock"><div class="wrap">
     <button class="big" data-act="scan">${ms('barcode_reader')}${esc(l.scan)}</button>
@@ -609,7 +678,7 @@ function render() {
     q.addEventListener('input', () => { ui.q = q.value; render(); });
     if (hadFocus) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
-  if (ui.sheet && ui.sheet.type !== 'form') renderSheet();
+  if (ui.sheet && !['form', 'addlog'].includes(ui.sheet.type)) renderSheet();
   document.documentElement.lang = S.lang === 'de' ? 'de' : 'ko';
   document.title = l.title;
 }
@@ -620,7 +689,7 @@ function closeSheet() { ui.sheet = null; ui.draft = null; ui.krNote = null; ui.l
 function renderSheet() {
   const s = ui.sheet;
   if (!s) { $('#sheet').innerHTML = ''; return; }
-  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : settingsHtml();
+  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : settingsHtml();
   if (html == null) return closeSheet();
   const prev = $('#sheet .sheet'), top = prev ? prev.scrollTop : 0;
   $('#sheet').innerHTML = `<div class="sheetbg" data-act="bg"><div class="sheet">${html}</div></div>`;
@@ -675,13 +744,14 @@ function detailHtml(id) {
   ${rows.length || (m.opened && !m.openDays) ? `<div class="tagc">${rows.map(([c, a, b]) => `<div class="r ${c}"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join('')}
     ${lim.by === 'open' ? `<div class="why">${esc(l.whyOpen)}</div>` : ''}
     ${m.opened && !m.openDays ? `<div class="warn">${ms('info').replace('class="ms"', 'class="ms" style="font-size:15px"')} ${esc(l.noOpenDays)}</div>` : ''}</div>` : ''}
+  ${m.gone ? '' : detailCare(m)}
   ${kids.length ? `<div class="kc">${kids.map(([w, t]) => `<div><div class="face ${w}">${esc(l.who[w])}</div><b>${esc(t)}</b></div>`).join('')}</div>` : ''}
   ${m.dose ? `<div class="box"><h3>${esc(l.fDose)}</h3>${doseHtml(m)}</div>` : ''}
   ${m.note ? `<div class="box"><h3>${esc(l.memo)}</h3><p class="pre">${esc(m.note)}</p></div>` : ''}
   ${same.length ? `<div class="box"><h3>${esc(l.same(same.length + 1))}</h3>${same.map(x => `<button class="same" data-act="detail" data-id="${x.id}"><span>${esc(fmt(limitOf(x).end) || l.noExp)}${x.opened ? ` · ${esc(l.openedOn)} ${esc(fmtShort(x.opened))}` : ''}</span><span class="sd ${statusOf(x).st}">${esc(stk(x))}</span></button>`).join('')}</div>` : ''}
   ${infoHtml(m)}
   ${m.pzn || m.ean || m.name || m.link ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${codeLinks(m)}</div>` : ''}
-  ${!m.gone && !m.opened ? `<div class="btnrow"><button class="btn" data-act="open-today" data-id="${id}">${ms('schedule')}${esc(l.openToday)}</button></div>` : ''}
+  ${m.gone ? '' : `<div class="btnrow"><button class="btn" data-act="addlog" data-med="${id}" data-who="${courseWho(m)}">${ms('pill')}${esc(l.tookIt)}</button>${m.opened ? '' : `<button class="btn ghost" data-act="open-today" data-id="${id}">${ms('schedule')}${esc(l.openToday)}</button>`}</div>`}
   <div class="btnrow" style="margin-top:8px">
     ${m.gone ? `<button class="btn ghost" data-act="restore" data-id="${id}">${ms('restore')}${esc(l.restore)}</button>` : `<button class="btn ghost" data-act="gone" data-id="${id}">${ms('check')}${esc(l.gone)}</button>`}
     <button class="btn danger small" data-act="delete" data-id="${id}" aria-label="${esc(l.del)}">${ms('delete')}</button>
@@ -728,6 +798,10 @@ function formHtml() {
     <label class="f">${esc(l.fDose)}</label><textarea class="in" name="dose" placeholder="${esc(l.fDosePh)}">${esc(m.dose || '')}</textarea>
     ${kidRow('k1')}${kidRow('k2')}
     ${(m.info || (catOf(m) || {}).info) ? `<div class="leafrow"><button type="button" class="btn ghost small" data-act="kid-calc">${ms('child_care')}${esc(l.kidCalc)}</button></div>` : ''}
+    <label class="f">${esc(l.courseTitle)} <span style="font-weight:500">${esc(l.optional)}</span></label>
+    <div class="row2"><div><input class="in" type="date" name="courseStart" value="${esc(m.courseStart != null ? m.courseStart : (m.course || {}).start || '')}" aria-label="${esc(l.courseStartL)}"></div>
+      <div class="inrow"><input class="in" type="number" inputmode="numeric" min="0" max="90" name="courseDays" value="${esc(m.courseDays != null ? m.courseDays : (m.course || {}).days || '')}" placeholder="7"><span>${esc(l.days)}</span><input class="in" type="number" inputmode="numeric" min="0" max="8" name="coursePer" value="${esc(m.coursePer != null ? m.coursePer : (m.course || {}).perDay || '')}" placeholder="2"><span>${esc(l.perDayU)}</span></div></div>
+    <p class="hint" style="margin-top:4px">${esc(l.courseHint)}</p>
     <label class="f">${esc(l.fNote)}</label><textarea class="in" name="note" placeholder="${esc(l.fNotePh)}">${esc(m.note || '')}</textarea>
   </div>
   ${isNew ? '' : `<button type="button" class="btn danger" data-act="delete" data-id="${m.id}" style="width:100%">${ms('delete')}${esc(l.del)}</button>`}
@@ -800,8 +874,8 @@ async function krByBarcode(ean) {
   if (!r.ok) return null;
   const j = await r.json(), seq = j.c[ean.slice(6)];
   if (!seq || !j.i[seq]) return null;
-  const [name, entp, form, rx] = j.i[seq];
-  return { itemSeq: seq, name, entp, form, rx };
+  const [name, entp, form, rx, atc] = j.i[seq];
+  return { itemSeq: seq, name, entp, form, rx, atc: atc || '' };
 }
 // Darreichungsform aus dem koreanischen Namen raten. / 한국 약 이름으로 종류 추측.
 function kindFromName(n) {
@@ -829,7 +903,7 @@ async function fillKorean(id, ean) {
   const d = ui.draft;
   if (!d.name) d.name = hit.name;
   if (!d.kind) d.kind = kindFromName(hit.name);
-  d.itemSeq = hit.itemSeq; d.entp = hit.entp;
+  d.itemSeq = hit.itemSeq; d.entp = hit.entp; if (hit.atc) d.atc = hit.atc;
   note({ t: l.krFound, ok: true });
   // Beschreibung von 의약품안전나라 (nur angemeldet) / 의약품안전나라 설명(로그인했을 때만)
   if (!canFetch()) return note({ t: `${l.krFound} ${l.krNoLogin}`, ok: true });
@@ -933,7 +1007,7 @@ function applyLeaflet(p, src) {
   if (!d.dose && shortDose) { d.dose = shortDose; got.push(l.fDose); }
   const kidsGot = fillKids(d, p.use, false);
   if (kidsGot.length) got.push(kidsGot.join('·') + ' ' + l.fDoseKid());
-  d.info = { efcy: p.efcy, use: p.use, warn: p.warn, se: p.se, store: p.store, open: p.openText || '', lang: p.lang, src: 'leaflet' };
+  d.info = { efcy: p.efcy, use: p.use, warn: p.warn, se: p.se, store: p.store, open: p.openText || '', ingr: p.ingr || '', lang: p.lang, src: 'leaflet' };
   if (src) d.leaflet = src;
   ui.leafNote = { t: got.length ? l.leafGot(got.join(', ')) : l.leafNone, ok: true };
   renderSheet();
@@ -1044,6 +1118,14 @@ function saveForm() {
   if (!m.drawer) m.drawer = guessDrawer(`${m.use || ''} ${m.name}`);
   m.openDays = +m.openDays || 0;
   if (!m.code) m.code = m.pzn ? 'pzn:' + m.pzn : m.ean ? 'ean:' + m.ean : '';
+  // Behandlungsdauer aus den Formularfeldern / 처방 기간 칸
+  if (+m.courseDays > 0) m.course = { start: m.courseStart || today(), days: +m.courseDays, perDay: +m.coursePer || 0 };
+  else delete m.course;
+  delete m.courseStart; delete m.courseDays; delete m.coursePer;
+  // Wirkstoffe für die Warnung bei gleichem Wirkstoff / 같은 성분 경고용 성분
+  const ci = m.info || (catOf(m) || {}).info || {};
+  m.ingr = MedLeaflet.ingredients([m.name, ci.ingr, (ci.use || '').slice(0, 800)], m.atc || (catOf(m) || {}).atc);
+  if (!m.ingr.length) delete m.ingr;
   for (const k of Object.keys(m)) if (m[k] === '' || m[k] == null) delete m[k];
   // Sorten-Angaben ins Lexikon; die lange Beschreibung liegt nur dort. / 제품 정보는 사전에, 긴 설명은 사전에만.
   toCat(m);
@@ -1053,6 +1135,199 @@ function saveForm() {
   toast(l.saved);
   openSheet({ type: 'detail', id: m.id });
   ui.draft = null;
+}
+
+// ---------- Krankheitstagebuch: Fieber und Gaben / 아플 때 기록: 체온과 먹은 약 ----------
+// S.log = { id → { t: Zeitpunkt (ms), who: k1|k2|mom|dad, kind: temp|dose, temp, med, name, amt, note } }
+// Die Familie teilt es (households/{Code}_medlog). Einträge älter als 60 Tage werden beim Öffnen gelöscht.
+// S.log = { id → 기록 }. 가족이 함께 씀(households/{코드}_medlog). 60일 지난 기록은 열 때 지움.
+S.log = S.log || {};
+const PEOPLE = ['k1', 'k2', 'mom', 'dad'];
+const pName = w => L().people[w] || w;
+(() => { const old = Date.now() - 60 * 864e5; for (const id in S.log) if (!(S.log[id].t > old)) delete S.log[id]; })();
+const logs = (who, since = 0) => Object.values(S.log).filter(x => (!who || x.who === who) && x.t >= since).sort((a, b) => b.t - a.t);
+const hhmm = t => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const dayOf = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+function ago(t) {
+  const mins = Math.round((Date.now() - t) / 60000), l = L();
+  return mins < 1 ? l.justNow : mins < 60 ? l.minAgo(mins) : mins < 1440 ? l.hAgo(Math.floor(mins / 60)) : l.dAgo(Math.floor(mins / 1440));
+}
+function whenText(t) {
+  const d = dayOf(t);
+  return d === today() ? hhmm(t) : d === addDays(today(), 1) ? `${L().tomorrow} ${hhmm(t)}` : `${fmtShort(d)} ${hhmm(t)}`;
+}
+const tempCls = c => c >= 39 ? 'bad' : c >= 38 ? 'soon' : c >= 37.5 ? 'warm' : 'ok';
+const doseFor = (m, who) => who === 'k1' ? m.doseK1 : who === 'k2' ? m.doseK2 : '';
+// Abstand und Höchstzahl: zuerst aus der Kinderdosis, dann „먹는 법“, dann Beipackzettel.
+// 간격·하루 최대: 아이 용량 → 먹는 법 → 설명서 순서로 찾음.
+function schedFor(m, who) {
+  const info = (catOf(m) || {}).info || m.info || {};
+  let minHours = 0, maxPerDay = 0;
+  for (const src of [doseFor(m, who), m.dose, info.use]) {
+    const s = MedLeaflet.schedule(src || '');
+    if (!minHours && s.minHours) minHours = s.minHours;
+    if (!maxPerDay && s.maxPerDay) maxPerDay = s.maxPerDay;
+  }
+  return { minHours, maxPerDay };
+}
+// Stand für eine Person und ein Mittel zu einem Zeitpunkt / 한 사람·한 약의 지금 상태
+function doseState(m, who, at = Date.now()) {
+  const { minHours, maxPerDay } = schedFor(m, who);
+  const mine = logs(who, at - 864e5).filter(x => x.kind === 'dose' && x.med === m.id && x.t <= at);
+  const last = mine[0], next = last && minHours ? last.t + minHours * 36e5 : 0;
+  return { last, count: mine.length, minHours, maxPerDay, next, early: next > at, full: !!maxPerDay && mine.length >= maxPerDay };
+}
+// Wirkstoffe eines Mittels (Lexikon, sonst aus Name/ATC) / 약의 성분(사전, 없으면 이름·ATC로)
+const ingrOf = m => {
+  const e = catOf(m) || {}, i = e.info || m.info || {};
+  return (e.ingr && e.ingr.length ? e.ingr : m.ingr && m.ingr.length ? m.ingr : MedLeaflet.ingredients([m.name, i.ingr], e.atc || m.atc));
+};
+// Andere Sorten im Schrank mit gleichem Wirkstoff / 같은 성분이 든 다른 약
+function sameIngr(m) {
+  const mine = ingrOf(m);
+  if (!mine.length) return [];
+  return active().filter(x => x.id !== m.id && groupKey(x) !== groupKey(m))
+    .map(x => ({ m: x, k: ingrOf(x).filter(k => mine.includes(k)) })).filter(x => x.k.length);
+}
+// Gleicher Wirkstoff kürzlich aus einem anderen Mittel gegeben? / 최근 다른 약으로 같은 성분을 먹었나?
+function ingrClash(m, who, at = Date.now()) {
+  const mine = ingrOf(m);
+  if (!mine.length) return null;
+  const hours = Math.max(4, schedFor(m, who).minHours || 6);
+  for (const x of logs(who, at - hours * 36e5)) {
+    if (x.kind !== 'dose' || x.med === m.id || x.t > at) continue;
+    const o = S.meds[x.med], k = (o ? ingrOf(o) : MedLeaflet.ingredients([x.name])).filter(i => mine.includes(i));
+    if (k.length) return { log: x, k };
+  }
+  return null;
+}
+const ingrNames = ks => ks.map(k => MedLeaflet.ingrName(k, S.lang)).join(', ');
+
+// Behandlungsdauer, z. B. Antibiotikum 7 Tage × 2 / 처방 복용 기간(예: 항생제 7일 × 하루 2번)
+function courseState(m) {
+  const c = m.course;
+  if (!c || !c.start || !c.days) return null;
+  const day = diff(c.start, today()) + 1, end = addDays(c.start, c.days - 1);
+  const doses = Object.values(S.log).filter(x => x.kind === 'dose' && x.med === m.id && dayOf(x.t) >= c.start);
+  const todayN = doses.filter(x => dayOf(x.t) === today()).length;
+  return { day, days: c.days, perDay: c.perDay || 0, todayN, total: doses.length, end, active: day >= 1 && today() <= end };
+}
+const courseWho = m => ['k1', 'k2'].includes(m.who) ? m.who : '';
+
+// Startseite: Karten für Kranke (letzte 48 h) und laufende Behandlungen / 첫 화면: 아픈 사람 카드, 복용 중인 약
+function careHtml() {
+  const l = L(), since = Date.now() - 48 * 36e5;
+  const cards = PEOPLE.filter(w => logs(w, since).length).map(w => {
+    const ls = logs(w, since), t = ls.find(x => x.kind === 'temp');
+    const meds = [...new Set(ls.filter(x => x.kind === 'dose').map(x => x.med))].map(id => S.meds[id]).filter(Boolean);
+    const rows = meds.map(m => {
+      const s = doseState(m, w);
+      const nx = s.full ? `<span class="nx bad">${esc(l.maxReached(s.count, s.maxPerDay))}</span>`
+        : s.early ? `<span class="nx soon">${esc(l.nextAt(whenText(s.next)))}</span>` : `<span class="nx ok">${esc(l.canNow)}</span>`;
+      return `<button class="crow" data-act="addlog" data-who="${w}" data-med="${m.id}"><span class="cn">${esc(m.name)}<small>${esc(l.lastAt(hhmm(s.last.t)))}${s.maxPerDay ? ` · ${esc(l.in24(s.count, s.maxPerDay))}` : ''}</small></span>${nx}</button>`;
+    }).join('');
+    return `<div class="care p-${w}"><div class="ch"><b>${esc(pName(w))}</b>
+      ${t ? `<span class="tp ${tempCls(t.temp)}">${t.temp.toFixed(1)}℃</span><small>${esc(ago(t.t))}</small>` : ''}
+      <button class="mini2" data-act="loglist" data-who="${w}" aria-label="${esc(l.diary)}">${ms('history')}</button></div>
+      ${rows}
+      <div class="cb"><button data-act="addlog" data-who="${w}" data-kind="temp">${ms('thermometer')}${esc(l.addTemp)}</button><button data-act="addlog" data-who="${w}" data-kind="dose">${ms('pill')}${esc(l.addDose)}</button></div></div>`;
+  }).join('');
+  const courses = active().map(m => [m, courseState(m)]).filter(([, c]) => c && c.active);
+  const courseCard = !courses.length ? '' : `<div class="care course"><div class="ch">${ms('event')}<b>${esc(l.courseNow)}</b></div>${courses.map(([m, c]) =>
+    `<button class="crow" data-act="addlog" data-who="${courseWho(m)}" data-med="${m.id}"><span class="cn">${esc(m.name)} ${whoChip(m.who)}<small>${esc(l.courseDay(c.day, c.days))}</small></span>${c.perDay ? `<span class="nx ${c.todayN >= c.perDay ? 'ok' : 'soon'}">${esc(l.todayN(c.todayN, c.perDay))}</span>` : ''}</button>`).join('')}</div>`;
+  return cards + courseCard;
+}
+
+// Neuer Eintrag / 새 기록
+const amtFor = (m, who) => !m ? '' : (MedLeaflet.amountOf(doseFor(m, who) || '') || MedLeaflet.amountOf(m.dose || '') || '');
+function openAddLog(o = {}) {
+  const recent = PEOPLE.find(w => logs(w, Date.now() - 48 * 36e5).length);
+  const who = o.who || (o.med && courseWho(S.meds[o.med] || {})) || recent || 'k1';
+  const last = logs(who).find(x => x.kind === 'temp');
+  ui.logDraft = { who, kind: o.kind || (o.med ? 'dose' : 'temp'), temp: last ? last.temp : 38, med: o.med || '', amt: '', date: today(), time: hhmm(Date.now()), note: '' };
+  if (ui.logDraft.med) ui.logDraft.amt = amtFor(S.meds[ui.logDraft.med], who);
+  openSheet({ type: 'addlog' });
+}
+function logAt(d) {
+  const [h, mi] = String(d.time || '00:00').split(':'), x = new Date(`${d.date || today()}T00:00:00`);
+  x.setHours(+h || 0, +mi || 0, 0, 0);
+  return x.getTime();
+}
+function readLog() {
+  const d = ui.logDraft, g = id => document.getElementById(id);
+  if (!d) return;
+  if (g('lamt')) d.amt = g('lamt').value;
+  if (g('ldate')) d.date = g('ldate').value || today();
+  if (g('ltime')) d.time = g('ltime').value || hhmm(Date.now());
+  if (g('lnote')) d.note = g('lnote').value;
+}
+function addlogHtml() {
+  const l = L(), d = ui.logDraft;
+  const ppl = PEOPLE.map(w => `<button type="button" class="chip p-${w} ${d.who === w ? 'on' : ''}" data-act="lset" data-k="who" data-v="${w}">${esc(pName(w))}</button>`).join('');
+  const seg = `<div class="seg"><button type="button" class="${d.kind === 'temp' ? 'on' : ''}" data-act="lset" data-k="kind" data-v="temp">${ms('thermometer')}${esc(l.tTemp)}</button><button type="button" class="${d.kind === 'dose' ? 'on' : ''}" data-act="lset" data-k="kind" data-v="dose">${ms('pill')}${esc(l.tDose)}</button></div>`;
+  let body;
+  if (d.kind === 'temp') {
+    body = `<div class="tbig"><button type="button" class="tb" data-act="tstep" data-v="-0.1">−</button><span class="tv ${tempCls(+d.temp)}">${(+d.temp).toFixed(1)}<small>℃</small></span><button type="button" class="tb" data-act="tstep" data-v="0.1">+</button></div>
+      <div class="wrapchips" style="justify-content:center">${[36.5, 37, 37.5, 38, 38.5, 39, 39.5, 40].map(v => `<button type="button" class="chip ${+d.temp === v ? 'on' : ''}" data-act="lset" data-k="temp" data-v="${v}">${v.toFixed(1)}</button>`).join('')}</div>`;
+  } else {
+    const fits = m => !m.who || m.who === d.who || (m.who === 'kids' && ['k1', 'k2'].includes(d.who)) || (m.who === 'adult' && ['mom', 'dad'].includes(d.who));
+    const lastUse = id => (logs(d.who).find(x => x.med === id) || {}).t || 0;
+    const list = active().filter(fits).sort((a, b) => lastUse(b.id) - lastUse(a.id) || String(a.name).localeCompare(String(b.name)));
+    const m = S.meds[d.med], warn = [];
+    if (m) {
+      const at = logAt(d), s = doseState(m, d.who, at), c = ingrClash(m, d.who, at);
+      if (s.full) warn.push(l.wFull(s.count, s.maxPerDay));
+      else if (s.early) warn.push(l.wEarly(hhmm(s.last.t), whenText(s.next)));
+      if (c) warn.push(l.wIngr(ingrNames(c.k), c.log.name, hhmm(c.log.t)));
+    }
+    body = `<div class="medpick">${list.map(x => `<button type="button" class="mp ${d.med === x.id ? 'on' : ''}" data-act="lset" data-k="med" data-v="${x.id}">${art(x, 30)}<span>${esc(x.name)}${doseFor(x, d.who) ? `<small>${esc(doseFor(x, d.who))}</small>` : ''}</span></button>`).join('') || `<p class="note">${esc(l.noMeds)}</p>`}</div>
+      ${m ? `<label class="f">${esc(l.amount)}</label><input class="in" id="lamt" value="${esc(d.amt)}" placeholder="${esc(l.amountPh)}">` : ''}
+      ${warn.map(w => `<p class="lwarn">${ms('warning')} ${esc(w)}</p>`).join('')}`;
+  }
+  return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.cancel)}</button><h2>${esc(l.newLog)}</h2><button class="txtbtn r" data-act="savelog">${esc(l.save)}</button></div>
+  <div class="box"><div class="wrapchips">${ppl}</div><div style="margin-top:10px">${seg}</div></div>
+  <div class="box">${body}</div>
+  <div class="box"><div class="row2"><div><label class="f">${esc(l.date)}</label><input class="in" type="date" id="ldate" value="${esc(d.date)}"></div><div><label class="f">${esc(l.time)}</label><input class="in" type="time" id="ltime" value="${esc(d.time)}"></div></div>
+    <label class="f">${esc(l.fNote)}</label><input class="in" id="lnote" value="${esc(d.note)}" placeholder="${esc(l.logNotePh)}"></div>`;
+}
+// Verlauf einer Person mit Fieberkurve (72 h) / 한 사람의 기록과 체온 그래프(72시간)
+function tempChart(ts) {
+  const W = 320, H = 124, t0 = ts[0].t, t1 = Math.max(ts[ts.length - 1].t, t0 + 36e5), lo = 36, hi = 40.5;
+  const x = t => 28 + (t - t0) / (t1 - t0) * (W - 38), y = c => 8 + (hi - Math.min(hi, Math.max(lo, c))) / (hi - lo) * (H - 28);
+  const guide = c => `<line x1="28" x2="${W - 8}" y1="${y(c).toFixed(1)}" y2="${y(c).toFixed(1)}" class="g${c >= 38.5 ? ' hot' : ''}"/><text x="2" y="${(y(c) + 4).toFixed(1)}">${c.toFixed(1)}</text>`;
+  return `<svg class="tchart" viewBox="0 0 ${W} ${H}">${guide(37)}${guide(38.5)}${guide(40)}<polyline points="${ts.map(p => `${x(p.t).toFixed(1)},${y(p.temp).toFixed(1)}`).join(' ')}"/>${ts.map(p => `<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.temp).toFixed(1)}" r="3.5" class="${tempCls(p.temp)}"/>`).join('')}<text x="28" y="${H - 2}">${esc(whenText(t0))}</text><text x="${W - 8}" y="${H - 2}" text-anchor="end">${esc(whenText(ts[ts.length - 1].t))}</text></svg>`;
+}
+function loglistHtml() {
+  const l = L(), w = ui.logWho || PEOPLE.find(p => logs(p).length) || 'k1', ls = logs(w);
+  const tabs = PEOPLE.map(p => `<button class="chip p-${p} ${p === w ? 'on' : ''}" data-act="loglist" data-who="${p}">${esc(pName(p))}</button>`).join('');
+  const temps = ls.filter(x => x.kind === 'temp' && x.t > Date.now() - 72 * 36e5).reverse();
+  let lastDay = '';
+  const rows = ls.slice(0, 150).map(x => {
+    const d = dayOf(x.t), head = d !== lastDay ? `<div class="lday">${esc(d === today() ? l.todayW : fmt(d))}</div>` : '';
+    lastDay = d;
+    return head + `<div class="lrow"><span class="lt">${hhmm(x.t)}</span>${x.kind === 'temp' ? `<span class="tp ${tempCls(x.temp)}">${x.temp.toFixed(1)}℃</span>` : `<span class="lm">${ms('pill')} ${esc(x.name)}${x.amt ? ` · ${esc(x.amt)}` : ''}</span>`}<button class="lx" data-act="dellog" data-id="${x.id}" aria-label="${esc(l.del)}">${ms('close')}</button>${x.note ? `<small>${esc(x.note)}</small>` : ''}</div>`;
+  }).join('');
+  return `<div class="sbar"><span style="min-width:56px"></span><h2>${esc(l.diary)}</h2><button class="txtbtn r" data-act="close">${esc(l.close)}</button></div>
+  <div class="wrapchips" style="margin-bottom:10px">${tabs}</div>
+  ${temps.length >= 2 ? `<div class="box">${tempChart(temps)}</div>` : ''}
+  <div class="box">${rows || `<p class="note" style="margin:0">${esc(l.noLogs)}</p>`}</div>
+  <div class="btnrow"><button class="btn" data-act="addlog" data-who="${w}">${ms('add')}${esc(l.newLog)}</button></div>`;
+}
+// Detailansicht: Wirkstoff-Warnung, Behandlungsdauer, „genommen“-Knopf / 상세: 같은 성분 경고, 처방 기간, 먹었어요
+function detailCare(m) {
+  const l = L(), out = [], si = sameIngr(m), c = courseState(m);
+  if (si.length) out.push(`<p class="lwarn">${ms('warning')} ${esc(l.sameIngr(ingrNames([...new Set(si.flatMap(x => x.k))]), si.map(x => x.m.name).join(', ')))}</p>`);
+  else if (ingrOf(m).length) out.push(`<p class="note" style="margin:0 0 10px">${esc(l.ingrIs(ingrNames(ingrOf(m))))}</p>`);
+  if (c) out.push(`<div class="box"><h3>${ms('event')}${esc(l.courseTitle)}</h3><p style="margin:0">${esc(c.active ? l.courseDay(c.day, c.days) : c.day < 1 ? l.courseFrom(fmt(m.course.start)) : l.courseDone)}${c.perDay && c.active ? ` · ${esc(l.todayN(c.todayN, c.perDay))}` : ''}</p><p class="note" style="margin:4px 0 0">${esc(l.courseEnd(fmt(c.end)))}${c.perDay ? ` · ${esc(l.courseTotal(c.total, c.days * c.perDay))}` : ''}</p></div>`);
+  return out.join('');
+}
+
+// ---------- Aufgebraucht → Einkaufsliste / 다 쓴 약 → 장보기 ----------
+function shopHtml() {
+  const l = L(), s = ui.sheet;
+  return `<div class="sbar"><span style="min-width:56px"></span><h2>${esc(l.shopTitle)}</h2><button class="txtbtn r" data-act="close">${esc(l.shopNo)}</button></div>
+  <div class="box"><p style="margin:0 0 8px">${esc(l.shopAsk)}</p><input class="in" id="shopname" value="${esc(s.name || '')}">
+    <div class="btnrow" style="margin-top:10px">${!s.stores ? `<p class="note">${esc(l.shopLoading)}</p>` : s.stores.map(x => `<button class="btn ghost small" data-act="shopadd" data-v="${esc(x.id)}">${ms('add')}${esc(x.label)}</button>`).join('')}</div></div>`;
 }
 
 // ---------- Kamera-Scanner / 카메라 스캐너 ----------
@@ -1221,7 +1496,43 @@ const ACT = {
   'opened-today'() { readForm(); ui.draft.opened = today(); renderSheet(); },
   save() { saveForm(); },
   'open-today'(el) { const m = { ...S.meds[el.dataset.id], opened: today() }; commit(m); toast(L().openedDone); },
-  gone(el) { const m = { ...S.meds[el.dataset.id], gone: today() }; commit(m); toast(L().goneDone); closeSheet(); },
+  gone(el) {
+    const m = { ...S.meds[el.dataset.id], gone: today() };
+    commit(m); toast(L().goneDone); closeSheet();
+    if (canFetch() && window.cloud.shopStores) {
+      openSheet({ type: 'shop', name: m.name, stores: null });
+      window.cloud.shopStores(S.lang).then(list => { if (ui.sheet && ui.sheet.type === 'shop') { ui.sheet.stores = list; renderSheet(); } }).catch(e => { console.warn(e); closeSheet(); });
+    }
+  },
+  async shopadd(el) {
+    const name = ($('#shopname').value || '').trim();
+    if (!name) return;
+    try { await window.cloud.addShop(el.dataset.v, name); toast(L().shopAdded); } catch (e) { console.warn(e); toast(L().trFail); }
+    closeSheet();
+  },
+  addlog(el) { openAddLog({ who: el.dataset.who, kind: el.dataset.kind, med: el.dataset.med }); },
+  loglist(el) { ui.logWho = el.dataset.who || ui.logWho; openSheet({ type: 'loglist' }); },
+  lset(el) {
+    readLog();
+    const d = ui.logDraft, k = el.dataset.k, v = el.dataset.v;
+    d[k] = k === 'temp' ? +v : v;
+    if (k === 'med' || k === 'who') d.amt = amtFor(S.meds[d.med], d.who) || d.amt;
+    renderSheet();
+  },
+  tstep(el) { readLog(); const d = ui.logDraft; d.temp = Math.min(42, Math.max(34, Math.round((+d.temp + +el.dataset.v) * 10) / 10)); renderSheet(); },
+  savelog() {
+    readLog();
+    const d = ui.logDraft, l = L(), m = S.meds[d.med];
+    if (d.kind === 'dose' && !m) { toast(l.pickMed); return; }
+    const e = { id: uid(), t: logAt(d), who: d.who, kind: d.kind };
+    if (d.kind === 'temp') e.temp = Math.round(+d.temp * 10) / 10;
+    else { e.med = m.id; e.name = m.name; if (d.amt) e.amt = d.amt; }
+    if (d.note) e.note = d.note;
+    S.log[e.id] = e;
+    keep(); ui.logDraft = null; closeSheet(); render(); toast(l.logged);
+    if (window.cloud) window.cloud.push();
+  },
+  dellog(el) { if (!confirm(L().confirmDelLog)) return; delete S.log[el.dataset.id]; keep(); renderSheet(); render(); if (window.cloud) window.cloud.push(); },
   restore(el) { const m = { ...S.meds[el.dataset.id] }; delete m.gone; commit(m); },
   delete(el) { if (!confirm(L().confirmDel)) return; remove(el.dataset.id); closeSheet(); toast(L().deleted); },
   scan() { startScan(); },
@@ -1353,7 +1664,7 @@ if (cfg) {
   const warn = e => console.warn("sync", e);
   // Zwei Dokumente: Packungen (meds) und das Arzneimittel-Lexikon (cat), damit keines an die 1-MB-Grenze stößt.
   // 문서 두 개: 약 통(meds)과 약 사전(cat). 한 문서가 1MB 한도에 닿지 않게 나눔.
-  const CH = [{ field: "meds", suffix: "_meds" }, { field: "cat", suffix: "_medcat" }];
+  const CH = [{ field: "meds", suffix: "_meds" }, { field: "cat", suffix: "_medcat" }, { field: "log", suffix: "_medlog" }];
   for (const c of CH) { c.unsub = null; c.first = true; c.ref = (code = S().house) => F.doc(db, "households", code + c.suffix); }
 
   function changes(c) {
@@ -1399,6 +1710,18 @@ if (cfg) {
     ready: false, user: null, note: '', push,
     // Für den Abruf-Server (meds-fetch): Anmeldenachweis / 설명서 가져오기 서버용 로그인 증명
     token: () => auth.currentUser ? auth.currentUser.getIdToken() : Promise.resolve(null),
+    // Einkaufsliste der Familie (gleiches Dokument wie die App „장보기“) / 가족 장보기 목록(장보기 앱과 같은 문서)
+    async shopStores(lang) {
+      const d = (await F.getDoc(house(S().house))).data() || {};
+      const names = lang === "de" ? { super: "Supermarkt", asia: "Asia-Markt", online: "Internet" } : { super: "슈퍼마켓", asia: "아시아 마켓", online: "인터넷" };
+      const rank = x => (["super", "asia", "online"].indexOf(x.id) + 1) || 9;
+      const list = Object.values(d.stores || {}).sort((a, b) => rank(a) - rank(b));
+      return (list.length ? list : [{ id: "super", key: "super" }]).map(x => ({ id: x.id, label: x.key ? names[x.key] || x.key : x.name || x.id }));
+    },
+    async addShop(store, name) {
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      await F.updateDoc(house(S().house), { [`items.${id}`]: { id, store, name } });
+    },
     signIn: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()),
     async signOut() { stop(); const s = S(); delete s.house; delete s.remote; keep(); await A.signOut(auth); },
     async create() {

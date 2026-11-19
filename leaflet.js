@@ -138,6 +138,7 @@
     const oa = openAfter(out.store + '\n' + text);
     if (oa) { out.openDays = oa.days; out.openText = oa.text; }
     out.kind = kindOf(out.name) || kindOf(text.slice(0, 800));
+    out.ingr = ingrText(text);
     out.dose = out.lang === 'de' ? doseSummary(out.use) : cut(out.use, 700);
     return out;
   }
@@ -233,5 +234,58 @@
   }
   const brief = i => !i ? {} : { efcy: briefEfcy(i.efcy || ''), dose: briefDose(i.use || ''), store: briefStore(i.store || '') };
 
-  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, brief, briefDose, ageRange, amountOf, split: t => split(tidy(t), DE) };
+  // ---------- Wirkstoffe / 성분 ----------
+  // Häufige Wirkstoffe in Haus-Apotheken, deutsch/koreanisch/Markennamen und ATC-Codes (z. B. aus der HIRA-Liste).
+  // 집에 흔한 성분: 독일어·한국어·상품명·ATC 코드로 알아봄.
+  const INGR = [
+    ['paracetamol', '아세트아미노펜', 'Paracetamol', /paracetamol|acetaminophen|아세트아미노펜|타이레놀|tylenol|ben-u-ron|펜잘|게보린|판콜|판피린|챔프/i, /^N02BE(01|51|71)/],
+    ['ibuprofen', '이부프로펜', 'Ibuprofen', /(?<!dex)ibuprofen|이부프로펜|nurofen|dolormin|dolo-?dobendan|ibu-?ratiopharm|부루펜|애드빌|advil|이지엔6/i, /^M01AE(01|51)/],
+    ['dexibuprofen', '덱시부프로펜', 'Dexibuprofen', /dexibuprofen|덱시부프로펜|맥시부펜/i, /^M01AE14/],
+    ['naproxen', '나프록센', 'Naproxen', /naproxen|나프록센|탁센|aleve|dolormin migräne/i, /^M01AE02/],
+    ['aspirin', '아스피린(아세틸살리실산)', 'Acetylsalicylsäure', /acetylsalicyl|aspirin|아스피린|아세틸살리실산|\bASS\b/i, /^N02BA(01|51)|^B01AC06/],
+    ['cetirizin', '세티리진', 'Cetirizin', /(?<!levo)cetirizin|세티리진|zyrtec|지르텍/i, /^R06AE07/],
+    ['levocetirizin', '레보세티리진', 'Levocetirizin', /levocetirizin|레보세티리진|xusal|씨잘/i, /^R06AE09/],
+    ['loratadin', '로라타딘', 'Loratadin', /(?<!deslo)loratadin|로라타딘|lorano|클라리틴/i, /^R06AX13/],
+    ['dimetinden', '디메틴덴', 'Dimetinden', /dimetinden|디메틴덴|fenistil/i, /^R06AB03|^D04AA13/],
+    ['chlorphenamin', '클로르페니라민', 'Chlorphenamin', /chlorphenamin|클로르페니라민/i, /^R06AB0[24]/],
+    ['xylometazolin', '자일로메타졸린', 'Xylometazolin', /xylometazolin|자일로메타졸린|otriven|오트리빈|nasic|olynth|nasenspray ratiopharm/i, /^R01AA07|^R01AB06/],
+    ['oxymetazolin', '옥시메타졸린', 'Oxymetazolin', /oxymetazolin|옥시메타졸린|nasivin|화이투벤 나잘/i, /^R01AA05/],
+    ['ambroxol', '암브록솔', 'Ambroxol', /ambroxol|암브록솔|mucosolvan|뮤코솔반/i, /^R05CB06/],
+    ['acetylcystein', '아세틸시스테인', 'Acetylcystein', /acetylcystein|아세틸시스테인|\bACC\b|fluimucil|뮤테란/i, /^R05CB01/],
+    ['dextromethorphan', '덱스트로메토르판', 'Dextromethorphan', /dextromethorphan|덱스트로메토르판/i, /^R05DA09/],
+    ['pseudoephedrin', '슈도에페드린', 'Pseudoephedrin', /pseudoephedrin|슈도에페드린/i, /^R01BA02/],
+    ['phenylephrin', '페닐레프린', 'Phenylephrin', /phenylephrin|페닐레프린/i, /^R01BA03/],
+    ['loperamid', '로페라미드', 'Loperamid', /loperamid|로페라미드|imodium|lopedium|로프민/i, /^A07DA03/],
+    ['diphenhydramin', '디펜히드라민', 'Diphenhydramin', /diphenhydramin|디펜히드라민/i, /^R06AA02/],
+    ['guaifenesin', '구아이페네신', 'Guaifenesin', /guaifenesin|구아이페네신/i, /^R05CA03/],
+    ['simeticon', '시메티콘', 'Simeticon', /simeticon|dimeticon|시메티콘|lefax|sab simplex|espumisan/i, /^A03AX13/],
+    ['efeu', '아이비엽(헤데라)', 'Efeublätter', /efeu|hedera|헤데라|아이비엽|prospan|프로스판/i, /^R05CA12/],
+  ];
+  // Wirkstoff-Zeile aus dem Beipackzettel / 설명서의 성분 줄
+  function ingrText(text) {
+    const m = text.match(/Wirkstoff(?:e)?\s*[:：]\s*([^\n]{2,160})|Der Wirkstoff ist\s+([^.\n]{2,120})|Die Wirkstoffe sind\s+([^.\n]{2,160})|(?:주성분|유효성분)\s*[:：]?\s*([^\n]{2,160})/i);
+    return m ? (m[1] || m[2] || m[3] || m[4]).trim() : '';
+  }
+  // Wirkstoff-Schlüssel aus Name, Wirkstoff-Zeile, Dosierungstext und ATC / 이름·성분 줄·용법·ATC로 성분 열쇠
+  function ingredients(parts, atc) {
+    const t = parts.filter(Boolean).join('\n');
+    return INGR.filter(([, , , re, at]) => re.test(t) || (atc && at.test(atc))).map(x => x[0]);
+  }
+  const ingrName = (k, lang) => { const x = INGR.find(i => i[0] === k); return x ? (lang === 'de' ? x[2] : x[1]) : k; };
+
+  // ---------- Abstand und Höchstzahl pro Tag / 복용 간격과 하루 최대 횟수 ----------
+  // „alle 6 Stunden“, „mindestens 6 Stunden Abstand“, „4-6시간 마다“, „bis zu 3-mal täglich“, „1일 5회“, „하루 최대 3번“
+  function schedule(text) {
+    const t = String(text || '');
+    let minHours = 0, maxPerDay = 0, m;
+    if ((m = t.match(/alle\s+(\d+)(?:\s*(?:[-–]|bis)\s*\d+)?\s*Stunden/i)) || (m = t.match(/(?:mindestens|frühestens nach)\s+(\d+)\s*Stunden/i))
+      || (m = t.match(/Abstand[^.\n]{0,40}?(\d+)\s*Stunden/i)) || (m = t.match(/(\d+)\s*(?:[-~–]\s*\d+\s*)?시간\s*(?:마다|간격|이상)/))
+      || (m = t.match(/(\d+)(?:\s*[-–]\s*\d+)?\s*Stunden\s*(?:Abstand|Pause)/i))) minHours = +m[1];
+    if ((m = t.match(/bis zu\s+(\d+)[- ]?mal\s*(?:täglich|am Tag|pro Tag|in 24)/i)) || (m = t.match(/(?:höchstens|maximal|max\.)\s+(\d+)[- ]?mal/i))
+      || (m = t.match(/1일\s*(?:최대\s*)?(\d+)\s*회/)) || (m = t.match(/하루\s*(?:최대\s*)?(\d+)\s*(?:번|회)/))
+      || (m = t.match(/(\d+)(?:\s*(?:[-–]|bis)\s*(\d+))?[- ]?mal\s*(?:täglich|am Tag|pro Tag)/i))) maxPerDay = +(m[2] || m[1]);
+    return { minHours, maxPerDay };
+  }
+
+  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, brief, briefDose, ingredients, ingrText, ingrName, schedule, INGR, ageRange, amountOf, split: t => split(tidy(t), DE) };
 })(typeof window !== 'undefined' ? window : globalThis);
