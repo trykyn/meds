@@ -3,7 +3,7 @@
 // alte Kopien, und die installierte App zeigt nach dem Neustart noch die alte Version.
 // 앱 파일은 매번 서버에 "바뀌었나요?"를 물어봄. GitHub Pages의 10분 저장 표시 때문에 홈 화면 앱이
 // 껐다 켜도 예전 화면을 보여 주는 일을 막음. 안 바뀌었으면 서버가 짧게 "그대로"라고만 답함.
-const CACHE = 'meds-v12';
+const CACHE = 'meds-v13';
 // Bibliothek und Schrift: die Version steht in der Adresse, eine gespeicherte Kopie veraltet also nie.
 // 라이브러리와 글꼴: 주소에 버전이 들어 있어서 저장해 둔 것이 낡지 않음.
 // Dazu die Barcode-Bibliothek samt WebAssembly (cdn.jsdelivr.net) und die Symbolschrift (Google Fonts).
@@ -47,18 +47,25 @@ self.addEventListener('fetch', e => {
 // 만료 알림: 서버는 빈 알림만 보냄. 문구는 앱이 'meds-alerts' 저장소에 넣어 둔 것을 씀.
 self.addEventListener('push', e => {
   e.waitUntil((async () => {
-    let lang = 'ko', lines = [];
+    let lang = 'ko', lines = [], nextDay = '', next = [];
     try {
       const r = await (await caches.open('meds-alerts')).match('alerts');
       if (r) {
         const a = await r.json(), d = new Date(), day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const byDate = a.byDate || {};
         lang = a.lang === 'de' ? 'de' : 'ko';
-        lines = (a.byDate && a.byDate[day]) || [];
+        lines = byDate[day] || [];
+        // Nichts fällig (z. B. Test): die nächste Erinnerung zeigen / 오늘 알릴 게 없으면(시험 알림 등) 다음 알림을 보여 줌
+        nextDay = Object.keys(byDate).filter(k => k > day).sort()[0] || '';
+        next = nextDay ? byDate[nextDay] : [];
       }
     } catch (x) {}
-    const title = lang === 'de' ? 'Hausapotheke' : '약상자';
-    const more = lines.length > 4 ? (lang === 'de' ? `\n+ ${lines.length - 4} weitere` : `\n외 ${lines.length - 4}개`) : '';
-    const body = lines.length ? lines.slice(0, 4).join('\n') + more : (lang === 'de' ? 'Erinnerungen sind eingeschaltet.' : '약상자 알림이 켜져 있어요.');
+    const de = lang === 'de', title = de ? 'Hausapotheke' : '약상자';
+    const list = ls => ls.slice(0, 4).join('\n') + (ls.length > 4 ? (de ? `\n+ ${ls.length - 4} weitere` : `\n외 ${ls.length - 4}개`) : '');
+    const dateText = s => de ? `${+s.slice(8, 10)}.${+s.slice(5, 7)}.` : `${+s.slice(5, 7)}월 ${+s.slice(8, 10)}일`;
+    const body = lines.length ? list(lines)
+      : next.length ? (de ? `Erinnerungen sind an. Nächste am ${dateText(nextDay)}:\n` : `알림이 켜져 있어요. 다음 알림은 ${dateText(nextDay)}:\n`) + list(next)
+      : (de ? 'Erinnerungen sind an. Zurzeit läuft nichts bald ab.' : '알림이 켜져 있어요. 지금은 곧 끝나는 약이 없어요.');
     await self.registration.showNotification(title, { body, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'meds-expiry', data: { url: './' } });
   })());
 });
