@@ -351,7 +351,9 @@ function freqKo(f) {
   if (S.lang !== 'ko' || !f) return f;
   return f.replace(/bis zu (\d+)[- ]?mal (?:täglich|am Tag|pro Tag)/i, '하루 최대 $1번')
     .replace(/(\d+)[- ]?(?:bis (\d+)[- ]?)?mal (?:täglich|am Tag|pro Tag)/i, (m, a, b) => `하루 ${b ? a + '~' + b : a}번`)
-    .replace(/alle (\d+(?:\s*[-–]\s*\d+)?) Stunden/i, '$1시간마다');
+    .replace(/alle (\d+(?:\s*[-–]\s*\d+)?) Stunden/i, '$1시간마다')
+    // Tabellenwert „3mal“ / „3 - 4mal“ (höchstens pro Tag) / 표의 '3mal'(하루 최대)
+    .replace(/^(\d+)(?:\s*-\s*(\d+))?\s*-?mal\b(?!ig).*$/i, (x, a, b) => `하루 최대 ${b ? a + '~' + b : a}번`);
 }
 // Dosis eines Kindes aus dem Dosierungstext; leer, wenn nichts passt. / 용량 글에서 아이 한 명 용량(없으면 빈 값)
 function kidDoseText(section, w) {
@@ -430,6 +432,10 @@ const T = {
     krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    autoNone: '이 PZN으로는 설명서를 자동으로 찾지 못했어요. 필요하면 아래에 설명서 링크나 PDF를 넣어 주세요.',
+    bulkTitle: '사진·설명 한 번에 찾기', bulkInfo: '이미 저장한 약 중 사진이나 설명이 없는 약을 찾아 채워요. 한국 약은 의약품안전나라, 독일 약은 PZN으로 온라인 약국에서 찾아요. 직접 쓴 칸은 바꾸지 않아요.',
+    bulkBtn: '빠진 사진·설명 찾기', bulkProgress: (i, n) => `찾는 중… ${i}/${n}`, bulkDone: (p, i) => `끝났어요 ✓ 사진 ${p}개, 설명 ${i}개를 채웠어요.`,
+    photoFind: '사진 가져오기', photoNotFound: '이 약 사진을 찾지 못했어요. 직접 찍어 주세요.',
     photoTitle: '사진', photoAdd: '사진 찍기·고르기', photoChange: '사진 바꾸기', photoHint: '상자 앞면을 찍어 두면 서랍에서 찾기 쉬워요. 한국 약은 바코드를 찍으면, 다른 약은 설명서 링크를 넣으면 사진을 자동으로 가져와요.',
     boxDefault: '우리집 약상자', boxAll: '전체', boxesTitle: '약상자 목록', boxesInfo: '거실, 냉장고, 차, 여행 가방처럼 약을 두는 곳을 나눠요. 약마다 어느 약상자에 있는지 고를 수 있어요.', boxNewPh: '새 약상자 이름 (예: 냉장고)', fBox: '어느 약상자에 둘까요',
     confirmBoxDel: (n, to) => `이 약상자를 지울까요? 안에 있던 약 ${n}개는 "${to}"(으)로 옮겨요.`,
@@ -510,6 +516,10 @@ const T = {
     krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    autoNone: 'Zu dieser PZN wurde kein Beipackzettel gefunden. Bei Bedarf unten Link oder PDF eingeben.',
+    bulkTitle: 'Fotos und Beschreibungen nachholen', bulkInfo: 'Sucht für gespeicherte Medikamente ohne Foto oder Beschreibung (koreanisch: MFDS, deutsch: über die PZN bei einer Online-Apotheke). Eigene Einträge bleiben.',
+    bulkBtn: 'Fehlende suchen', bulkProgress: (i, n) => `Suche… ${i}/${n}`, bulkDone: (p, i) => `Fertig ✓ ${p} Fotos, ${i} Beschreibungen ergänzt.`,
+    photoFind: 'Foto holen', photoNotFound: 'Kein Foto gefunden. Bitte selbst fotografieren.',
     photoTitle: 'Foto', photoAdd: 'Foto aufnehmen/wählen', photoChange: 'Foto ändern', photoHint: 'Ein Foto der Packung hilft beim Finden. Bei koreanischen Mitteln kommt es mit dem Barcode, sonst mit dem Link zur Produktseite.',
     boxDefault: 'Hausapotheke', boxAll: 'Alle', boxesTitle: 'Aufbewahrungsorte', boxesInfo: 'Z. B. Wohnzimmer, Kühlschrank, Auto, Reisetasche. Jedes Medikament bekommt seinen Ort.', boxNewPh: 'Neuer Ort (z. B. Kühlschrank)', fBox: 'Wo liegt es?',
     confirmBoxDel: (n, to) => `Diesen Ort löschen? ${n} Medikamente kommen nach „${to}“.`,
@@ -797,7 +807,7 @@ function detailHtml(id) {
   ${m.note ? `<div class="box"><h3>${esc(l.memo)}</h3><p class="pre">${esc(m.note)}</p></div>` : ''}
   ${same.length ? `<div class="box"><h3>${esc(l.same(same.length + 1))}</h3>${same.map(x => `<button class="same" data-act="detail" data-id="${x.id}"><span>${esc(fmt(limitOf(x).end) || l.noExp)}${x.opened ? ` · ${esc(l.openedOn)} ${esc(fmtShort(x.opened))}` : ''}${multiBox() ? ` · ${esc(boxName(boxOf(x)))}` : ''}${stockText(x) ? ` · ${esc(stockText(x))}` : ''}</span><span class="sd ${statusOf(x).st}">${esc(stk(x))}</span></button>`).join('')}</div>` : ''}
   ${infoHtml(m)}
-  ${m.pzn || m.ean || m.name || m.link ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${codeLinks(m)}</div>` : ''}
+  ${m.pzn || m.ean || m.name || m.link ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${codeLinks(m)}${!photoOf(m) && canFetch() && (m.itemSeq || m.pzn || (catOf(m) || {}).itemSeq || (catOf(m) || {}).leaflet) ? `<button class="btn ghost small" style="margin-top:8px" data-act="photo-find" data-id="${id}">${ms('photo_camera')}${esc(l.photoFind)}</button>` : ''}</div>` : ''}
   ${m.gone ? '' : `<div class="btnrow"><button class="btn" data-act="addlog" data-med="${id}" data-who="${courseWho(m)}">${ms('pill')}${esc(l.tookIt)}</button>${m.opened ? '' : `<button class="btn ghost" data-act="open-today" data-id="${id}">${ms('schedule')}${esc(l.openToday)}</button>`}</div>`}
   <div class="btnrow" style="margin-top:8px">
     ${m.gone ? '' : `<button class="btn ghost" data-act="pack-more" data-id="${id}">${ms('add')}${esc(l.packMore)}</button>`}
@@ -877,6 +887,7 @@ function settingsHtml() {
     <button class="chip ${S.lang !== 'de' ? 'on' : ''}" data-act="setlang" data-v="ko">한국어</button><button class="chip ${S.lang === 'de' ? 'on' : ''}" data-act="setlang" data-v="de">Deutsch</button></div></div>
   <div class="box"><h3>${esc(l.sync)}</h3>${sync}</div>
   ${notiHtml()}
+  ${bulkHtml()}
   ${boxesHtml()}
   <div class="box"><h3>${esc(l.kidsTitle)}</h3><p class="note" style="margin:0 0 6px">${esc(l.kidsInfo)}</p>
     ${KIDS.map(w => `<div class="row2" style="align-items:flex-end;margin-top:6px"><div><label class="f">${whoChip(w)} ${esc(l.kidBirth)}${kidMonths(w) >= 0 ? ' · ' + esc(kidAgeText(kidMonths(w))) : ''}</label><input class="in" type="month" id="kb-${w}" value="${esc(kidOf(w).birth || '')}"></div><div><label class="f">${esc(l.kidKg)}</label><input class="in" type="number" inputmode="decimal" step="0.1" min="0" id="kk-${w}" value="${+kidOf(w).kg || ''}"></div></div>`).join('')}
@@ -917,6 +928,10 @@ function handleCode(c) {
   openSheet({ type: 'form' });
   if (prev) toast(l.copied);
   if (/^880/.test(c.ean) && !(prev && prev.itemSeq && prev.info)) fillKorean(ui.draft.id, c.ean);
+  if (c.pzn && canFetch()) {
+    if (!(prev && prev.info)) autoGerman(ui.draft.id, c.pzn);
+    else if (!prev.img) photoIntoDraft(ui.draft.id, () => photoFromUrl(dePhotoUrl(c.pzn)));
+  }
 }
 
 // ---------- Koreanische Arzneimittel / 한국 약 정보 ----------
@@ -995,7 +1010,7 @@ const pdfjs = () => pdfjsP || (pdfjsP = import(PDF_URL).then(m => { m.GlobalWork
 // Text aus einem PDF (nur Text-PDFs; eingescannte Bilder haben keinen Text). / PDF에서 글자 꺼내기(글자가 든 PDF만).
 async function pdfText(buf) {
   const lib = await pdfjs(), doc = await lib.getDocument({ data: new Uint8Array(buf) }).promise;
-  let out = '';
+  let out = '', rows = '';
   for (let p = 1; p <= Math.min(doc.numPages, 40); p++) {
     const tc = await (await doc.getPage(p)).getTextContent();
     let line = '';
@@ -1004,8 +1019,31 @@ async function pdfText(buf) {
       if (it.hasEOL) { out += line + '\n'; line = ''; }
     }
     out += line + '\n';
+    // Zusätzlich zeilenweise nach Höhe auf der Seite: Tabellen stehen im PDF oft Spalte für Spalte.
+    // 높이(y)로 다시 묶은 줄: PDF 표는 칸별로 저장된 경우가 많아서 가로줄을 다시 맞춤.
+    const byY = new Map();
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const y = Math.round(it.transform[5] / 3);
+      if (!byY.has(y)) byY.set(y, []);
+      byY.get(y).push(it);
+    }
+    // Zellen trennen, wo zwischen zwei Textstücken eine Lücke ist; jede Zelle als „x@Text“, getrennt mit Tab.
+    // 글자 사이가 벌어진 곳에서 칸을 나눔. 칸마다 'x위치@글', 탭으로 구분.
+    rows += [...byY.entries()].sort((a, b) => b[0] - a[0]).map(([, its]) => {
+      its.sort((a, b) => a.transform[4] - b.transform[4]);
+      const cells = [];
+      let end = -1e9;
+      for (const i of its) {
+        const x = i.transform[4];
+        if (!cells.length || x - end > 6) cells.push({ x, s: i.str.trim() });
+        else cells[cells.length - 1].s += ' ' + i.str.trim();
+        end = x + (i.width || 0);
+      }
+      return cells.map(c => `${Math.round(c.x)}@${c.s}`).join('\t');
+    }).join('\n') + '\n';
   }
-  return out;
+  return out + '\n\u0000ROWS\n' + rows;
 }
 // Lesbarer Text aus HTML, Tabellenzellen mit „|“. / HTML에서 글만, 표 칸은 | 로.
 function htmlText(html) {
@@ -1028,13 +1066,10 @@ async function nedrugInfo(seq) {
 async function leafletFromUrl(url) {
   const r = await viaWorker(url), type = r.headers.get('Content-Type') || '', final = r.headers.get('X-Final-Url') || url;
   if (/pdf/i.test(type) || /\.pdf(\?|$)/i.test(final)) return MedLeaflet.parse(await pdfText(await r.arrayBuffer()));
-  const { text, doc } = htmlText(await r.text());
-  // Vorschaubild der Seite (og:image) als Foto-Vorschlag / 페이지 대표 사진
-  const og = doc.querySelector('meta[property="og:image"],meta[name="og:image"],meta[name="twitter:image"]');
-  let ogUrl = '';
-  try { ogUrl = og && og.content ? new URL(og.content, final).href : ''; } catch (e) {}
+  const html = await r.text(), imgs = pageImages(html, final);
+  const { text, doc } = htmlText(html);
   const p = MedLeaflet.parse(text);
-  if (p) { p.photoUrl = ogUrl; return p; }
+  if (p) { p.photoUrls = imgs; return p; }
   const links = [...doc.querySelectorAll('a[href]')]
     .filter(a => /\.pdf(\?|#|$)/i.test(a.getAttribute('href')) || /beipackzettel|packungsbeilage|gebrauchsinformation|설명서|첨부문서|e-?라벨/i.test(a.textContent + ' ' + a.getAttribute('href')))
     .map(a => { try { return new URL(a.getAttribute('href'), final).href; } catch (e) { return ''; } })
@@ -1043,7 +1078,7 @@ async function leafletFromUrl(url) {
     try {
       const r2 = await viaWorker(h), t2 = r2.headers.get('Content-Type') || '';
       const p2 = /pdf/i.test(t2) ? MedLeaflet.parse(await pdfText(await r2.arrayBuffer())) : MedLeaflet.parse(htmlText(await r2.text()).text);
-      if (p2) { p2.photoUrl = ogUrl; return p2; }
+      if (p2) { p2.photoUrls = imgs; return p2; }
     } catch (e) { console.warn(e); }
   }
   return null;
@@ -1071,7 +1106,9 @@ function applyLeaflet(p, src) {
   if (src) d.leaflet = src;
   ui.leafNote = { t: got.length ? l.leafGot(got.join(', ')) : l.leafNone, ok: true };
   renderSheet();
-  if (p.photoUrl && /^https:/.test(p.photoUrl) && canFetch()) photoIntoDraft(d.id, () => photoFromUrl(p.photoUrl));
+  // Foto: Bilder der Seite, dann über die PZN / 사진: 페이지 사진, 그다음 PZN
+  const urls = [...(p.photoUrls || []), ...(d.pzn ? [dePhotoUrl(d.pzn)] : [])];
+  if (urls.length && canFetch()) photoIntoDraft(d.id, () => firstPhoto(urls));
 }
 async function leafRun(job, src) {
   const l = L(), id = ui.draft && ui.draft.id;
@@ -1546,7 +1583,7 @@ async function shrink(src, max = 360) {
 // Foto aus dem Netz über den Abruf-Server / 인터넷 사진을 가져오기 서버로
 async function photoFromUrl(url) {
   const r = await viaWorker(url), type = r.headers.get('Content-Type') || '';
-  if (!/^image\//i.test(type)) return null;
+  if (!/^image\//i.test(type) && !(/octet-stream/i.test(type) && /\.(jpe?g|png|webp)(\?|$)/i.test(url))) return null;
   return shrink(await r.blob());
 }
 // Koreanisch: Packungsfoto von 의약품안전나라 (steht als Bild in der Detailseite) / 의약품안전나라 포장 사진
@@ -1573,6 +1610,111 @@ function photoFormHtml(m) {
       <div class="phbtns"><button type="button" class="btn ghost small" data-act="photo-pick">${ms('photo_camera')}${esc(src ? l.photoChange : l.photoAdd)}</button>
       ${src ? `<button type="button" class="btn ghost small" data-act="photo-del">${ms('delete')}${esc(l.del)}</button>` : ''}</div></div>
     <p class="hint">${esc(l.photoHint)}</p></div>`;
+}
+
+// ---------- Deutsche Mittel über die PZN / 독일 약: PZN으로 사진·설명서 ----------
+// Die Online-Apotheke shop-apotheke legt Produktfoto und Beipackzettel-PDF unter festen Adressen ab:
+// …/images/D01/234/562/D01234562-p1.jpg und …/PDF/D01/234/562/D01234562-bp.pdf. Nicht jede PZN hat beides.
+// 독일 온라인 약국 shop-apotheke는 PZN으로 정해진 주소에 제품 사진과 설명서 PDF를 둠(없는 PZN도 있음).
+const saPath = p => `D${p.slice(0, 2)}/${p.slice(2, 5)}/${p.slice(5, 8)}/D${p}`;
+const dePhotoUrl = p => `https://cdn.shop-apotheke.com/images/${saPath(p)}-p1.jpg`;
+const deLeafletUrl = p => `https://cdn.shop-apotheke.com/PDF/${saPath(p)}-bp.pdf`;
+async function leafletByPzn(pzn) {
+  const r = await viaWorker(deLeafletUrl(pzn));
+  return MedLeaflet.parse(await pdfText(await r.arrayBuffer()));
+}
+// Produktbilder einer Seite: JSON-LD „Product.image“, og:image (ohne Logos/SVG), itemprop=image
+// 페이지의 제품 사진 후보: JSON-LD, og:image(로고·SVG 제외), itemprop=image
+function pageImages(html, base) {
+  const doc = new DOMParser().parseFromString(html, 'text/html'), out = [];
+  const walk = o => {
+    if (!o || typeof o !== 'object') return;
+    if (Array.isArray(o)) return o.forEach(walk);
+    if (/Product|Drug|Medic/i.test([].concat(o['@type'] || []).join(' ')) && o.image) [].concat(o.image).forEach(i => out.push(typeof i === 'string' ? i : i && i.url));
+    if (o['@graph']) walk(o['@graph']);
+  };
+  doc.querySelectorAll('script[type="application/ld+json"]').forEach(s => { try { walk(JSON.parse(s.textContent)); } catch (e) {} });
+  doc.querySelectorAll('meta[property="og:image"],meta[name="og:image"],meta[name="twitter:image"],link[rel="image_src"],img[itemprop="image"]')
+    .forEach(e => out.push(e.getAttribute('content') || e.getAttribute('href') || e.getAttribute('src')));
+  // PZN in der Adresse oder auf der Seite → Foto der Online-Apotheke / 주소나 페이지의 PZN → 온라인 약국 사진
+  const pz = (String(base).match(/\/(\d{8})(?:\/|$|\?)/) || html.match(/PZN[^0-9]{0,20}(\d{8})/i) || [])[1];
+  if (pz && MedCode.pznOk(pz)) out.push(dePhotoUrl(pz));
+  return [...new Set(out.filter(Boolean).map(u => { try { return new URL(u, base).href; } catch (e) { return ''; } })
+    .filter(u => /^https:/.test(u) && !/\.svg(\?|$)|logo|favicon|placeholder/i.test(u)))].slice(0, 4);
+}
+async function firstPhoto(urls) {
+  for (const u of urls) { const d = await photoFromUrl(u).catch(() => null); if (d) return d; }
+  return null;
+}
+// Foto zu einer Sorte suchen: koreanisch → 의약품안전나라, PZN → Online-Apotheke, sonst Produktseite
+// 제품 사진 찾기: 한국 → 의약품안전나라, PZN → 온라인 약국, 그 밖 → 넣어 둔 제품 페이지
+async function findPhoto(m) {
+  if (m.itemSeq) { const d = await nedrugPhoto(m.itemSeq).catch(() => null); if (d) return d; }
+  if (m.pzn) { const d = await photoFromUrl(dePhotoUrl(m.pzn)).catch(() => null); if (d) return d; }
+  if (m.leaflet && !/\.pdf(\?|$)/i.test(m.leaflet)) {
+    const r = await viaWorker(m.leaflet).catch(() => null);
+    if (r && !/pdf/i.test(r.headers.get('Content-Type') || '')) return firstPhoto(pageImages(await r.text(), r.headers.get('X-Final-Url') || m.leaflet));
+  }
+  return null;
+}
+// Beim Scannen einer deutschen Packung: Beipackzettel und Foto automatisch / 독일 약 스캔: 설명서·사진 자동
+async function autoGerman(id, pzn) {
+  const l = L();
+  photoIntoDraft(id, () => photoFromUrl(dePhotoUrl(pzn)));
+  readForm(); ui.leafNote = { t: l.leafBusy }; renderSheet();
+  let p = null;
+  try { p = await leafletByPzn(pzn); } catch (e) { console.warn(e); }
+  if (!ui.draft || ui.draft.id !== id) return;
+  if (p) return applyLeaflet(p, deLeafletUrl(pzn));
+  readForm(); ui.leafNote = { t: l.autoNone }; renderSheet();
+}
+
+// Alles nachholen: fehlende Fotos und Beschreibungen für gespeicherte Mittel (füllt nur leere Felder)
+// 저장된 약에 빠진 사진·설명을 한 번에 찾기(빈 칸만 채움)
+async function fillMissing() {
+  const l = L();
+  if (!canFetch()) { toast(l.leafLogin); return; }
+  const seen = new Set(), list = [];
+  for (const m of active()) { const k = catKey(m); if (k && !seen.has(k)) { seen.add(k); list.push(m); } }
+  let photos = 0, infos = 0, i = 0;
+  for (const m of list) {
+    ui.bulk = l.bulkProgress(++i, list.length); if (ui.sheet && ui.sheet.type === 'settings') renderSheet();
+    const e = catOf(m) || toCat(m), all = { ...e, ...m };
+    if (!e.img) {
+      const d = await findPhoto(all).catch(() => null);
+      if (d) { e.img = Date.now(); await storePhoto(imgKey(m), d); photos++; }
+    }
+    if (!e.info) {
+      let p = null, src = '';
+      if (all.itemSeq) { p = await nedrugInfo(all.itemSeq).catch(() => null); src = 'nedrug'; }
+      else if (all.pzn) { p = await leafletByPzn(all.pzn).catch(() => null); src = 'leaflet'; if (p && !e.leaflet) e.leaflet = deLeafletUrl(all.pzn); }
+      if (p) {
+        e.info = { efcy: p.efcy, use: p.use, warn: p.warn, se: p.se, store: p.store, open: p.openText || '', ingr: p.ingr || '', lang: p.lang, src };
+        e.ingr = MedLeaflet.ingredients([all.name, p.ingr, (p.use || '').slice(0, 800)], all.atc);
+        // Leere Felder aller Packungen dieser Sorte / 같은 약 모든 통의 빈 칸
+        for (const x of active().filter(x => catKey(x) === catKey(m))) {
+          const n = { ...x };
+          if (!n.dose && p.use) n.dose = MedLeaflet.briefDose(p.use) || p.dose;
+          if (!+n.openDays && p.openDays) n.openDays = p.openDays;
+          if (!n.use) n.use = useLabels(p.efcy) || n.use;
+          fillKids(n, p.use, false);
+          n.updated = Date.now();
+          S.meds[x.id] = n;
+        }
+        infos++;
+      }
+    }
+    e.updated = Date.now();
+  }
+  keep(); render(); if (window.cloud) window.cloud.push();
+  ui.bulk = l.bulkDone(photos, infos);
+  if (ui.sheet && ui.sheet.type === 'settings') renderSheet();
+}
+function bulkHtml() {
+  const l = L();
+  return `<div class="box"><h3>${esc(l.bulkTitle)}</h3><p class="note" style="margin:0 0 8px">${esc(l.bulkInfo)}</p>
+    <button class="btn small" data-act="fill-missing" ${ui.bulkRunning ? 'disabled' : ''}>${ms('photo_camera')}${esc(l.bulkBtn)}</button>
+    ${ui.bulk ? `<p class="hint ok">${esc(ui.bulk)}</p>` : ''}</div>`;
 }
 
 // ---------- Ablauf-Erinnerung (Web Push) / 만료 알림 ----------
@@ -1833,6 +1975,23 @@ const ACT = {
   async 'push-test'() {
     try { await workerPost('/push/test', { endpoint: pushEndpoint() }); toast(L().notiTestSent); }
     catch (e) { console.warn(e); if (/not_registered/.test(e.message)) { try { localStorage.removeItem(PUSHKEY); } catch (x) {} } toast(L().notiFail); renderSheet(); }
+  },
+  async 'photo-find'(el) {
+    const m = S.meds[el.dataset.id];
+    if (!m) return;
+    toast(L().leafBusy);
+    const d = await findPhoto({ ...(catOf(m) || {}), ...m }).catch(() => null);
+    if (!d) { toast(L().photoNotFound); return; }
+    const e = catOf(m) || toCat(m);
+    e.img = Date.now(); e.updated = Date.now();
+    await storePhoto(imgKey(m), d);
+    keep(); render(); renderSheet(); if (window.cloud) window.cloud.push();
+  },
+  async 'fill-missing'() {
+    if (ui.bulkRunning) return;
+    ui.bulkRunning = true; renderSheet();
+    try { await fillMissing(); } catch (e) { console.warn(e); toast(L().trFail); }
+    ui.bulkRunning = false; renderSheet();
   },
   'photo-pick'() {
     const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';

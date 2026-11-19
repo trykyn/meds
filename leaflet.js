@@ -98,16 +98,60 @@
   }
 
   // Name: Zeile(n) nach „Gebrauchsinformation: Information für …“ / 이름: „Gebrauchsinformation …“ 다음 줄
+  // Hinweiszeilen, die kein Name sind / 이름이 아닌 안내 줄
+  const NOT_NAME = /^(Wirkstoff|Lesen Sie|Zur Anwendung|Für (Kinder|Erwachsene|Säuglinge)|Körpergewicht|ab \d|Anwendung bei|\(|\d+\s*(Monate|Jahre)|\d+\.\s|Was (ist|sind|in dieser))/i;
   function nameOf(text, sec1Heading) {
-    const m = text.match(/Gebrauchsinformation\s*:?\s*Information\s+für\s+(?:den\s+|die\s+)?(?:Anwender|Patienten|Anwenderinnen)[^\n]*\n+([^\n]{3,90})(?:\n([^\n]{2,60}))?/i);
+    // Name aus der Überschrift „1. Was ist … und wofür“ – steht in jedem Beipackzettel / 1번 제목의 이름(모든 설명서에 있음)
+    const h = String(sec1Heading || '').match(/Was ist\s+([\s\S]{2,90}?)\s+und\s+wof/i);
+    const hn = h ? h[1].replace(/\s+/g, ' ').trim() : '';
+    const m = text.match(/Gebrauchsinformation\s*:?\s*Information\s+für\s+(?:den\s+|die\s+)?(?:Anwender|Patienten|Anwenderinnen)[^\n]*\n+((?:[^\n]*\n){1,8})/i);
     if (m) {
-      let n = m[1].trim();
-      // zweite Zeile gehört dazu, wenn sie wie Stärke/Darreichungsform aussieht / 두 번째 줄이 함량·제형이면 이어 붙임
-      if (m[2] && /\d\s*(mg|g|ml|%)|Tabletten|Saft|Suspension|Tropfen|Spray|Salbe|Creme|Kapseln|Zäpfchen|für Kinder/i.test(m[2]) && !/^(Wirkstoff|Zur Anwendung|Lesen Sie)/i.test(m[2])) n += ' ' + m[2].trim();
-      if (!/^(Wirkstoff|Lesen Sie)/i.test(n)) return n.replace(/\s+/g, ' ');
+      const lines = m[1].split('\n').map(x => x.trim()).filter(x => x && !NOT_NAME.test(x));
+      if (lines.length) {
+        let n = lines[0];
+        // zweite Zeile gehört dazu, wenn sie wie Stärke/Darreichungsform aussieht / 두 번째 줄이 함량·제형이면 이어 붙임
+        if (lines[1] && /\d\s*(mg|g|ml|%)|\b(Tabletten|Filmtabletten|Saft|Suspension|Tropfen|Spray|Salbe|Creme|Kapseln|Weichkapseln|Zäpfchen|Granulat|Lösung)\b/i.test(lines[1])
+          && !/\b(wird|werden|ist|sind|zur|bei)\b/i.test(lines[1]) && lines[1].length < 60) n += ' ' + lines[1];
+        n = n.replace(/\s+/g, ' ');
+        // Passt die Zeile nicht zur Überschrift, ist die Überschrift sicherer / 제목 이름과 안 맞으면 제목 이름을 씀
+        const first = (hn.split(' ')[0] || '').toLowerCase();
+        if (!hn || n.toLowerCase().includes(first)) return n;
+        return hn + (/\d\s*(mg|ml)/i.test(n) && !/\d\s*(mg|ml)/i.test(hn) ? ' ' + (n.match(/\d+(?:[.,]\d+)?\s*(?:mg|ml|mg\/ml)(?:\/ml)?/i) || [''])[0] : '');
+      }
     }
-    const h = String(sec1Heading || text).match(/Was ist\s+([\s\S]{2,80}?)\s+und\s+wof/i);
-    return h ? h[1].replace(/\s+/g, ' ').trim() : '';
+    return hn;
+  }
+  // Im PDF umgebrochene Zeilen wieder zu Sätzen verbinden / PDF에서 끊긴 줄을 문장으로 다시 잇기
+  const unwrap = t => String(t || '')
+    .replace(/(\w)-\n(?=[a-zäöüß])/g, '$1')
+    .replace(/([^\n.:!?;])\n(?![\n\-•*·]|\d+\.\s|\s*$)/g, '$1 ');
+  // Tabellenzeilen (nach Höhe sortiert) mit Alter/Gewicht und Menge; zweizeilige Zellen zusammenführen
+  // 높이로 맞춘 표 줄 중 나이·체중과 양이 있는 줄. 두 줄짜리 칸은 합침.
+  function tableRows(rows) {
+    // Zeile = Zellen „x@Text“ mit Tab dazwischen (aus pdfText) / 줄 = 'x@글' 칸들(탭 구분)
+    const cellsOf = l => l.split('\t').map(c => { const m = c.match(/^(-?\d+)@([\s\S]*)$/); return m ? { x: +m[1], s: m[2].replace(/\s+/g, ' ').trim() } : { x: 0, s: c.trim() }; }).filter(c => c.s);
+    const ls = String(rows).split('\n').map(cellsOf), out = [];
+    for (let i = 0; i < ls.length; i++) {
+      const cs = ls[i];
+      for (let j = 0; j < cs.length; j++) {
+        const c = cs[j];
+        if (!(ageRange(c.s) || kgRange(c.s))) continue;
+        // Bereich und Menge in derselben Zelle oder in den nächsten zwei Zellen / 범위와 양: 같은 칸이거나 다음 두 칸
+        const tail = amountOf(c.s) ? [] : cs.slice(j + 1, j + 3).map(x => x.s);
+        if (!amountOf(c.s) && !tail.some(t => amountOf(t))) continue;
+        let range = c.s;
+        // Zweizeilige Zelle: darunter steht an gleicher Stelle das Alter „(6 - 9 Jahre)“ / 아래 줄 같은 위치의 나이
+        // (zentriert gesetzt → x leicht verschoben; erst darunter, dann darüber suchen) / 아래, 그다음 위 줄에서 찾기
+        // Andere Spalten schieben sich dazwischen → bis zu 3 Zeilen weiter suchen; nur den Altersteil nehmen.
+        // 다른 단의 줄이 끼어들 수 있어서 3줄까지 찾고, 나이 부분만 가져옴.
+        const near = l => (l || []).find(x => Math.abs(x.x - c.x) < 45 && ageRange(x.s) && !amountOf(x.s) && !kgRange(x.s));
+        const below = near(ls[i + 1]) || near(ls[i + 2]) || near(ls[i + 3]) || near(ls[i - 1]);
+        if (below && !ageRange(range)) range += ` (${ageRange(below.s)[2].trim()})`;
+        out.push([range, ...tail].join(' | '));
+        break;
+      }
+    }
+    return out.slice(0, 14);
   }
 
   // Dosierung kurz: Standardsätze am Anfang weglassen / 먹는 법 요약: 앞의 정해진 안내 문장 빼기
@@ -119,7 +163,9 @@
   }
 
   function parse(raw) {
-    const text = tidy(raw);
+    // PDF: hinter „\u0000ROWS“ steht derselbe Text zeilenweise nach Höhe (für Tabellen) / PDF는 뒤에 높이별 줄이 붙어 옴
+    const [main, rows = ''] = String(raw || '').split('\u0000ROWS');
+    const text = tidy(main);
     if (!text) return null;
     const out = { lang: '', name: '', kind: '', efcy: '', use: '', warn: '', se: '', store: '', openDays: 0, openText: '', dose: '' };
     const de = split(text, DE);
@@ -135,7 +181,11 @@
       Object.assign(out, { efcy: ko.efcy || '', use: ko.use || '', warn: ko.warn || '', store: ko.store || '' });
     }
     for (const k of Object.keys(LIMIT)) out[k] = cut(tidy(out[k]), LIMIT[k]);
-    const oa = openAfter(out.store + '\n' + text);
+    // Dosierungstabelle aus der Höhen-Fassung anhängen, wenn der Text sie zerlegt hat / 표가 흩어졌으면 높이별 줄을 붙임
+    const tr = rows ? tableRows(rows) : [];
+    // Leerzeile davor, damit die Tabelle nicht an den letzten Satz angehängt wird / 빈 줄로 띄워서 앞 문장에 붙지 않게
+    if (tr.length && !tr.every(r => out.use.includes(r))) out.use += '\n\n' + tr.join('\n');
+    const oa = openAfter(unwrap(out.store) + '\n' + unwrap(text));
     if (oa) { out.openDays = oa.days; out.openText = oa.text; }
     out.kind = kindOf(out.name) || kindOf(text.slice(0, 800));
     out.ingr = ingrText(text);
@@ -186,7 +236,7 @@
     }
     return '';
   }
-  const FREQ = /(bis zu \d+[- ]?mal (?:täglich|am Tag|pro Tag)|\d+[- ]?(?:bis \d+[- ]?)?mal (?:täglich|am Tag|pro Tag)|alle \d+(?:\s*[-–]\s*\d+)? Stunden|1일\s*\d+(?:\s*~\s*\d+)?\s*회|\d+(?:\s*[-~]\s*\d+)?\s*시간\s*(?:마다|간격))/i;
+  const FREQ = /(bis zu \d+[- ]?mal (?:täglich|am Tag|pro Tag)|\d+[- ]?(?:bis \d+[- ]?)?mal (?:täglich|am Tag|pro Tag)|alle \d+(?:\s*[-–]\s*\d+)? Stunden|1일\s*\d+(?:\s*~\s*\d+)?\s*회|\d+(?:\s*[-~]\s*\d+)?\s*시간\s*(?:마다|간격)|\b\d+\s*(?:-\s*\d+\s*)?-?mal\b)/i;
   const NO = /nicht (?:anwenden|einnehmen|geben|verwenden|geeignet)|darf nicht|sollen nicht|kontraindiziert|투여하지\s*(?:말|않)|사용하지\s*(?:말|않)|복용하지\s*(?:말|않)/i;
   function kidDose(section, kid) {
     if (!section || !kid || !(kid.months >= 0)) return null;
@@ -214,7 +264,7 @@
   // ---------- Kurzfassung für die Anzeige / 화면용 짧은 요약 ----------
   // Ohne KI: aus jedem Abschnitt nur die Sätze mit dem Wesentlichen (Anwendung, Mengen/Häufigkeit, Temperatur).
   // AI 없이: 각 항목에서 핵심 문장만(무엇에 쓰나, 양·횟수, 보관 온도).
-  const sents = t => tidy(t).split(/(?<=[.!?])\s+|\n+/).map(s => s.replace(/^\s*(?:\d+\.|[-•·])\s*/, '').trim()).filter(s => s.length > 2);
+  const sents = t => unwrap(tidy(t)).split(/(?<=[.!?])\s+|\n+/).map(s => s.replace(/^\s*(?:\d+\.|[-•·])\s*/, '').trim()).filter(s => s.length > 2);
   const BOILER = /Packungsbeilage|Fragen Sie|Ihr Arzt hat|immer genau|für Kinder unzugänglich|außer Sicht- und Reichweite|nach dem auf|Verfalldatum|어린이의 손이 닿지|의사.*상의|약사.*상의/i;
   function briefEfcy(t) {
     const s = sents(t).filter(x => !BOILER.test(x) && !/^(?:주\s*)?효능[\s·・ㆍ]*효과$|^다음 질환에도/.test(x));
@@ -224,7 +274,7 @@
   }
   function briefDose(t) {
     const amt = /\d\s*(?:ml|mL|mg|g\b|Tablette|Kapsel|Beutel|Zäpfchen|Hub|Hübe|Sprühstoß|Tropfen|정|캡슐|포|방울|회)/i;
-    const scored = sents(t).map((s, i) => ({ s, i, n: (amt.test(s) ? 2 : 0) + (FREQ.test(s) ? 1 : 0) + (/Erwachsene|Jugendliche|성인|어른|만\s*\d+세\s*이상|höchstens|maximal|최대|초과/i.test(s) ? 1 : 0) - (/\|/.test(s) ? 2 : 0) - (BOILER.test(s) ? 3 : 0) }))
+    const scored = sents(t).map((s, i) => ({ s, i, n: (amt.test(s) ? 2 : 0) + (FREQ.test(s) ? 1 : 0) + (/Erwachsene|Jugendliche|성인|어른|만\s*\d+세\s*이상|höchstens|maximal|최대|초과/i.test(s) ? 1 : 0) - (/\|/.test(s) ? 9 : 0) - (BOILER.test(s) ? 3 : 0) }))
       .filter(x => x.n > 0).sort((a, b) => b.n - a.n || a.i - b.i).slice(0, 3).sort((a, b) => a.i - b.i);
     return scored.map(x => cut(x.s, 110)).join('\n');
   }
@@ -281,9 +331,13 @@
     if ((m = t.match(/alle\s+(\d+)(?:\s*(?:[-–]|bis)\s*\d+)?\s*Stunden/i)) || (m = t.match(/(?:mindestens|frühestens nach)\s+(\d+)\s*Stunden/i))
       || (m = t.match(/Abstand[^.\n]{0,40}?(\d+)\s*Stunden/i)) || (m = t.match(/(\d+)\s*(?:[-~–]\s*\d+\s*)?시간\s*(?:마다|간격|이상)/))
       || (m = t.match(/(\d+)(?:\s*[-–]\s*\d+)?\s*Stunden\s*(?:Abstand|Pause)/i))) minHours = +m[1];
-    if ((m = t.match(/bis zu\s+(\d+)[- ]?mal\s*(?:täglich|am Tag|pro Tag|in 24)/i)) || (m = t.match(/(?:höchstens|maximal|max\.)\s+(\d+)[- ]?mal/i))
+    if ((m = t.match(/Gesamtdosis von\s+(\d+)\s+(?:Kapseln|Tabletten|Zäpfchen|Beuteln|Messlöffeln|Einzeldosen)/i))
+      || (m = t.match(/nicht mehr als\s+(\d+)\s+(?:Kapseln|Tabletten|Zäpfchen|Beutel|Einzeldosen)[^.]{0,50}?(?:24 Stunden|täglich|pro Tag)/i))
+      || (m = t.match(/bis zu\s+(\d+)[- ]?mal\s*(?:täglich|am Tag|pro Tag|in 24)/i)) || (m = t.match(/(?:höchstens|maximal|max\.)\s+(\d+)[- ]?mal/i))
       || (m = t.match(/1일\s*(?:최대\s*)?(\d+)\s*회/)) || (m = t.match(/하루\s*(?:최대\s*)?(\d+)\s*(?:번|회)/))
-      || (m = t.match(/(\d+)(?:\s*(?:[-–]|bis)\s*(\d+))?[- ]?mal\s*(?:täglich|am Tag|pro Tag)/i))) maxPerDay = +(m[2] || m[1]);
+      || (m = t.match(/(\d+)(?:\s*(?:[-–]|bis)\s*(\d+))?[- ]?mal\s*(?:täglich|am Tag|pro Tag)/i))
+      // Tabellenspalte „Maximale Häufigkeit“: nur „3mal“ / 표의 '최대 횟수' 칸: '3mal'만 있음
+      || (m = t.match(/\b(\d+)(?:\s*-\s*(\d+))?\s*-?mal\b(?!ig)/i))) maxPerDay = +(m[2] || m[1]);
     return { minHours, maxPerDay };
   }
 

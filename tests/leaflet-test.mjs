@@ -136,5 +136,36 @@ eq('sched KO', schedule('1회 권장용량을 4-6시간 마다 필요시 복용�
 eq('sched KO short', schedule('7.5 mL · 하루 최대 3번'), { minHours: 0, maxPerDay: 3 });
 eq('sched none', schedule('morgens 1 Tablette'), { minHours: 0, maxPerDay: 0 });
 
+// PDF-Tabelle spaltenweise + Höhen-Fassung (nachgebaut, kein Originaltext) / PDF 표: 칸별 + 높이별 줄(흉내 낸 예)
+const PDFLIKE = `Gebrauchsinformation: Information für Anwender
+Zur Anwendung bei Kindern ab 7 kg
+Kindersaft 40 mg/ml
+1. Was ist Kindersaft und wofür wird es angewendet?
+Kindersaft wird angewendet zur
+kurzzeitigen Behandlung von Fieber.
+3. Wie ist Kindersaft anzuwenden?
+Einzeldosen etwa alle 6-8 Stunden.
+5. Wie ist Kindersaft aufzubewahren?
+Nach dem Öffnen
+noch 6 Monate haltbar.
+\u0000ROWS
+576@7 - 9 kg\t615@1 x 1,25 ml (entsprechend 50 mg\t779@(andere Spalte)
+293@Text der Nachbarspalte
+564@(6 - 11 Monate) Ibuprofen\t769@• noch mehr Text
+293@Nachbar\t571@16 - 19 kg\t615@1 x 3,75 ml (entsprechend 150 mg\t731@3mal
+86@Überschrift
+293@Nachbar\t570@(4 -5 Jahre)\t616@Ibuprofen
+571@20 - 29 kg\t615@1 x 5 ml (entsprechend 200 mg\t731@3mal
+293@Nachbar
+568@(6 - 9 Jahre)\t616@Ibuprofen`;
+const pl = parse(PDFLIKE);
+eq('pdf name skips hint line', pl.name, 'Kindersaft 40 mg/ml');
+eq('pdf open across lines', pl.openDays, 182);
+eq('pdf brief efcy unwrapped', brief(pl).efcy, 'Kindersaft wird angewendet zur kurzzeitigen Behandlung von Fieber.');
+eq('pdf table 6 J.', (kidDose(pl.use, { months: 83 }) || {}).amount, '5 ml');
+eq('pdf table 4 J.', (kidDose(pl.use, { months: 56 }) || {}).amount, '3,75 ml');
+eq('pdf table baby', (kidDose(pl.use, { months: 10 }) || {}).amount, '1,25 ml');
+eq('pdf max per day from table', schedule(kidDose(pl.use, { months: 83 }).freq).maxPerDay, 3);
+
 console.log(fail ? `\n${fail} FAILED` : '\nall passed');
 process.exit(fail ? 1 : 0);
