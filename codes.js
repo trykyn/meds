@@ -93,13 +93,30 @@
   }
 
   function parse(raw) {
-    const out = { raw: String(raw || ''), pzn: '', ean: '', gtin: '', exp: '', batch: '', serial: '', country: '', kind: '' };
+    const out = { raw: String(raw || ''), pzn: '', ean: '', gtin: '', exp: '', batch: '', serial: '', country: '', kind: '', url: '' };
     // Vorne: Symbologie-Kennung (]d2) und das FNC1-Zeichen, das manche Leser als ␝ ausgeben.
     // 앞에 붙는 ]d2 표시와 FNC1(␝) 글자 제거.
     let t = out.raw.trim().replace(/^\][A-Za-z]\d/, '').replace(/^\x1d+/, '').replace(/[\r\n]+$/, '');
     if (!t) return null;
 
-    if (t.startsWith('[)>') || /^06\x1d/.test(t)) {
+    if (/^https?:\/\//i.test(t)) {
+      // QR-Code mit Adresse: GS1 Digital Link (…/01/GTIN/10/Charge/21/Serie?17=JJMMTT) oder sonst ein Link
+      // (z. B. koreanische e-Label-Seite des Herstellers). / QR 주소: GS1 디지털 링크면 풀어 읽고, 아니면 링크로 보관.
+      out.kind = 'url'; out.url = t;
+      let u; try { u = new URL(t); } catch (e) { u = null; }
+      const p = u ? decodeURIComponent(u.pathname) : t;
+      const g = p.match(/\/(?:01|gtin)\/(\d{8,14})(?=\/|$)/);
+      if (g && gtinOk(g[1])) {
+        fromGtin(out, g[1].padStart(14, '0'));
+        const seg = k => { const m = p.match(new RegExp('/' + k + '/([^/]+)')); return m ? m[1] : ''; };
+        out.batch = seg('10'); out.serial = seg('21');
+        out.exp = ymd((u && u.searchParams.get('17')) || seg('17'));
+        out.kind = 'gs1link';
+      } else {
+        const k = t.match(/(?:^|\D)(880\d{10})(?:\D|$)/);
+        if (k && gtinOk(k[1])) out.ean = k[1];
+      }
+    } else if (t.startsWith('[)>') || /^06\x1d/.test(t)) {
       out.kind = 'ifa';
       const f = ifa(t);
       if (f['9N'] && /^11\d{8}/.test(f['9N']) && pznOk(f['9N'].slice(2, 10))) out.pzn = f['9N'].slice(2, 10);
