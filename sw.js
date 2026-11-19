@@ -3,18 +3,18 @@
 // alte Kopien, und die installierte App zeigt nach dem Neustart noch die alte Version.
 // 앱 파일은 매번 서버에 "바뀌었나요?"를 물어봄. GitHub Pages의 10분 저장 표시 때문에 홈 화면 앱이
 // 껐다 켜도 예전 화면을 보여 주는 일을 막음. 안 바뀌었으면 서버가 짧게 "그대로"라고만 답함.
-const CACHE = 'meds-v4';
+const CACHE = 'meds-v5';
 // Bibliothek und Schrift: die Version steht in der Adresse, eine gespeicherte Kopie veraltet also nie.
 // 라이브러리와 글꼴: 주소에 버전이 들어 있어서 저장해 둔 것이 낡지 않음.
 // Dazu die Barcode-Bibliothek samt WebAssembly (cdn.jsdelivr.net) und die Symbolschrift (Google Fonts).
 // 바코드 인식기와 wasm(cdn.jsdelivr.net), 아이콘 글꼴(Google Fonts)도 포함.
-const FIXED = ['https://www.gstatic.com', 'https://cdn.jsdelivr.net', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
+const FIXED = ['https://www.gstatic.com', 'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
 // So lange wird bei schwachem Empfang auf den Server gewartet, bevor die gespeicherte Kopie kommt.
 // 신호가 약할 때 서버를 이만큼만 기다리고, 그 뒤에는 저장해 둔 것을 보여 줌.
 const WAIT_MS = 3000;
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'icon.svg', 'codes.js', 'firebase-config.js'])));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'index.html', 'manifest.webmanifest', 'icon.svg', 'codes.js', 'leaflet.js', 'firebase-config.js'])));
   self.skipWaiting();
 });
 self.addEventListener('activate', e => e.waitUntil((async () => {
