@@ -349,8 +349,8 @@ const T = {
     memo: '메모',
     entp: '업체', findNedrug: '설명서 보기 (의약품안전나라)', openQr: 'QR 링크 열기',
     krLooking: '한국 약 목록에서 찾는 중…', krFound: '한국 약 목록에서 이름을 찾았어요 ✓', krNotFound: '한국 약 목록에 없는 바코드예요. 이름을 직접 넣어 주세요.',
-    krInfoOk: 'e약은요에서 복용법·효능을 가져왔어요 ✓', krNoInfo: 'e약은요에 없는 약이에요(전문의약품은 대부분 없어요). 설명서 보기 버튼을 눌러 보세요.',
-    krNoKey: '복용법은 아래 "설명서 보기"에서 확인할 수 있어요. 설정에 e약은요 인증키를 넣으면 자동으로 채워져요.', krErr: 'e약은요에 연결하지 못했어요. 인증키를 확인해 주세요.',
+    krNoInfo: '의약품안전나라에서 설명을 가져오지 못했어요. 아래 "설명서 보기"를 눌러 보세요.',
+    krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
     leafTitle: '설명서로 채우기', leafInfo: '설명서 PDF를 올리거나 설명서가 있는 웹페이지 주소를 넣으면 용도, 먹는 법, 개봉 후 기간을 채워요.',
@@ -363,7 +363,6 @@ const T = {
     kidsTitle: '아이 정보', kidsInfo: '설명서 용량표에서 나이(몸무게를 넣으면 몸무게)에 맞는 용량을 찾아 첫째·둘째 칸을 채워요. 가족만 보는 곳에 저장돼요.', kidBirth: '생년월', kidKg: '몸무게 kg (선택)', kidsSaved: '아이 정보를 저장했어요',
     kidNo: '이 나이에는 쓰지 않는 약이에요', kidCalc: '나이로 다시 계산', kidCalcNone: '설명서에서 이 나이에 맞는 용량을 찾지 못했어요', kidCalcNeed: '먼저 위의 "설명서로 채우기"로 설명서를 읽어 주세요', kidNeedBirth: '설정의 "아이 정보"에 생년월을 먼저 넣어 주세요', kidCalcDone: n => `${n} 용량을 계산했어요 ✓ 설명서와 꼭 한 번 비교해 주세요`,
     catTitle: '약 사전', catInfo: n => `약 ${n}개를 기억하고 있어요. 같은 약을 다시 넣으면 자동으로 채워져요(삭제한 약도 남아요).`,
-    keyTitle: '한국 약 설명 자동 채우기', keyInfo: '공공데이터포털(data.go.kr)에서 「식품의약품안전처_의약품개요정보(e약은요)」 활용신청을 하면 받는 일반 인증키(Decoding)를 넣어 주세요. 이 기기에만 저장돼요. 한국 일반의약품의 효능·사용법·주의사항이 자동으로 채워져요.', keyPh: '인증키 붙여넣기', keySaved: '인증키를 저장했어요',
     scanHint: '약 상자의 바코드나 작은 네모 코드를 네모 안에 비춰 주세요', scanSub: '10~15cm 떨어지면 초점이 잘 맞아요',
     scanLoading: '스캐너 준비 중…', scanLooking2D: '코드를 찾았어요. 유효기간이 든 네모 코드도 있는지 보는 중…',
     camFail: '카메라를 열지 못했어요. 브라우저 설정에서 카메라를 허용하거나, 사진·번호로 입력해 주세요.',
@@ -406,8 +405,8 @@ const T = {
     memo: 'Notiz',
     entp: 'Firma', findNedrug: 'Beipackzettel (MFDS, koreanisch)', openQr: 'QR-Link öffnen',
     krLooking: 'Suche in der koreanischen Liste…', krFound: 'Name aus der koreanischen Liste ✓', krNotFound: 'Barcode nicht in der koreanischen Liste. Bitte Namen eingeben.',
-    krInfoOk: 'Wirkung und Anwendung von e약은요 übernommen ✓', krNoInfo: 'Nicht in e약은요 (meist nur rezeptfreie). Siehe Beipackzettel-Link.',
-    krNoKey: 'Anwendung steht im Beipackzettel-Link unten. Mit einem e약은요-Schlüssel in den Einstellungen wird sie automatisch übernommen.', krErr: 'e약은요 nicht erreichbar. Bitte Schlüssel prüfen.',
+    krNoInfo: 'Beschreibung vom MFDS nicht erreichbar. Siehe Beipackzettel-Link unten.',
+    krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
     leafTitle: 'Aus Beipackzettel füllen', leafInfo: 'PDF hochladen oder Adresse einer Seite mit dem Beipackzettel eingeben – Anwendung, Dosierung und Haltbarkeit nach Anbruch werden übernommen.',
@@ -420,7 +419,6 @@ const T = {
     kidsTitle: 'Kinder', kidsInfo: 'Aus der Dosierungstabelle wird die Dosis nach Alter (oder Gewicht, falls angegeben) für K1 und K2 eingetragen.', kidBirth: 'Geburtsmonat', kidKg: 'Gewicht kg (optional)', kidsSaved: 'Gespeichert',
     kidNo: 'In diesem Alter nicht anwenden', kidCalc: 'Nach Alter neu berechnen', kidCalcNone: 'Keine passende Dosis für dieses Alter gefunden', kidCalcNeed: 'Bitte zuerst den Beipackzettel einlesen', kidNeedBirth: 'Bitte zuerst in den Einstellungen die Geburtsmonate eintragen', kidCalcDone: n => `Dosis für ${n} berechnet ✓ Bitte mit dem Beipackzettel vergleichen`,
     catTitle: 'Arzneimittel-Lexikon', catInfo: n => `${n} Medikamente gemerkt. Beim nächsten Eintragen wird alles übernommen (auch nach dem Löschen).`,
-    keyTitle: 'Koreanische Beschreibungen', keyInfo: 'Schlüssel (Decoding) für „의약품개요정보(e약은요)“ von data.go.kr. Wird nur auf diesem Gerät gespeichert.', keyPh: 'Schlüssel einfügen', keySaved: 'Schlüssel gespeichert',
     scanHint: 'Barcode oder den kleinen quadratischen Code in den Rahmen halten', scanSub: 'Mit 10–15 cm Abstand wird es scharf',
     scanLoading: 'Scanner wird geladen…', scanLooking2D: 'Code erkannt. Suche noch den quadratischen Code mit Verfall…',
     camFail: 'Kamera nicht verfügbar. Bitte Kamera erlauben oder Foto/Nummer verwenden.',
@@ -739,13 +737,11 @@ function settingsHtml() {
   <div class="box"><h3>${esc(l.lang)}</h3><div class="wrapchips">
     <button class="chip ${S.lang !== 'de' ? 'on' : ''}" data-act="setlang" data-v="ko">한국어</button><button class="chip ${S.lang === 'de' ? 'on' : ''}" data-act="setlang" data-v="de">Deutsch</button></div></div>
   <div class="box"><h3>${esc(l.sync)}</h3>${sync}</div>
-  <div class="box"><h3>${esc(l.keyTitle)}</h3><p class="note" style="margin-top:0">${esc(l.keyInfo)}</p>
-    <div class="inrow"><input class="in" id="krkey" placeholder="${esc(l.keyPh)}" value="${esc(S.krKey || '')}" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="mini" data-act="save-key">${esc(l.save)}</button></div>
-    <p class="note">한국 약 이름: 건강보험심사평가원 「약가마스터_의약품표준코드」 2026.08 · 공공누리 제1유형(출처표시)</p></div>
   <div class="box"><h3>${esc(l.kidsTitle)}</h3><p class="note" style="margin:0 0 6px">${esc(l.kidsInfo)}</p>
     ${KIDS.map(w => `<div class="row2" style="align-items:flex-end;margin-top:6px"><div><label class="f">${whoChip(w)} ${esc(l.kidBirth)}${kidMonths(w) >= 0 ? ' · ' + esc(kidAgeText(kidMonths(w))) : ''}</label><input class="in" type="month" id="kb-${w}" value="${esc(kidOf(w).birth || '')}"></div><div><label class="f">${esc(l.kidKg)}</label><input class="in" type="number" inputmode="decimal" step="0.1" min="0" id="kk-${w}" value="${+kidOf(w).kg || ''}"></div></div>`).join('')}
     <div class="leafrow"><button class="btn ghost small" data-act="save-kids">${esc(l.save)}</button></div></div>
-  <div class="box"><h3>${esc(l.catTitle)}</h3><p class="note" style="margin:0">${esc(l.catInfo(Object.keys(S.cat).filter(k => k[0] !== '@').length))}</p></div>
+  <div class="box"><h3>${esc(l.catTitle)}</h3><p class="note" style="margin:0">${esc(l.catInfo(Object.keys(S.cat).filter(k => k[0] !== '@').length))}</p>
+    <p class="note">한국 약 이름: 건강보험심사평가원 「약가마스터_의약품표준코드」 2026.08 · 한국 약 설명: 식품의약품안전처 의약품안전나라 · 공공누리 제1유형(출처표시)</p></div>
   <div class="box"><h3>${esc(l.backup)}</h3><div class="btnrow">
     <button class="btn ghost small" data-act="export">${ms('download')}${esc(l.exportB)}</button>
     <button class="btn ghost small" data-act="import">${ms('upload')}${esc(l.importB)}</button></div></div>
@@ -784,9 +780,9 @@ function handleCode(c) {
 
 // ---------- Koreanische Arzneimittel / 한국 약 정보 ----------
 // 1) Barcode → Name/Firma/품목기준코드 aus kd/NNN.json (HIRA-Liste, im App-Ordner, kein Schlüssel nötig).
-// 2) Mit e약은요-Schlüssel (nur rezeptfreie): Wirkung, Anwendung, Hinweise, Aufbewahrung.
+// 2) Angemeldet: Wirkung, Anwendung, Hinweise von 의약품안전나라 über den eigenen Abruf-Server (auch Rx).
 // 1) 바코드 → 이름·업체·품목기준코드: kd/NNN.json(심평원 목록, 앱 안에 있음, 키 필요 없음).
-// 2) e약은요 인증키가 있으면(일반의약품만): 효능·사용법·주의사항·보관법.
+// 2) 로그인하면: 의약품안전나라의 효능·용법·주의사항(우리 가져오기 서버를 거침, 전문약도).
 async function krByBarcode(ean) {
   const r = await fetch(`kd/${ean.slice(3, 6)}.json`);
   if (!r.ok) return null;
@@ -794,18 +790,6 @@ async function krByBarcode(ean) {
   if (!seq || !j.i[seq]) return null;
   const [name, entp, form, rx] = j.i[seq];
   return { itemSeq: seq, name, entp, form, rx };
-}
-const clean = s => String(s || '').replace(/<br\s*\/?>|<\/p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim();
-async function krEasy(seq) {
-  const key = (S.krKey || '').trim();
-  if (!key) return { nokey: true };
-  const k = /%[0-9A-Fa-f]{2}/.test(key) ? key : encodeURIComponent(key);
-  const r = await fetch(`https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList?serviceKey=${k}&itemSeq=${encodeURIComponent(seq)}&type=json&numOfRows=1`);
-  if (!r.ok) throw new Error('http ' + r.status);
-  const j = await r.json(), items = j && j.body && j.body.items;
-  const x = Array.isArray(items) ? items[0] : items && items.item ? [].concat(items.item)[0] : null;
-  if (!x) return null;
-  return { efcy: clean(x.efcyQesitm), use: clean(x.useMethodQesitm), warn: clean([x.atpnWarnQesitm, x.atpnQesitm, x.intrcQesitm].filter(Boolean).join('\n')), se: clean(x.seQesitm), store: clean(x.depositMethodQesitm) };
 }
 // Darreichungsform aus dem koreanischen Namen raten. / 한국 약 이름으로 종류 추측.
 function kindFromName(n) {
@@ -835,22 +819,20 @@ async function fillKorean(id, ean) {
   if (!d.kind) d.kind = kindFromName(hit.name);
   d.itemSeq = hit.itemSeq; d.entp = hit.entp;
   note({ t: l.krFound, ok: true });
-  // Zuerst 의약품안전나라 (angemeldet, ohne Schlüssel, auch Rx), sonst e약은요 (mit Schlüssel).
-  // 먼저 의약품안전나라(로그인하면 키 없이, 전문약도) → 안 되면 e약은요(인증키 있을 때).
-  let info = null, src = '';
-  if (canFetch()) { try { info = await nedrugInfo(hit.itemSeq); src = 'nedrug'; } catch (e) { console.warn(e); } }
-  if (!info) { try { info = await krEasy(hit.itemSeq); src = 'easy'; } catch (e) { console.warn(e); info = { err: true }; } }
+  // Beschreibung von 의약품안전나라 (nur angemeldet) / 의약품안전나라 설명(로그인했을 때만)
+  if (!canFetch()) return note({ t: `${l.krFound} ${l.krNoLogin}`, ok: true });
+  let info = null;
+  try { info = await nedrugInfo(hit.itemSeq); } catch (e) { console.warn(e); }
   if (!same()) return;
   readForm();
-  if (info && info.err) return note({ t: l.krErr });
-  if (info && info.nokey) return note({ t: `${l.krFound} ${l.krNoKey}`, ok: true });
   if (!info) return note({ t: `${l.krFound} ${l.krNoInfo}`, ok: true });
+  const src = 'nedrug';
   d.info = { efcy: info.efcy, use: info.use, warn: info.warn, se: info.se, store: info.store, open: info.openText || '', lang: 'ko', src };
   if (!d.dose && (info.dose || info.use)) d.dose = info.dose || info.use;
   if (!d.drawer || d.drawerAuto) { d.drawer = guessDrawer(`${info.efcy} ${d.name}`); d.drawerAuto = true; }
   if (!+d.openDays && info.openDays) d.openDays = info.openDays;
   fillKids(d, info.use, false);
-  note({ t: src === 'nedrug' ? l.nedrugOk : l.krInfoOk, ok: true });
+  note({ t: l.nedrugOk, ok: true });
 }
 
 // ---------- Beipackzettel holen und lesen / 설명서 가져와서 읽기 ----------
@@ -1269,7 +1251,7 @@ const ACT = {
     keep(); toast(L().kidsSaved); renderSheet(); render();
     if (window.cloud) window.cloud.push();
   },
-  'save-key'() { S.krKey = ($('#krkey').value || '').trim(); keep(); toast(L().keySaved); },
+
   torch() { sc.torch = !sc.torch; sc.track.applyConstraints({ advanced: [{ torch: sc.torch }] }).catch(() => {}); drawScan(); },
   signin() { window.cloud.signIn().catch(e => console.warn(e)); },
   async signout() { await window.cloud.signOut(); renderSheet(); render(); },
