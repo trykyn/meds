@@ -2,5 +2,17 @@ name = "meds-fetch"
 main = "src/index.js"
 compatibility_date = "2026-10-01"
 
-# 약상자 앱의 설명서 가져오기 서버. 비밀 값 없음(로그인한 가족만 쓸 수 있게 코드에서 확인).
+# 약상자 앱 서버: 설명서 가져오기 + 만료 알림.
+# 비밀 값 VAPID_PRIVATE_JWK 는 여기 적지 않음(wrangler secret 으로 저장됨).
 # 배포 (meds/worker 폴더에서):  ../../weekly-meals/worker/node_modules/.bin/wrangler deploy
+
+kv_namespaces = [
+  { binding = "STORE", id = "3892197e63fb4ee28bb7dfffde4558b1" }
+]
+
+# 매일 06·07시(UTC)에 깨어나서 뮌헨 시각이 8시면 알림
+[triggers]
+crons = ["0 6 * * *", "0 7 * * *"]
+
+[vars]
+VAPID_PUBLIC = "BGBnN4Z-zgrtxpiREd2xLP4HToyuuKyx1HRv1sMbBAJ3Iw2OuohsIZMyrkZKkLN-eVCopdxbwSRGpsI5rn_I3fc"

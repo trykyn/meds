@@ -411,6 +411,11 @@ const T = {
     krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    notiTitle: '만료 알림', notiInfo: '약 기한이 30일·7일 남았을 때와 마지막 날 아침 8시에 휴대폰으로 알려 줘요. 약 이름은 서버에 저장되지 않아요.',
+    notiEnable: '알림 켜기', notiOnText: '켜져 있어요 · 매일 아침 8시에 필요한 날만 알려요', notiTest: '시험 알림 보내기', notiOff: '끄기',
+    notiNoSupport: '이 화면에서는 알림을 쓸 수 없어요. 아이폰은 Safari에서 "홈 화면에 추가"한 앱으로 열어야 켤 수 있어요.', notiNeedLogin: '위의 "가족과 함께 쓰기"에서 구글 로그인을 하면 켤 수 있어요.',
+    notiDenied: '알림 권한이 꺼져 있어요. 휴대폰 설정 → 알림에서 약상자를 허용해 주세요.', notiFail: '알림을 설정하지 못했어요. 잠시 뒤 다시 해 주세요.', notiOnToast: '알림을 켰어요', notiOffToast: '알림을 껐어요', notiTestSent: '시험 알림을 보냈어요. 곧 도착해요.',
+    a30: (n, d) => `${n}: 30일 남았어요(${d}까지)`, a7: (n, d) => `${n}: 1주 남았어요(${d}까지)`, a3: (n, d) => `${n}: 개봉 후 기한 3일 남았어요(${d}까지)`, a0: n => `${n}: 오늘까지 쓸 수 있어요`,
     people: { davin: '다빈', arin: '아린', mom: '엄마', dad: '아빠' },
     justNow: '방금', minAgo: n => `${n}분 전`, hAgo: n => `${n}시간 전`, dAgo: n => `${n}일 전`, tomorrow: '내일', todayW: '오늘',
     maxReached: (n, x) => `오늘 ${n}/${x}번 다 먹음`, nextAt: t => `${t}부터`, canNow: '지금 가능', lastAt: t => `마지막 ${t}`, in24: (n, x) => `24시간 ${n}/${x}번`,
@@ -480,6 +485,11 @@ const T = {
     krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    notiTitle: 'Ablauf-Erinnerung', notiInfo: '30 und 7 Tage vor Ablauf und am letzten Tag kommt um 8 Uhr eine Nachricht. Namen der Medikamente werden nicht auf dem Server gespeichert.',
+    notiEnable: 'Erinnerungen einschalten', notiOnText: 'Eingeschaltet · täglich 8 Uhr, nur an fälligen Tagen', notiTest: 'Test senden', notiOff: 'Ausschalten',
+    notiNoSupport: 'Hier gehen keine Mitteilungen. Auf dem iPhone die App über Safari → „Zum Home-Bildschirm“ öffnen.', notiNeedLogin: 'Bitte oben unter „Mit der Familie teilen“ mit Google anmelden.',
+    notiDenied: 'Mitteilungen sind nicht erlaubt. Bitte in den Einstellungen des Handys erlauben.', notiFail: 'Erinnerung konnte nicht eingerichtet werden. Bitte später erneut.', notiOnToast: 'Erinnerungen an', notiOffToast: 'Erinnerungen aus', notiTestSent: 'Test gesendet – kommt gleich.',
+    a30: (n, d) => `${n}: noch 30 Tage (bis ${d})`, a7: (n, d) => `${n}: noch 1 Woche (bis ${d})`, a3: (n, d) => `${n}: nach Anbruch nur noch 3 Tage (bis ${d})`, a0: n => `${n}: heute letzter Tag`,
     people: { davin: 'Davin', arin: 'Arin', mom: 'Mama', dad: 'Papa' },
     justNow: 'gerade', minAgo: n => `vor ${n} Min.`, hAgo: n => `vor ${n} Std.`, dAgo: n => `vor ${n} T.`, tomorrow: 'morgen', todayW: 'Heute',
     maxReached: (n, x) => `heute ${n}/${x} – genug`, nextAt: t => `ab ${t}`, canNow: 'jetzt möglich', lastAt: t => `zuletzt ${t}`, in24: (n, x) => `24 h: ${n}/${x}`,
@@ -679,6 +689,7 @@ function render() {
     if (hadFocus) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
   if (ui.sheet && !['form', 'addlog'].includes(ui.sheet.type)) renderSheet();
+  syncAlerts();
   document.documentElement.lang = S.lang === 'de' ? 'de' : 'ko';
   document.title = l.title;
 }
@@ -823,6 +834,7 @@ function settingsHtml() {
   <div class="box"><h3>${esc(l.lang)}</h3><div class="wrapchips">
     <button class="chip ${S.lang !== 'de' ? 'on' : ''}" data-act="setlang" data-v="ko">한국어</button><button class="chip ${S.lang === 'de' ? 'on' : ''}" data-act="setlang" data-v="de">Deutsch</button></div></div>
   <div class="box"><h3>${esc(l.sync)}</h3>${sync}</div>
+  ${notiHtml()}
   <div class="box"><h3>${esc(l.kidsTitle)}</h3><p class="note" style="margin:0 0 6px">${esc(l.kidsInfo)}</p>
     ${KIDS.map(w => `<div class="row2" style="align-items:flex-end;margin-top:6px"><div><label class="f">${whoChip(w)} ${esc(l.kidBirth)}${kidMonths(w) >= 0 ? ' · ' + esc(kidAgeText(kidMonths(w))) : ''}</label><input class="in" type="month" id="kb-${w}" value="${esc(kidOf(w).birth || '')}"></div><div><label class="f">${esc(l.kidKg)}</label><input class="in" type="number" inputmode="decimal" step="0.1" min="0" id="kk-${w}" value="${+kidOf(w).kg || ''}"></div></div>`).join('')}
     <div class="leafrow"><button class="btn ghost small" data-act="save-kids">${esc(l.save)}</button></div></div>
@@ -1330,6 +1342,79 @@ function shopHtml() {
     <div class="btnrow" style="margin-top:10px">${!s.stores ? `<p class="note">${esc(l.shopLoading)}</p>` : s.stores.map(x => `<button class="btn ghost small" data-act="shopadd" data-v="${esc(x.id)}">${ms('add')}${esc(x.label)}</button>`).join('')}</div></div>`;
 }
 
+// ---------- Ablauf-Erinnerung (Web Push) / 만료 알림 ----------
+// Das Handy rechnet die Tage aus (30 und 7 Tage vorher, am letzten Tag; angebrochene Kurzläufer 3 Tage vorher)
+// und schickt dem Server nur diese Tage. Den Text legt es in den Cache „meds-alerts“, den sw.js beim Push liest.
+// 휴대폰이 알림 날짜(30일·7일 전, 마지막 날, 개봉 후 짧은 약은 3일 전)를 계산해 서버에는 날짜만 보냄.
+// 알림 문구는 'meds-alerts' 저장소에 넣어 두고, 푸시가 오면 sw.js가 읽어서 보여 줌.
+const WORKER = 'https://meds-fetch.weekly-meals-reader.workers.dev';
+const VAPID_PUBLIC = 'BGBnN4Z-zgrtxpiREd2xLP4HToyuuKyx1HRv1sMbBAJ3Iw2OuohsIZMyrkZKkLN-eVCopdxbwSRGpsI5rn_I3fc';
+const PUSHKEY = 'meds:push';
+const pushEndpoint = () => { try { return localStorage.getItem(PUSHKEY) || ''; } catch (e) { return ''; } };
+const canPush = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && location.protocol === 'https:';
+function alertPlan() {
+  const l = L(), byDate = {}, add = (d, text) => { if (d >= today()) (byDate[d] = byDate[d] || []).push(text); };
+  for (const m of active()) {
+    const { end, by } = limitOf(m);
+    if (!end) continue;
+    add(addDays(end, -30), l.a30(m.name, fmtShort(end)));
+    add(addDays(end, -7), l.a7(m.name, fmtShort(end)));
+    if (by === 'open' && m.openDays <= 30) add(addDays(end, -3), l.a3(m.name, fmtShort(end)));
+    add(end, l.a0(m.name));
+  }
+  return byDate;
+}
+async function workerPost(p, body) {
+  const tok = window.cloud && await window.cloud.token();
+  if (!tok) throw new Error('login');
+  const r = await fetch(WORKER + p, { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.ok === false) throw new Error(j.error || 'http' + r.status);
+  return j;
+}
+// Nach Änderungen: Text in den Cache, neue Tage an den Server (nur wenn sich etwas geändert hat).
+// 바뀌면: 문구는 저장소에, 바뀐 날짜만 서버로.
+let alertTimer = 0, alertSig = '';
+function syncAlerts() {
+  clearTimeout(alertTimer);
+  alertTimer = setTimeout(async () => {
+    const byDate = alertPlan(), sig = JSON.stringify([S.lang, byDate]);
+    if (sig === alertSig) return;
+    alertSig = sig;
+    try { const c = await caches.open('meds-alerts'); await c.put('alerts', new Response(JSON.stringify({ lang: S.lang, byDate }))); } catch (e) {}
+    const ep = pushEndpoint();
+    if (ep && canFetch()) workerPost('/push/days', { endpoint: ep, days: Object.keys(byDate) }).catch(e => console.warn('push days', e));
+  }, 1500);
+}
+const b64ToBytes = s => { const b = atob((s + '='.repeat((4 - s.length % 4) % 4)).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+async function pushOn() {
+  const l = L();
+  if (await Notification.requestPermission() !== 'granted') { toast(l.notiDenied); return; }
+  const reg = await navigator.serviceWorker.ready;
+  const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(VAPID_PUBLIC) });
+  alertSig = '';
+  await workerPost('/push/subscribe', { sub: sub.toJSON(), days: Object.keys(alertPlan()) });
+  try { localStorage.setItem(PUSHKEY, sub.endpoint); } catch (e) {}
+  syncAlerts();
+  toast(l.notiOnToast);
+}
+async function pushOff() {
+  const ep = pushEndpoint();
+  try { localStorage.removeItem(PUSHKEY); } catch (e) {}
+  if (ep) await workerPost('/push/unsubscribe', { endpoint: ep }).catch(() => {});
+  try { const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription(); if (sub) await sub.unsubscribe(); } catch (e) {}
+}
+function notiHtml() {
+  const l = L();
+  let body;
+  if (!canPush()) body = `<p class="note" style="margin:0">${esc(l.notiNoSupport)}</p>`;
+  else if (!canFetch()) body = `<p class="note" style="margin:0">${esc(l.notiNeedLogin)}</p>`;
+  else if (pushEndpoint()) body = `<p class="ok-t" style="margin:0">✓ ${esc(l.notiOnText)}</p>
+    <div class="btnrow" style="margin-top:8px"><button class="btn ghost small" data-act="push-test">${esc(l.notiTest)}</button><button class="btn ghost small" data-act="push-off">${esc(l.notiOff)}</button></div>`;
+  else body = `<p class="note" style="margin:0 0 8px">${esc(l.notiInfo)}</p><button class="btn small" data-act="push-on">${ms('notifications')}${esc(l.notiEnable)}</button>`;
+  return `<div class="box"><h3>${esc(l.notiTitle)}</h3>${body}</div>`;
+}
+
 // ---------- Kamera-Scanner / 카메라 스캐너 ----------
 const BD_URL = 'https://cdn.jsdelivr.net/npm/barcode-detector@3.2.3/dist/es/ponyfill.js';
 let detectorP = null;
@@ -1509,6 +1594,12 @@ const ACT = {
     if (!name) return;
     try { await window.cloud.addShop(el.dataset.v, name); toast(L().shopAdded); } catch (e) { console.warn(e); toast(L().trFail); }
     closeSheet();
+  },
+  async 'push-on'() { try { await pushOn(); } catch (e) { console.warn(e); toast(L().notiFail); } renderSheet(); },
+  async 'push-off'() { await pushOff(); toast(L().notiOffToast); renderSheet(); },
+  async 'push-test'() {
+    try { await workerPost('/push/test', { endpoint: pushEndpoint() }); toast(L().notiTestSent); }
+    catch (e) { console.warn(e); if (/not_registered/.test(e.message)) { try { localStorage.removeItem(PUSHKEY); } catch (x) {} } toast(L().notiFail); renderSheet(); }
   },
   addlog(el) { openAddLog({ who: el.dataset.who, kind: el.dataset.kind, med: el.dataset.med }); },
   loglist(el) { ui.logWho = el.dataset.who || ui.logWho; openSheet({ type: 'loglist' }); },

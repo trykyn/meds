@@ -3,7 +3,7 @@
 // alte Kopien, und die installierte App zeigt nach dem Neustart noch die alte Version.
 // 앱 파일은 매번 서버에 "바뀌었나요?"를 물어봄. GitHub Pages의 10분 저장 표시 때문에 홈 화면 앱이
 // 껐다 켜도 예전 화면을 보여 주는 일을 막음. 안 바뀌었으면 서버가 짧게 "그대로"라고만 답함.
-const CACHE = 'meds-v11';
+const CACHE = 'meds-v12';
 // Bibliothek und Schrift: die Version steht in der Adresse, eine gespeicherte Kopie veraltet also nie.
 // 라이브러리와 글꼴: 주소에 버전이 들어 있어서 저장해 둔 것이 낡지 않음.
 // Dazu die Barcode-Bibliothek samt WebAssembly (cdn.jsdelivr.net) und die Symbolschrift (Google Fonts).
@@ -40,6 +40,26 @@ self.addEventListener('fetch', e => {
     // (받던 것은 계속 받아서 다음번을 위해 저장).
     e.waitUntil(net.catch(() => {}));
     return Promise.race([net.catch(() => cached), new Promise(done => setTimeout(() => done(cached), WAIT_MS))]);
+  })());
+});
+
+// Ablauf-Erinnerung: Der Server schickt eine leere Nachricht; den Text legt die App in den Cache „meds-alerts“.
+// 만료 알림: 서버는 빈 알림만 보냄. 문구는 앱이 'meds-alerts' 저장소에 넣어 둔 것을 씀.
+self.addEventListener('push', e => {
+  e.waitUntil((async () => {
+    let lang = 'ko', lines = [];
+    try {
+      const r = await (await caches.open('meds-alerts')).match('alerts');
+      if (r) {
+        const a = await r.json(), d = new Date(), day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        lang = a.lang === 'de' ? 'de' : 'ko';
+        lines = (a.byDate && a.byDate[day]) || [];
+      }
+    } catch (x) {}
+    const title = lang === 'de' ? 'Hausapotheke' : '약상자';
+    const more = lines.length > 4 ? (lang === 'de' ? `\n+ ${lines.length - 4} weitere` : `\n외 ${lines.length - 4}개`) : '';
+    const body = lines.length ? lines.slice(0, 4).join('\n') + more : (lang === 'de' ? 'Erinnerungen sind eingeschaltet.' : '약상자 알림이 켜져 있어요.');
+    await self.registration.showNotification(title, { body, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'meds-expiry', data: { url: './' } });
   })());
 });
 self.addEventListener('notificationclick', e => {
