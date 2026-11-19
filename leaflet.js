@@ -142,5 +142,73 @@
     return out;
   }
 
-  root.MedLeaflet = { parse, openAfter, kindOf, split: t => split(tidy(t), DE) };
+  // ---------- Dosis für ein Kind aus der Dosierungstabelle / 용량표에서 아이 한 명의 용량 ----------
+  // kid = { months: Alter in Monaten, kg: Gewicht oder 0 }. Gesucht wird die Zeile, deren Alters- (oder Gewichts-)
+  // Bereich passt; „nicht anwenden“ bei passendem Alter wird als Warnung zurückgegeben.
+  // kid = { months: 개월 수, kg: 몸무게(모르면 0) }. 나이(또는 몸무게) 범위가 맞는 줄을 찾음.
+  // 그 나이에 "쓰지 말라"는 줄이면 경고로 돌려줌.
+  const NUMW = '(\\d+(?:[.,]\\d+)?)';
+  const DASH = '\\s*(?:[-–—~〜]|bis(?:\\s+unter)?|bis\\s+zu|부터)\\s*';
+  const AGEU = '(Jahre|Jahren|Jahr|J\\.|세|살|Monate|Monaten|Monat|개월)';
+  const num = s => parseFloat(String(s).replace(',', '.'));
+  const inMonths = (n, u) => /^(Monat|개월)/i.test(u) ? n : n * 12;
+  function ageRange(line) {
+    let m;
+    // „6 – 9 Jahre“, „만 4세~6세“, „7개월~23개월“, „von 2 bis 5 Jahren“
+    if ((m = line.match(new RegExp(`(?:만\\s*)?(\\d+)\\s*(세|살|개월|Monate|Monaten|Monat|Jahre|Jahren)?${DASH}(?:만\\s*)?(\\d+)\\s*${AGEU}`, 'i')))) {
+      const unitA = m[2] || m[4], excl = /bis\s+unter/i.test(m[0]);
+      const hi = excl ? inMonths(+m[3], m[4]) - 0.01 : inMonths(+m[3], m[4]) + (/^(Monat|개월)/i.test(m[4]) ? 0.99 : 11.99);
+      return [inMonths(+m[1], unitA), hi, m[0]];
+    }
+    // „ab 12 Jahren“, „12세 이상“ / 이상
+    if ((m = line.match(new RegExp(`(?:ab|über|älter als)\\s+(\\d+)\\s*${AGEU}`, 'i'))) || (m = line.match(new RegExp(`(?:만\\s*)?(\\d+)\\s*${AGEU}\\s*이상`))))
+      return [inMonths(+m[1], m[2]), Infinity, m[0]];
+    // „unter 6 Jahren“, „6세 미만“ / 미만
+    if ((m = line.match(new RegExp(`(?:unter|jünger als)\\s+(\\d+)\\s*${AGEU}`, 'i'))) || (m = line.match(new RegExp(`(?:만\\s*)?(\\d+)\\s*${AGEU}\\s*미만`))))
+      return [0, inMonths(+m[1], m[2]) - 0.01, m[0]];
+    // „bis 6 Jahre“, „6세 이하“
+    if ((m = line.match(new RegExp(`(?:bis|bis zu)\\s+(\\d+)\\s*${AGEU}`, 'i'))) || (m = line.match(new RegExp(`(?:만\\s*)?(\\d+)\\s*${AGEU}\\s*이하`))))
+      return [0, inMonths(+m[1], m[2]) + 11.99, m[0]];
+    return null;
+  }
+  function kgRange(line) {
+    const m = line.match(new RegExp(`${NUMW}${DASH}${NUMW}\\s*kg`, 'i'));
+    return m ? [num(m[1]), num(m[2]), m[0]] : null;
+  }
+  // Menge des Arzneimittels (ml/Tabletten vor mg, weil mg oft die Wirkstoffmenge ist) / 약의 양(mg보다 ml·정 우선)
+  function amountOf(line) {
+    const units = ['ml|mL|Milliliter|Messlöffel|Dosierspritze', 'Tabletten?|Filmtabletten?|Kapseln?|Zäpfchen|Beutel|Brausetabletten?|Hub|Hübe|Sprühstoß|Sprühstöße|Tropfen|정|캡슐|포|방울|좌제|개|회분', 'mg'];
+    const clean = line.replace(new RegExp(`${NUMW}${DASH}${NUMW}\\s*kg`, 'gi'), ' ').replace(/\d+(?:[.,]\d+)?\s*mg\s*\/\s*kg/gi, ' ');
+    for (const u of units) {
+      const m = clean.match(new RegExp(`(?:${NUMW}${DASH})?${NUMW}\\s*(${u})(?![a-zäöü])`, 'i'));
+      if (m) return (m[1] ? `${m[1]}–${m[2]}` : m[2]) + ' ' + m[3];
+    }
+    return '';
+  }
+  const FREQ = /(bis zu \d+[- ]?mal (?:täglich|am Tag|pro Tag)|\d+[- ]?(?:bis \d+[- ]?)?mal (?:täglich|am Tag|pro Tag)|alle \d+(?:\s*[-–]\s*\d+)? Stunden|1일\s*\d+(?:\s*~\s*\d+)?\s*회|\d+(?:\s*[-~]\s*\d+)?\s*시간\s*(?:마다|간격))/i;
+  const NO = /nicht (?:anwenden|einnehmen|geben|verwenden|geeignet)|darf nicht|sollen nicht|kontraindiziert|투여하지\s*(?:말|않)|사용하지\s*(?:말|않)|복용하지\s*(?:말|않)/i;
+  function kidDose(section, kid) {
+    if (!section || !kid || !(kid.months >= 0)) return null;
+    const lines = tidy(section).split('\n').flatMap(l => l.split(/(?<=\.)\s+(?=[A-ZÄÖÜ가-힣])|;\s*/)).map(s => s.trim()).filter(Boolean);
+    const general = (tidy(section).match(FREQ) || [])[0] || '';
+    let best = null;
+    for (const line of lines) {
+      const ar = ageRange(line), kr = kgRange(line);
+      if (!ar && !kr) continue;
+      const byKg = kid.kg > 0 && kr && kid.kg >= kr[0] && kid.kg <= kr[1];
+      const byAge = ar && kid.months >= ar[0] && kid.months <= ar[1];
+      if (!byKg && !(byAge && !(kid.kg > 0 && kr))) continue;
+      const score = (byKg ? 2 : 0) + (byAge ? 1 : 0) + (ar && ar[1] !== Infinity ? 0.5 : 0);
+      if (best && best.score >= score) continue;
+      if (NO.test(line)) { best = { score, warn: true, text: line }; continue; }
+      const amt = amountOf(line);
+      if (!amt) continue;
+      const freq = (line.match(FREQ) || [])[0] || general;
+      const range = [ar && ar[2], kr && kr[2]].filter(Boolean).map(s => s.replace(/\s+/g, ' ').trim()).join(', ');
+      best = { score, amount: amt, freq, range, text: line };
+    }
+    return best;
+  }
+
+  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, ageRange, amountOf, split: t => split(tidy(t), DE) };
 })(typeof window !== 'undefined' ? window : globalThis);
