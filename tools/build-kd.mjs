@@ -36,7 +36,7 @@ for (const r of it) {
   if (!/^880\d{10}$/.test(code)) continue;
   const seq = r[ix('품목기준코드')].trim();
   const sh = code.slice(3, 6), s = shards[sh] || (shards[sh] = { i: {}, c: {} });
-  if (!s.i[seq] || !cancel) s.i[seq] = [r[ix('한글상품명')].trim(), r[ix('업체명')].trim(), r[ix('제형구분')].trim(), KEEP[kind]];
+  if (!s.i[seq] || !cancel) s.i[seq] = [r[ix('한글상품명')].trim(), r[ix('업체명')].trim(), r[ix('제형구분')].trim(), KEEP[kind], r[ix('국제표준코드(ATC코드)')].trim()];
   if (!s.c[code.slice(6)] || !cancel) s.c[code.slice(6)] = seq;
   n++;
 }

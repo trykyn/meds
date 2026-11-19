@@ -120,5 +120,21 @@ const kb = brief(k);
 has('ko brief efcy', kb.efcy, '발열 및 동통');
 eq('ko brief store', kb.store, '기밀용기, 실온보관');
 
+// Wirkstoffe / 성분
+const { ingredients, schedule } = globalThis.MedLeaflet;
+eq('ingr line', p.ingr, 'Ibuprofen');
+eq('ingr DE', ingredients(['Fiebersaft Junior', p.ingr]), ['ibuprofen']);
+eq('ingr brand', ingredients(['ben-u-ron Zäpfchen 250']), ['paracetamol']);
+eq('ingr KO name', ingredients(['타이레놀정500밀리그람(아세트아미노펜)']), ['paracetamol']);
+eq('ingr ATC combo', ingredients(['판콜에이내복액'], 'N02BE51'), ['paracetamol']);
+eq('dexibuprofen not ibuprofen', ingredients(['맥시부펜시럽(덱시부프로펜)']), ['dexibuprofen']);
+eq('nothing', ingredients(['Bepanthen Wundsalbe']), []);
+// Abstand / 간격·횟수
+eq('sched DE', schedule('Kinder 6 – 9 Jahre: 7,5 ml bis zu 3-mal täglich. Zwischen den Gaben mindestens 6 Stunden Abstand.'), { minHours: 6, maxPerDay: 3 });
+eq('sched alle', schedule('alle 4 – 6 Stunden 1 Tablette, höchstens 4-mal täglich'), { minHours: 4, maxPerDay: 4 });
+eq('sched KO', schedule('1회 권장용량을 4-6시간 마다 필요시 복용한다. 1일 5회를 초과하지 않는다.'), { minHours: 4, maxPerDay: 5 });
+eq('sched KO short', schedule('7.5 mL · 하루 최대 3번'), { minHours: 0, maxPerDay: 3 });
+eq('sched none', schedule('morgens 1 Tablette'), { minHours: 0, maxPerDay: 0 });
+
 console.log(fail ? `\n${fail} FAILED` : '\nall passed');
 process.exit(fail ? 1 : 0);
