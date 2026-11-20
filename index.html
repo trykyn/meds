@@ -573,7 +573,7 @@ const T = {
     sickNone: '맞는 약이 집에 없어요. 약국이나 병원에 물어보세요.', sickPick: '증상을 고르면 집에 있는 약을 기한이 짧은 것부터 보여줘요.', packs: n => `${n}통`,
     sickNote: '약 이름과 설명서 내용으로 고른 참고용 목록이에요. 증상이 심하거나 오래가면 의사·약사와 상의하세요.',
     sym: { fever: '열', pain: '통증·두통', cough: '기침', nose: '콧물·코막힘', throat: '목 아픔', belly: '배탈·설사', constip: '변비', nausea: '구토·멀미', allergy: '알레르기·가려움', wound: '상처·화상', insect: '벌레 물림', eye: '눈', ear: '귀' },
-    openedEmpty: '개봉일을 비워 두면 아직 안 연 것(미개봉)이에요.', notOpened: '아직 안 열었어요', sealedNote: '포는 하나씩 포장돼 있어서 개봉일은 필요 없어요. 상자에 찍힌 기한까지 써요.', unopened: '새것(미개봉)',
+    openedEmpty: '개봉일을 비워 두면 아직 안 연 것(미개봉)이에요.', notOpened: '아직 안 열었어요', sealedNote: '하나씩 포장된 약(포·알약 판·좌약)은 개봉일이 필요 없어요. 상자에 찍힌 기한까지 써요.', jarBtn: '병이나 통에 든 약이에요 → 개봉일 쓰기', unopened: '새것(미개봉)',
     openAuto: s => `설명서대로 개봉 후 ${s}로 계산했어요`, sumLeft: s => `모두 합쳐 ${s}`,
     stockHint: '상자에 적힌 개수(예: 20정)를 한 번 넣으면, "먹었어요"를 누를 때마다 저절로 줄어요. 새 상자는 "지금 남은 양"을 비워 두세요.',
     stockHintLevel: '연고·안약처럼 세기 어려운 약은 대충 고르세요. 아직 안 연 약은 "가득"으로 두면 "새것(미개봉)"으로 보여요.', stockHintNone: '남은 양을 세지 않아요.',
@@ -703,7 +703,7 @@ const T = {
     sickNone: 'Nichts Passendes im Haus. Bitte Apotheke oder Arzt fragen.', sickPick: 'Beschwerden wählen – passende Mittel erscheinen, das zuerst ablaufende oben.', packs: n => `${n} Pack.`,
     sickNote: 'Auswahl nach Name und Beipackzettel, nur als Hilfe. Bei starken oder anhaltenden Beschwerden Arzt oder Apotheke fragen.',
     sym: { fever: 'Fieber', pain: 'Schmerzen', cough: 'Husten', nose: 'Schnupfen', throat: 'Halsweh', belly: 'Magen/Darm', constip: 'Verstopfung', nausea: 'Übelkeit', allergy: 'Allergie/Juckreiz', wound: 'Wunde/Verbrennung', insect: 'Insektenstich', eye: 'Augen', ear: 'Ohren' },
-    openedEmpty: 'Leer lassen = noch ungeöffnet.', notOpened: 'noch nicht geöffnet', sealedNote: 'Einzeln verpackt – Anbruchdatum nicht nötig, es gilt das Verfallsdatum.', unopened: 'neu (ungeöffnet)',
+    openedEmpty: 'Leer lassen = noch ungeöffnet.', notOpened: 'noch nicht geöffnet', sealedNote: 'Einzeln verpackt (Beutel, Blister, Zäpfchen) – kein Anbruchdatum nötig, es gilt das Verfallsdatum.', jarBtn: 'In Dose oder Flasche → Anbruch eintragen', unopened: 'neu (ungeöffnet)',
     openAuto: s => `Laut Beipackzettel ${s} nach Anbruch eingetragen`, sumLeft: s => `zusammen ${s}`,
     stockHint: 'Anzahl laut Packung (z. B. 20 Tabletten) einmal eingeben – mit „Genommen“ wird automatisch abgezogen. Bei neuer Packung „Noch da“ leer lassen.',
     stockHintLevel: 'Für Salben, Tropfen usw. grob wählen. Ungeöffnet auf „voll“ lassen – dann steht „neu (ungeöffnet)“.', stockHintNone: 'Vorrat wird nicht gezählt.',
@@ -776,7 +776,11 @@ const fmtShort = s => !s ? '' : S.lang === 'de' ? `${+s.slice(8, 10)}.${+s.slice
 const openLabel = n => n % 365 === 0 ? (S.lang === 'de' ? `${n / 365} J.` : `${n / 365}년`) : n % 30 === 0 || n === 182 || n === 91 ? L().months(Math.round(n / 30.4)) : n % 7 === 0 && n > 7 ? L().weeks(n / 7) : `${n}${S.lang === 'de' ? ' T.' : '일'}`;
 
 // Einzeln verpackt (Beutel/포): der Anbruch der Schachtel spielt keine Rolle / 하나씩 포장된 약(포)은 개봉일이 상관없음
-const sealed = m => (m.qtyUnit != null ? m.qtyUnit : m.qty ? m.qty.unit : '') === 'bag';
+const sealed = m => {
+  const u = m.qtyUnit != null ? m.qtyUnit : m.qty ? m.qty.unit : '';
+  if (u === 'bag') return true;
+  return !m.jar && !+m.openDays && (['tab', 'supp'].includes(m.kind) || u === 'tab');
+};
 // Wann ist die Packung wirklich zu Ende? / 실제로 언제까지 쓸 수 있나
 function limitOf(m) {
   const openEnd = !sealed(m) && m.opened && m.openDays ? addDays(m.opened, m.openDays) : '';
@@ -1069,7 +1073,7 @@ function formHtml() {
   <div class="box">
     <label class="f">${esc(l.fExp)}</label><input class="in" name="expText" inputmode="decimal" autocomplete="off" value="${esc(m.expText != null ? m.expText : expIn(m.exp))}" placeholder="${esc(l.fExpPh)}">
     ${expHint(m.expText != null ? m.expText : expIn(m.exp), m.expScan && m.exp === m.expScan && m.expText == null)}
-    ${sealed(m) ? `<p class="hint ok" style="margin-top:10px">${esc(l.sealedNote)}</p>` : `<label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
+    ${sealed(m) ? `<p class="hint ok" style="margin-top:10px">${esc(l.sealedNote)}</p>${(m.qtyUnit != null ? m.qtyUnit : (m.qty || {}).unit) !== 'bag' ? `<button type="button" class="linkbtn" data-act="set" data-k="jar" data-v="1">${esc(l.jarBtn)}</button>` : ''}` : `<label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
     <p class="hint" style="margin-top:4px">${esc(l.openedEmpty)}</p>
     <label class="f">${esc(l.fOpenDays)}</label><div class="wrapchips">${opens}</div>
     ${custom || ui.customDays ? `<div class="inrow" style="margin-top:8px"><input class="in" type="number" inputmode="numeric" min="1" max="3650" name="openDays" value="${od || ''}" style="max-width:120px"><span>${esc(l.days)}</span></div>` : ''}
@@ -2255,6 +2259,7 @@ function savePack() {
   else if (p.unit === 'level') n.level = +p.level;
   if (!sealed(n) && ((n.level != null && n.level < 3) || (n.qty && n.qty.left < n.qty.total))) n.opened = today();
   if (m.ingr) n.ingr = m.ingr;
+  if (m.jar) n.jar = m.jar;
   n.openDays = m.openDays || 0;
   for (const k of Object.keys(n)) if (n[k] === '' || n[k] == null) delete n[k];
   commit(n);
