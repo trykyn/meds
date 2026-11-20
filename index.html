@@ -754,7 +754,7 @@ function render() {
     body = `<div class="cab">${per.map(([id, list]) => {
       const open = searching || ui.open.includes(id);
       const pips = list.slice().sort(byLimit).map(m => `<i style="background:var(--${statusOf(m).st})"></i>`).join('');
-      return `<button class="dr ${open ? 'open' : ''}" data-act="drawer" data-v="${id}"><span class="plate">${esc(l.drawers[id])}</span><span class="cnt">${esc(l.cnt(list.length))}</span><span class="pips">${pips}</span><span class="knob"></span></button>${open ? `<div class="tray row-x">${groups(list).map(itemHtml).join('')}</div>` : ''}`;
+      return `<button class="dr ${open ? 'open' : ''}" data-act="drawer" data-v="${id}"><span class="plate">${esc(l.drawers[id])}</span><span class="cnt">${esc(l.cnt(list.length))}</span><span class="pips">${pips}</span><span class="knob"></span></button>${open ? `<div class="tray row-x">${groups(list).map(g => itemHtml(g)).join('')}</div>` : ''}`;
     }).join('')}</div>`;
   }
 
