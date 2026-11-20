@@ -60,6 +60,12 @@ eq('umgekehrt', openAfter('Innerhalb von 14 Tagen nach dem Öffnen aufbrauchen.'
 eq('Haltbarkeit nach Anbruch:', openAfter('Haltbarkeit nach Anbruch: 12 Monate').days, 365);
 eq('Korean', openAfter('개봉 후 1개월 이내에 사용하십시오.').days, 30);
 eq('nothing', openAfter('Nicht über 25 °C lagern.'), null);
+eq('Korean 개봉 후 3개월 유효', openAfter('개봉 후 3개월 유효').days, 90);
+eq('Korean 개봉일로부터', openAfter('개봉일로부터 1개월 이내에 사용하세요.').days, 30);
+eq('Korean 달', openAfter('개봉한 후 6달 안에 쓰세요').days, 182);
+eq('nach Gebrauch', openAfter('Nach dem ersten Gebrauch 12 Monate verwendbar.').days, 365);
+eq('angebrochene Tube', openAfter('Angebrochene Tuben sind 3 Monate haltbar.').days, 90);
+eq('line break', openAfter('Nach Anbruch ist die Lösung\n4 Wochen haltbar.').days, 28);
 
 const KO = `효능효과
 1. 주효능·효과

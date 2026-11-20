@@ -12,7 +12,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,thermometer,upload,warning&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,sick,thermometer,upload,warning&display=block">
 <style>
 :root {
   --red: #d9443a; --red2: #b8352d; --cream: #f7efe1; --ink: #3a2a20; --mut: #8a7562; --line: #eadfcd; --card: #fff;
@@ -34,12 +34,12 @@ button { cursor: pointer; }
 /* Deckel / 구급상자 뚜껑 */
 .lid { background: var(--red); color: #fff; margin: 22px 0 0; border-radius: 20px 20px 12px 12px; padding: 12px 12px 12px; position: relative; box-shadow: inset 0 -6px 0 var(--red2); }
 .lid::before { content: ''; position: absolute; left: 50%; top: -12px; width: 66px; height: 20px; transform: translateX(-50%); border: 6px solid #6b5b52; border-bottom: 0; border-radius: 14px 14px 0 0; }
-.lid .t { display: flex; align-items: center; gap: 10px; }
+.lid .t { display: flex; align-items: center; gap: 6px; }
 .wc { width: 32px; height: 32px; background: #fff; border-radius: 9px; position: relative; flex: none; }
 .wc::before, .wc::after { content: ''; position: absolute; background: var(--red); border-radius: 2px; }
 .wc::before { left: 12px; top: 6px; width: 8px; height: 20px; } .wc::after { left: 6px; top: 12px; width: 20px; height: 8px; }
-.lid b { font: 400 20px var(--jua); flex: 1; }
-.lbtn { border: 0; background: rgba(0,0,0,.18); color: #fff; border-radius: 10px; height: 34px; min-width: 34px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+.lid b { font: 400 18px var(--jua); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-left: 2px; }
+.lbtn { border: 0; background: rgba(0,0,0,.18); color: #fff; border-radius: 10px; height: 32px; min-width: 32px; padding: 0 6px; flex: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
 .lbtn .ms { font-size: 20px; }
 
 /* Zettel und Korb / 포스트잇과 바구니 */
@@ -197,6 +197,17 @@ textarea.in { min-height: 76px; resize: vertical; }
 .phbig { width: 110px; height: 110px; object-fit: cover; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.15); flex: none; }
 .phnone { width: 110px; height: 110px; display: grid; place-items: center; background: #f4ece0; border-radius: 14px; flex: none; }
 .phbtns { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.srcbadge { flex: none; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; font: 400 12px var(--jua); color: #fff; }
+.srcbadge.de { background: #444; } .srcbadge.kr { background: #2c6db5; }
+.rec { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid #f1e8da; }
+.rec:first-of-type { border-top: 0; }
+.rec .ph, .rec svg { flex: none; }
+.rb { flex: 1; min-width: 0; } .rb b { display: block; font-size: 14px; }
+.rb small { display: block; font-size: 12px; color: var(--mut); margin-top: 1px; }
+.rb .kdl { color: var(--ink); } .rb .bad-t { color: var(--bad); font-weight: 700; } .rb .soon-t { color: #c77c00; font-weight: 700; }
+.linkbtn { border: 0; background: none; color: var(--red2); font-weight: 700; font-size: 14px; padding: 6px 0 0; display: inline-flex; align-items: center; gap: 4px; }
+.linkbtn .ms { font-size: 18px; }
+.scan .brow button { font-size: 14px; }
 .boxes { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 0; scrollbar-width: none; }
 .boxes::-webkit-scrollbar { display: none; }
 .boxes button { flex: none; border: 0; background: #fff; border-radius: 12px; padding: 6px 12px; font: 400 15px var(--jua); color: var(--ink); box-shadow: inset 0 -2px 0 #e7dccb; }
@@ -432,6 +443,17 @@ const T = {
     krNoLogin: '설정에서 구글 로그인을 하면 효능·용법도 자동으로 채워져요. 지금은 아래 "설명서 보기"에서 볼 수 있어요.',
     qrSaved: 'QR 링크를 저장했어요. 약 이름을 넣어 주세요. 상자의 줄 바코드를 찍으면 이름이 자동으로 채워져요.',
     info: '약 설명', iEfcy: '효능', iUse: '사용법', iWarn: '주의사항', iSe: '부작용', iStore: '보관',
+    findTitle: '이름으로 찾기', findShort: '이름', findNet: '인터넷에서 이름으로 찾기', findPh: '약 이름 (예: Fenistil, 타이레놀)',
+    findHint: '한글로 쓰면 의약품안전나라, 독일어·영어로 쓰면 독일 온라인 약국에서 찾아요. 고르면 사진과 설명서도 채워져요.', findNeedLogin: '인터넷 검색은 설정에서 구글 로그인을 하면 돼요. 지금은 내 약 사전에서만 찾아요.',
+    findMine: '내 약 사전', findMineTitle: '내 약 사전에서', findNetTitle: '인터넷에서', findNone: '찾은 약이 없어요. 다른 이름이나 짧은 이름으로 해 보세요.', itemNo: '품목',
+    sickTitle: '증상으로 약 찾기', sickWho: '누가 아파요?', sickWhat: '어떤 증상이에요? (여러 개 고를 수 있어요)', sickList: '집에 있는 약 · 기한 짧은 것부터',
+    sickNone: '맞는 약이 집에 없어요. 약국이나 병원에 물어보세요.', sickPick: '증상을 고르면 집에 있는 약을 기한이 짧은 것부터 보여줘요.', packs: n => `${n}통`,
+    sickNote: '약 이름과 설명서 내용으로 고른 참고용 목록이에요. 증상이 심하거나 오래가면 의사·약사와 상의하세요.',
+    sym: { fever: '열', pain: '통증·두통', cough: '기침', nose: '콧물·코막힘', throat: '목 아픔', belly: '배탈·설사', constip: '변비', nausea: '구토·멀미', allergy: '알레르기·가려움', wound: '상처·화상', insect: '벌레 물림', eye: '눈', ear: '귀' },
+    openedEmpty: '개봉일을 비워 두면 아직 안 연 것(미개봉)이에요.', notOpened: '아직 안 열었어요', unopened: '새것(미개봉)',
+    openAuto: s => `설명서대로 개봉 후 ${s}로 계산했어요`, sumLeft: s => `모두 합쳐 ${s}`,
+    stockHint: '상자에 적힌 개수(예: 20정)를 한 번 넣으면, "먹었어요"를 누를 때마다 저절로 줄어요. 새 상자는 "지금 남은 양"을 비워 두세요.',
+    stockHintLevel: '연고·안약처럼 세기 어려운 약은 대충 고르세요. 아직 안 연 약은 "가득"으로 두면 "새것(미개봉)"으로 보여요.', stockHintNone: '남은 양을 세지 않아요.',
     autoNone: '이 PZN으로는 설명서를 자동으로 찾지 못했어요. 필요하면 아래에 설명서 링크나 PDF를 넣어 주세요.',
     bulkTitle: '사진·설명 한 번에 찾기', bulkInfo: '이미 저장한 약 중 사진이나 설명이 없는 약을 찾아 채워요. 한국 약은 의약품안전나라, 독일 약은 PZN으로 온라인 약국에서 찾아요. 직접 쓴 칸은 바꾸지 않아요.',
     bulkBtn: '빠진 사진·설명 찾기', bulkProgress: (i, n) => `찾는 중… ${i}/${n}`, bulkDone: (p, i) => `끝났어요 ✓ 사진 ${p}개, 설명 ${i}개를 채웠어요.`,
@@ -516,6 +538,17 @@ const T = {
     krNoLogin: 'Mit Google-Anmeldung (Einstellungen) werden Wirkung und Anwendung automatisch übernommen. Sonst: Beipackzettel-Link unten.',
     qrSaved: 'QR-Link gespeichert. Bitte Namen eingeben – mit dem Strichcode der Packung kommt der Name automatisch.',
     info: 'Beschreibung', iEfcy: 'Wirkung', iUse: 'Anwendung', iWarn: 'Hinweise', iSe: 'Nebenwirkungen', iStore: 'Aufbewahrung',
+    findTitle: 'Nach Namen suchen', findShort: 'Name', findNet: 'Im Internet nach Namen suchen', findPh: 'Name (z. B. Fenistil, 타이레놀)',
+    findHint: 'Koreanisch geschrieben → MFDS, sonst deutsche Online-Apotheke. Nach der Auswahl kommen Foto und Beipackzettel dazu.', findNeedLogin: 'Für die Internetsuche bitte mit Google anmelden. Jetzt nur im eigenen Lexikon.',
+    findMine: 'Mein Lexikon', findMineTitle: 'Aus meinem Lexikon', findNetTitle: 'Im Internet', findNone: 'Nichts gefunden. Kürzeren oder anderen Namen versuchen.', itemNo: 'Nr.',
+    sickTitle: 'Was hilft?', sickWho: 'Wer ist krank?', sickWhat: 'Welche Beschwerden? (mehrere möglich)', sickList: 'Im Haus · zuerst ablaufend',
+    sickNone: 'Nichts Passendes im Haus. Bitte Apotheke oder Arzt fragen.', sickPick: 'Beschwerden wählen – passende Mittel erscheinen, das zuerst ablaufende oben.', packs: n => `${n} Pack.`,
+    sickNote: 'Auswahl nach Name und Beipackzettel, nur als Hilfe. Bei starken oder anhaltenden Beschwerden Arzt oder Apotheke fragen.',
+    sym: { fever: 'Fieber', pain: 'Schmerzen', cough: 'Husten', nose: 'Schnupfen', throat: 'Halsweh', belly: 'Magen/Darm', constip: 'Verstopfung', nausea: 'Übelkeit', allergy: 'Allergie/Juckreiz', wound: 'Wunde/Verbrennung', insect: 'Insektenstich', eye: 'Augen', ear: 'Ohren' },
+    openedEmpty: 'Leer lassen = noch ungeöffnet.', notOpened: 'noch nicht geöffnet', unopened: 'neu (ungeöffnet)',
+    openAuto: s => `Laut Beipackzettel ${s} nach Anbruch eingetragen`, sumLeft: s => `zusammen ${s}`,
+    stockHint: 'Anzahl laut Packung (z. B. 20 Tabletten) einmal eingeben – mit „Genommen“ wird automatisch abgezogen. Bei neuer Packung „Noch da“ leer lassen.',
+    stockHintLevel: 'Für Salben, Tropfen usw. grob wählen. Ungeöffnet auf „voll“ lassen – dann steht „neu (ungeöffnet)“.', stockHintNone: 'Vorrat wird nicht gezählt.',
     autoNone: 'Zu dieser PZN wurde kein Beipackzettel gefunden. Bei Bedarf unten Link oder PDF eingeben.',
     bulkTitle: 'Fotos und Beschreibungen nachholen', bulkInfo: 'Sucht für gespeicherte Medikamente ohne Foto oder Beschreibung (koreanisch: MFDS, deutsch: über die PZN bei einer Online-Apotheke). Eigene Einträge bleiben.',
     bulkBtn: 'Fehlende suchen', bulkProgress: (i, n) => `Suche… ${i}/${n}`, bulkDone: (p, i) => `Fertig ✓ ${p} Fotos, ${i} Beschreibungen ergänzt.`,
@@ -719,6 +752,7 @@ function render() {
   const hadFocus = document.activeElement && document.activeElement.id === 'q';
   $('#app').innerHTML = `<div class="wrap">
     <div class="lid"><div class="t"><span class="wc"></span><b>${esc(l.title)}</b>
+      <button class="lbtn" data-act="sick-open" aria-label="${esc(l.sickTitle)}">${ms('sick')}</button>
       <button class="lbtn" data-act="loglist" aria-label="${esc(l.diary)}">${ms('thermometer')}</button>
       <button class="lbtn" data-act="lang">${S.lang === 'de' ? '한' : 'DE'}</button>
       <button class="lbtn" data-act="settings" aria-label="${esc(l.settings)}">${window.cloud && window.cloud.user && S.house ? ms('cloud_done') : ms('settings')}</button></div></div>
@@ -745,11 +779,13 @@ function closeSheet() { ui.sheet = null; ui.draft = null; ui.krNote = null; ui.l
 function renderSheet() {
   const s = ui.sheet;
   if (!s) { $('#sheet').innerHTML = ''; return; }
-  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : settingsHtml();
+  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : s.type === 'find' ? findHtml() : s.type === 'sick' ? sickHtml() : settingsHtml();
   if (html == null) return closeSheet();
   const prev = $('#sheet .sheet'), top = prev ? prev.scrollTop : 0;
   $('#sheet').innerHTML = `<div class="sheetbg" data-act="bg"><div class="sheet">${html}</div></div>`;
   $('#sheet .sheet').scrollTop = top;
+  const ff = $('#findform');
+  if (ff) { ff.addEventListener('submit', e => { e.preventDefault(); runFind($('#findq').value); }); if (!ui.find || !ui.find.results) $('#findq').focus(); }
   const nm = $('#medform [name=name]');
   if (nm) { nm.addEventListener('input', updateSugg); updateSugg(); }
 }
@@ -789,7 +825,7 @@ function detailHtml(id) {
   const l = L(), lim = limitOf(m), { st } = statusOf(m);
   const rows = [];
   if (m.exp) rows.push(['', l.lPrinted, fmt(m.exp)]);
-  if (m.opened) rows.push(['', l.lOpened, fmt(m.opened)]);
+  rows.push(['', l.lOpened, m.opened ? fmt(m.opened) : l.notOpened]);
   if (m.opened && m.openDays) rows.push(['', l.lAfter, openLabel(m.openDays)]);
   if (lim.end) rows.push([`main ${m.gone ? '' : st}`, l.lReal, fmt(lim.end)]);
   const kids = [['davin', m.doseDavin], ['arin', m.doseArin]].filter(x => x[1]);
@@ -805,7 +841,7 @@ function detailHtml(id) {
   ${stockBoxHtml(m)}
   ${m.dose ? `<div class="box"><h3>${esc(l.fDose)}</h3>${doseHtml(m)}</div>` : ''}
   ${m.note ? `<div class="box"><h3>${esc(l.memo)}</h3><p class="pre">${esc(m.note)}</p></div>` : ''}
-  ${same.length ? `<div class="box"><h3>${esc(l.same(same.length + 1))}</h3>${same.map(x => `<button class="same" data-act="detail" data-id="${x.id}"><span>${esc(fmt(limitOf(x).end) || l.noExp)}${x.opened ? ` · ${esc(l.openedOn)} ${esc(fmtShort(x.opened))}` : ''}${multiBox() ? ` · ${esc(boxName(boxOf(x)))}` : ''}${stockText(x) ? ` · ${esc(stockText(x))}` : ''}</span><span class="sd ${statusOf(x).st}">${esc(stk(x))}</span></button>`).join('')}</div>` : ''}
+  ${same.length ? `<div class="box"><h3>${esc(l.same(same.length + 1))}${packSum([m, ...same]) ? ` · ${esc(packSum([m, ...same]))}` : ''}</h3>${same.map(x => `<button class="same" data-act="detail" data-id="${x.id}"><span>${esc(fmt(limitOf(x).end) || l.noExp)}${x.opened ? ` · ${esc(l.openedOn)} ${esc(fmtShort(x.opened))}` : ''}${multiBox() ? ` · ${esc(boxName(boxOf(x)))}` : ''}${stockText(x) ? ` · ${esc(stockText(x))}` : ''}</span><span class="sd ${statusOf(x).st}">${esc(stk(x))}</span></button>`).join('')}</div>` : ''}
   ${infoHtml(m)}
   ${m.pzn || m.ean || m.name || m.link ? `<div class="box"><h3>${esc(l.fCode)}</h3>${codeInfo(m)}${codeLinks(m)}${!photoOf(m) && canFetch() && (m.itemSeq || m.pzn || (catOf(m) || {}).itemSeq || (catOf(m) || {}).leaflet) ? `<button class="btn ghost small" style="margin-top:8px" data-act="photo-find" data-id="${id}">${ms('photo_camera')}${esc(l.photoFind)}</button>` : ''}</div>` : ''}
   ${m.gone ? '' : `<div class="btnrow"><button class="btn" data-act="addlog" data-med="${id}" data-who="${courseWho(m)}">${ms('pill')}${esc(l.tookIt)}</button>${m.opened ? '' : `<button class="btn ghost" data-act="open-today" data-id="${id}">${ms('schedule')}${esc(l.openToday)}</button>`}</div>`}
@@ -840,7 +876,7 @@ function formHtml() {
     ${ui.leafNote ? `<p class="hint ${ui.leafNote.ok ? 'ok' : ''}">${esc(ui.leafNote.t)}</p>` : ''}</div>
   ${photoFormHtml(m)}
   <div class="box">
-    <label class="f">${esc(l.fName)}</label><input class="in" name="name" value="${esc(m.name || '')}" placeholder="${esc(l.fNamePh)}"><div id="sugg" class="sugg"></div>
+    <label class="f">${esc(l.fName)}</label><input class="in" name="name" value="${esc(m.name || '')}" placeholder="${esc(l.fNamePh)}"><div id="sugg" class="sugg"></div>${isNew && !m.pzn && !m.ean && !m.itemSeq ? `<button type="button" class="linkbtn" data-act="find-open">${ms('search')} ${esc(l.findNet)}</button>` : ''}
     <label class="f">${esc(l.fKind)}</label><div class="wrapchips">${kinds}</div>
     <label class="f">${esc(l.fUse)}</label><input class="in" name="use" value="${esc(m.use || '')}" placeholder="${esc(l.fUsePh)}">
     <div class="chips">${uses}</div>
@@ -852,6 +888,7 @@ function formHtml() {
     <label class="f">${esc(l.fExp)}</label><input class="in" type="date" name="exp" value="${esc(m.exp || '')}">
     <p class="hint ${m.expScan && m.exp === m.expScan ? 'ok' : ''}">${esc(m.expScan && m.exp === m.expScan ? l.fExpScan : l.fExpHint)}</p>
     <label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
+    <p class="hint" style="margin-top:4px">${esc(l.openedEmpty)}</p>
     <label class="f">${esc(l.fOpenDays)}</label><div class="wrapchips">${opens}</div>
     ${custom || ui.customDays ? `<div class="inrow" style="margin-top:8px"><input class="in" type="number" inputmode="numeric" min="1" max="3650" name="openDays" value="${od || ''}" style="max-width:120px"><span>${esc(l.days)}</span></div>` : ''}
     <p class="hint">${esc(['syrup', 'drops'].includes(m.kind) ? l.fOpenHintSyrup : l.fOpenHint)}</p>
@@ -958,15 +995,15 @@ function kindFromName(n) {
   if (/정|캡슐|환|츄어블|산$|과립/.test(n)) return 'tab';
   return '';
 }
-async function fillKorean(id, ean) {
+async function fillKorean(id, ean, given) {
   const l = L(), same = () => ui.draft && ui.draft.id === id && ui.sheet && ui.sheet.type === 'form';
   // Nur neu zeichnen; Eingaben werden vor jeder Änderung mit readForm() übernommen.
   // 다시 그리기만 함. 입력값은 바꾸기 전에 readForm()으로 먼저 읽어 둠.
   const note = n => { if (same()) { ui.krNote = n; renderSheet(); } };
   readForm();
   note({ t: l.krLooking });
-  let hit = null;
-  try { hit = await krByBarcode(ean); } catch (e) { console.warn(e); }
+  let hit = given || null;
+  if (!hit) try { hit = await krByBarcode(ean); } catch (e) { console.warn(e); }
   if (!same()) return;
   if (!hit) return note({ t: l.krNotFound });
   readForm();
@@ -984,7 +1021,7 @@ async function fillKorean(id, ean) {
   readForm();
   if (!info) return note({ t: `${l.krFound} ${l.krNoInfo}`, ok: true });
   const src = 'nedrug';
-  d.info = { efcy: info.efcy, use: info.use, warn: info.warn, se: info.se, store: info.store, open: info.openText || '', lang: 'ko', src };
+  d.info = { efcy: info.efcy, use: info.use, warn: info.warn, se: info.se, store: info.store, open: info.openText || '', ingr: info.ingr || '', lang: 'ko', src };
   if (!d.dose && info.use) d.dose = MedLeaflet.briefDose(info.use) || info.dose || info.use;
   if (!d.drawer || d.drawerAuto) { d.drawer = guessDrawer(`${info.efcy} ${d.name}`); d.drawerAuto = true; }
   if (!+d.openDays && info.openDays) d.openDays = info.openDays;
@@ -1206,6 +1243,11 @@ function openDrawerOf(m) {
   if (!ui.open.includes(d)) { ui.open.push(d); keepUi(); render(); }
 }
 
+function openDaysFromInfo(m) {
+  const e = catOf(m) || {}, i = m.info || e.info || {};
+  const o = MedLeaflet.openAfter([i.open, i.store, i.warn, i.use, i.efcy].filter(Boolean).join('\n'));
+  return o ? o.days : 0;
+}
 function saveForm() {
   readForm();
   const l = L(), m = { ...ui.draft };
@@ -1217,6 +1259,9 @@ function saveForm() {
   ui.krNote = null;
   if (!m.drawer) m.drawer = guessDrawer(`${m.use || ''} ${m.name}`);
   m.openDays = +m.openDays || 0;
+  // Angebrochen ohne Frist: aus dem Beipackzettel nehmen / 개봉했는데 기간이 비었으면 설명서에서
+  let autoOpen = 0;
+  if (m.opened && !m.openDays) { autoOpen = openDaysFromInfo(m); if (autoOpen) m.openDays = autoOpen; }
   if (!m.code) m.code = m.pzn ? 'pzn:' + m.pzn : m.ean ? 'ean:' + m.ean : '';
   stockFromForm(m);
   if (!m.box) m.box = boxesList()[0].id;
@@ -1238,7 +1283,7 @@ function saveForm() {
   delete m.info;
   commit(m);
   openDrawerOf(m);
-  toast(l.saved);
+  toast(autoOpen ? l.openAuto(openLabel(autoOpen)) : l.saved);
   openSheet({ type: 'detail', id: m.id });
   ui.draft = null;
 }
@@ -1463,6 +1508,12 @@ function boxesHtml() {
 }
 
 // ---------- Vorrat / 재고 ----------
+// Summe mehrerer Packungen, wenn alle gezählt und in derselben Einheit / 여러 통 합계(모두 같은 단위로 셀 때)
+function packSum(ms) {
+  const u = ms[0].qty && ms[0].qty.unit;
+  if (!u || !ms.every(m => m.qty && m.qty.unit === u && m.qty.total > 0)) return '';
+  return L().sumLeft(fmtNum(ms.reduce((a, m) => a + m.qty.left, 0)) + ' ' + L().units[u]);
+}
 // m.qty = { unit: tab|pc|bag|ml, total, left } (gezählt) oder m.level 3 voll · 2 halb · 1 wenig · 0 fast leer.
 // m.qty = { 단위, 한 통 양, 남은 양 }(셈) 또는 m.level 3 가득 · 2 절반 · 1 조금 · 0 거의 없음.
 const COUNT_UNITS = ['tab', 'pc', 'bag', 'ml'];
@@ -1477,6 +1528,7 @@ function stockRatio(m) {
 const lowStock = m => m.level != null ? m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
 function stockText(m) {
   const l = L();
+  if (!m.opened && ((m.qty && m.qty.total > 0 && m.qty.left >= m.qty.total) || m.level === 3)) return l.unopened;
   if (m.qty && m.qty.total > 0) return `${fmtNum(m.qty.left)}/${fmtNum(m.qty.total)} ${l.units[m.qty.unit]}`;
   if (m.level != null) return l.levels[m.level];
   return '';
@@ -1511,10 +1563,11 @@ function stockFormHtml(m) {
   const chips = [...COUNT_UNITS, 'level', 'none'].map(k => `<button type="button" class="chip ${u === k || (k === 'none' && !u) ? 'on' : ''}" data-act="set" data-k="qtyUnit" data-v="${k === 'none' ? '' : k}">${esc(l.unitNames[k])}</button>`).join('');
   const body = u === 'level'
     ? `<div class="wrapchips" style="margin-top:8px">${[3, 2, 1, 0].map(v => `<button type="button" class="chip ${lv === v ? 'on' : ''}" data-act="set" data-k="level" data-v="${v}">${esc(l.levels[v])}</button>`).join('')}</div>`
-    : u ? `<div class="row2" style="margin-top:8px"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" type="number" inputmode="decimal" min="0" step="any" name="qtyTotal" value="${esc(total)}" placeholder="${u === 'ml' ? '100' : '20'}"><span>${esc(l.units[u])}</span></div></div>
+    : u ? `<div class="row2" style="margin-top:8px;flex-wrap:wrap"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" type="number" inputmode="decimal" min="0" step="any" name="qtyTotal" value="${esc(total)}" placeholder="${u === 'ml' ? '100' : '20'}"><span>${esc(l.units[u])}</span></div></div>
+        <div class="wrapchips" style="flex:0 0 100%">${(u === 'ml' ? [50, 100, 150, 200] : [10, 20, 30, 50, 100]).map(n => `<button type="button" class="chip ${+total === n ? 'on' : ''}" data-act="set" data-k="qtyTotal" data-v="${n}">${n} ${esc(l.units[u])}</button>`).join('')}</div>
         <div><label class="f">${esc(l.qtyLeft)}</label><div class="inrow"><input class="in" type="number" inputmode="decimal" min="0" step="any" name="qtyLeft" value="${esc(left)}" placeholder="${esc(l.qtyLeftPh)}"><span>${esc(l.units[u])}</span></div></div></div>` : '';
   return `<div class="box"><label class="f">${esc(l.stockTitle)}</label><div class="wrapchips">${chips}</div>${body}
-    ${u && u !== 'level' ? `<p class="hint">${esc(l.stockHint)}</p>` : ''}</div>`;
+    <p class="hint">${esc(u === 'level' ? l.stockHintLevel : u ? l.stockHint : l.stockHintNone)}</p></div>`;
 }
 // Formularwerte → m.qty / m.level / 양식 값 → 재고
 function stockFromForm(m) {
@@ -1704,6 +1757,11 @@ async function fillMissing() {
         infos++;
       }
     }
+    // Angebrochen ohne Frist → aus der (gespeicherten) Beschreibung / 개봉했는데 기간이 빈 통 → 설명서에서
+    for (const x of active().filter(x => catKey(x) === catKey(m) && x.opened && !+x.openDays)) {
+      const d = openDaysFromInfo(x);
+      if (d) S.meds[x.id] = { ...S.meds[x.id], openDays: d, updated: Date.now() };
+    }
     e.updated = Date.now();
   }
   keep(); render(); if (window.cloud) window.cloud.push();
@@ -1715,6 +1773,101 @@ function bulkHtml() {
   return `<div class="box"><h3>${esc(l.bulkTitle)}</h3><p class="note" style="margin:0 0 8px">${esc(l.bulkInfo)}</p>
     <button class="btn small" data-act="fill-missing" ${ui.bulkRunning ? 'disabled' : ''}>${ms('photo_camera')}${esc(l.bulkBtn)}</button>
     ${ui.bulk ? `<p class="hint ok">${esc(ui.bulk)}</p>` : ''}</div>`;
+}
+
+// ---------- Suche nach Namen (wenn der Barcode nicht geht) / 이름으로 찾기(바코드가 안 될 때) ----------
+// Lexikon (sofort), deutsche Online-Apotheke (Latein-Schrift) oder 의약품안전나라 (Hangul) über den Abruf-Server.
+// 약 사전(바로), 독일 온라인 약국(라틴 글자) 또는 의약품안전나라(한글)를 가져오기 서버로 검색.
+const slugName = s => decodeURIComponent(s).replace(/-/g, ' ').replace(/\s+/g, ' ').trim().replace(/\b\p{L}/gu, c => c.toUpperCase());
+async function searchGerman(q) {
+  const r = await viaWorker(`https://www.shop-apotheke.com/search.htm?q=${encodeURIComponent(q)}`);
+  const html = await r.text(), seen = new Set(), out = [];
+  const re = /href="\/[a-z-]+\/(\d{7,8})\/([^"?.]+)\.htm/g;
+  let m;
+  while ((m = re.exec(html)) && out.length < 12) {
+    const pzn = m[1].padStart(8, '0');
+    if (seen.has(pzn) || !MedCode.pznOk(pzn)) continue;
+    seen.add(pzn);
+    out.push({ src: 'de', pzn, name: slugName(m[2]) });
+  }
+  return out;
+}
+async function searchKorean(q) {
+  const r = await viaWorker(`https://nedrug.mfds.go.kr/searchDrug?searchYn=true&itemName=${encodeURIComponent(q)}`);
+  const html = await r.text(), seen = new Set(), out = [];
+  const re = /getItemDetail\?itemSeq=(\d{9})[^>]*>([^<]{2,100})</g;
+  let m;
+  while ((m = re.exec(html)) && out.length < 12) {
+    if (seen.has(m[1])) continue;
+    seen.add(m[1]);
+    out.push({ src: 'kr', itemSeq: m[1], name: m[2].replace(/\s+/g, ' ').trim() });
+  }
+  return out;
+}
+function findHtml() {
+  const l = L(), f = ui.find || {}, q = (f.q || '').trim().toLowerCase();
+  const local = !q ? [] : Object.entries(S.cat).filter(([k, e]) => k[0] !== '@' && e.name && e.name.toLowerCase().includes(q)).slice(0, 6)
+    .map(([k, e]) => `<button class="mp" data-act="find-cat" data-k="${esc(k)}">${art(e, 30)}<span>${esc(e.name)}<small>${esc(l.findMine)}</small></span></button>`).join('');
+  const net = (f.results || []).map((x, i) => `<button class="mp" data-act="find-pick" data-i="${i}"><span class="srcbadge ${x.src}">${x.src === 'de' ? 'DE' : 'KR'}</span><span>${esc(x.name)}<small>${esc(x.src === 'de' ? `PZN ${x.pzn}` : `${l.itemNo} ${x.itemSeq}`)}</small></span></button>`).join('');
+  return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.close)}</button><h2>${esc(l.findTitle)}</h2><span style="min-width:56px"></span></div>
+  <form class="box" id="findform"><div class="inrow"><input class="in" id="findq" value="${esc(f.q || '')}" placeholder="${esc(l.findPh)}" autocomplete="off" enterkeyhint="search"><button class="mini">${ms('search')}</button></div>
+    <p class="hint">${esc(canFetch() ? l.findHint : l.findNeedLogin)}</p></form>
+  ${local ? `<div class="box"><h3>${esc(l.findMineTitle)}</h3><div class="medpick">${local}</div></div>` : ''}
+  ${f.busy ? `<p class="note" style="text-align:center">${esc(l.leafBusy)}</p>` : ''}
+  ${f.results ? `<div class="box"><h3>${esc(l.findNetTitle)}</h3>${net ? `<div class="medpick">${net}</div>` : `<p class="note" style="margin:0">${esc(l.findNone)}</p>`}</div>` : ''}`;
+}
+async function runFind(q) {
+  ui.find = { q, busy: canFetch(), results: null };
+  renderSheet();
+  if (!canFetch() || !q.trim()) { ui.find.busy = false; renderSheet(); return; }
+  let res = [];
+  try { res = /[가-힣]/.test(q) ? await searchKorean(q) : await searchGerman(q); } catch (e) { console.warn(e); }
+  if (!ui.find || ui.find.q !== q) return;
+  ui.find = { q, busy: false, results: res };
+  if (ui.sheet && ui.sheet.type === 'find') renderSheet();
+}
+
+// ---------- Was hilft? Beschwerden → passende Mittel / 증상으로 약 찾기 ----------
+// Nur nicht abgelaufene Mittel, die zur Person passen; Reihenfolge: passt am besten, dann zuerst ablaufend (FEFO).
+// 기한이 남았고 그 사람에게 맞는 약만. 증상이 많이 맞는 순, 그다음 기한이 빨리 끝나는 것부터.
+const SYMPTOMS = [
+  ['fever', /fieber|temperatur|열|해열|발열/i], ['pain', /schmerz|kopf|glieder|zahn|통증|두통|진통|치통|몸살|생리통/i],
+  ['cough', /husten|bronch|schleim|기침|가래|기관지/i], ['nose', /schnupfen|nase|nasal|rhinitis|코막힘|콧물|비염|코감기/i],
+  ['throat', /hals|rachen|schluck|인후|목 ?아|편도/i], ['belly', /durchfall|magen|darm|bauch|blähung|설사|소화|복통|위장|배탈/i],
+  ['constip', /verstopf|abführ|변비|배변/i], ['nausea', /übelkeit|erbrechen|reise|구토|멀미|메스꺼/i],
+  ['allergy', /allerg|juck|heuschnupfen|알레르기|가려|두드러기/i], ['wound', /wunde|verbrenn|schürf|haut|상처|화상|피부|찰과/i],
+  ['insect', /insekt|stich|mücke|벌레|모기|물림/i], ['eye', /auge|bindehaut|눈|결막|안구/i], ['ear', /\bohr|귀|중이/i],
+];
+function medText(m) {
+  const e = catOf(m) || {}, i = e.info || m.info || {};
+  return [m.name, m.use, e.use, L().drawers[drawerOf(m)], i.efcy].filter(Boolean).join(' ');
+}
+const kidOk = (m, w) => !['davin', 'arin'].includes(w) || (m.who !== 'adult' && !/^⚠/.test(doseFor(m, w) || ''));
+function sickHtml() {
+  const l = L(), s = ui.sick || { who: 'davin', sym: [] };
+  const ppl = PEOPLE.map(w => `<button class="chip p-${w} ${s.who === w ? 'on' : ''}" data-act="sick-who" data-v="${w}">${esc(pName(w))}</button>`).join('');
+  const syms = SYMPTOMS.map(([k]) => `<button class="chip ${s.sym.includes(k) ? 'on' : ''}" data-act="sick-sym" data-v="${k}">${esc(l.sym[k])}</button>`).join('');
+  let list = '';
+  if (s.sym.length) {
+    const fits = m => !m.who || m.who === s.who || (m.who === 'kids' && ['davin', 'arin'].includes(s.who)) || (m.who === 'adult' && ['mom', 'dad'].includes(s.who));
+    const scored = groups(active().filter(m => statusOf(m).st !== 'bad' && fits(m) && kidOk(m, s.who)))
+      .map(g => { const t = medText(g[0]); return { g, n: s.sym.filter(k => SYMPTOMS.find(x => x[0] === k)[1].test(t)).length }; })
+      .filter(x => x.n).sort((a, b) => b.n - a.n || byLimit(a.g[0], b.g[0]));
+    list = scored.map(({ g }) => {
+      const m = g[0], st = doseState(m, s.who), clash = ingrClash(m, s.who), kd = doseFor(m, s.who);
+      return `<div class="rec">${art(m, 46)}<div class="rb"><b>${esc(m.name)}</b>
+        <small>${esc([fmt(limitOf(m).end) ? `${l.lReal} ${fmt(limitOf(m).end)}` : '', multiBox() ? boxName(boxOf(m)) : '', g.length > 1 ? l.packs(g.length) : ''].filter(Boolean).join(' · '))}</small>
+        ${kd ? `<small class="kdl">${whoChip(s.who)} ${esc(kd)}</small>` : ''}
+        ${st.full ? `<small class="bad-t">${esc(l.maxReached(st.count, st.maxPerDay))}</small>` : st.early ? `<small class="soon-t">${esc(l.nextAt(whenText(st.next)))}</small>` : ''}
+        ${clash ? `<small class="bad-t">${esc(l.wIngr(ingrNames(clash.k), clash.log.name, hhmm(clash.log.t)))}</small>` : ''}</div>
+        <button class="btn small" data-act="addlog" data-who="${s.who}" data-med="${m.id}">${ms('pill')}${esc(l.tookIt)}</button></div>`;
+    }).join('') || `<p class="note" style="margin:0">${esc(l.sickNone)}</p>`;
+  }
+  return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.close)}</button><h2>${esc(l.sickTitle)}</h2><span style="min-width:56px"></span></div>
+  <div class="box"><label class="f">${esc(l.sickWho)}</label><div class="wrapchips">${ppl}</div>
+    <label class="f">${esc(l.sickWhat)}</label><div class="wrapchips">${syms}</div></div>
+  ${s.sym.length ? `<div class="box"><h3>${esc(l.sickList)}</h3>${list}</div>` : `<p class="note" style="text-align:center">${esc(l.sickPick)}</p>`}
+  <p class="note">${esc(l.sickNote)}</p>`;
 }
 
 // ---------- Ablauf-Erinnerung (Web Push) / 만료 알림 ----------
@@ -1829,7 +1982,7 @@ function scanHtml() {
     ${sc.err ? `<div class="err">${esc(sc.err)}</div>` : ''}
     ${zoom}
     ${sc.typing ? `<form id="typeform"><input id="typed" inputmode="numeric" placeholder="${esc(l.typePh)}" autocomplete="off"><button>${esc(l.ok)}</button></form>` : ''}
-    <div class="brow"><button data-act="scan-photo">${ms('image')}${esc(l.photo)}</button><button data-act="scan-type">${ms('keyboard')}${esc(l.typeNo)}</button></div>
+    <div class="brow"><button data-act="scan-photo">${ms('image')}${esc(l.photo)}</button><button data-act="scan-type">${ms('keyboard')}${esc(l.typeNo)}</button><button data-act="find-open">${ms('search')}${esc(l.findShort)}</button></div>
   </div>`;
 }
 function drawScan() {
@@ -1953,9 +2106,13 @@ const ACT = {
     if (!d.drawer || (d.drawerAuto && !u)) { d.drawer = useDrawer(v) || d.drawer; d.drawerAuto = true; }
     renderSheet();
   },
-  'opened-today'() { readForm(); ui.draft.opened = today(); renderSheet(); },
+  'opened-today'() { readForm(); ui.draft.opened = today(); if (!+ui.draft.openDays) { const d = openDaysFromInfo(ui.draft); if (d) ui.draft.openDays = d; } renderSheet(); },
   save() { saveForm(); },
-  'open-today'(el) { const m = { ...S.meds[el.dataset.id], opened: today() }; commit(m); toast(L().openedDone); },
+  'open-today'(el) {
+    const m = { ...S.meds[el.dataset.id], opened: today() }, d = m.openDays ? 0 : openDaysFromInfo(m);
+    if (d) m.openDays = d;
+    commit(m); toast(d ? L().openAuto(openLabel(d)) : L().openedDone);
+  },
   gone(el) {
     const m = { ...S.meds[el.dataset.id], gone: today() };
     commit(m); toast(L().goneDone); closeSheet();
@@ -1993,6 +2150,42 @@ const ACT = {
     try { await fillMissing(); } catch (e) { console.warn(e); toast(L().trFail); }
     ui.bulkRunning = false; renderSheet();
   },
+  'find-open'() {
+    if (sc.on) closeScan();
+    const q = ui.draft && ui.sheet && ui.sheet.type === 'form' ? (($('#medform [name=name]') || {}).value || '') : '';
+    ui.find = { q, results: null };
+    openSheet({ type: 'find' });
+    if (q.trim()) runFind(q);
+  },
+  'find-cat'(el) {
+    const e = S.cat[el.dataset.k];
+    if (!e) return;
+    ui.draft = newDraft({ ...fromCat(e), code: e.code || '', pzn: e.pzn || '', ean: e.ean || '', copied: true });
+    if (e.info && e.info.use) fillKids(ui.draft, e.info.use, true);
+    ui.customDays = false; ui.leafNote = null; ui.krNote = null;
+    openSheet({ type: 'form' });
+  },
+  'find-pick'(el) {
+    const x = ((ui.find || {}).results || [])[+el.dataset.i];
+    if (!x) return;
+    if (x.src === 'de') {
+      handleCode(MedCode.parse(x.pzn));
+      if (ui.draft && !ui.draft.name) { readForm(); ui.draft.name = x.name; renderSheet(); }
+      return;
+    }
+    const code = 'seq:' + x.itemSeq, prev = S.cat[code];
+    ui.draft = newDraft({ ...(prev ? { ...fromCat(prev), copied: true } : {}), code, itemSeq: x.itemSeq, name: (prev && prev.name) || x.name, kind: (prev && prev.kind) || kindFromName(x.name) });
+    ui.customDays = false; ui.leafNote = null; ui.krNote = null;
+    openSheet({ type: 'form' });
+    if (!(prev && prev.info)) fillKorean(ui.draft.id, '', { itemSeq: x.itemSeq, name: x.name, entp: '' });
+  },
+  'sick-open'() {
+    const recent = PEOPLE.find(w => logs(w, Date.now() - 48 * 36e5).length);
+    ui.sick = ui.sick || { who: recent || 'davin', sym: [] };
+    openSheet({ type: 'sick' });
+  },
+  'sick-who'(el) { ui.sick.who = el.dataset.v; renderSheet(); },
+  'sick-sym'(el) { const s = ui.sick, k = el.dataset.v; s.sym = s.sym.includes(k) ? s.sym.filter(x => x !== k) : [...s.sym, k]; renderSheet(); },
   'photo-pick'() {
     const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
     i.onchange = async () => {
