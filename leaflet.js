@@ -59,13 +59,17 @@
 
   // „Nach Anbruch 6 Monate haltbar“, „innerhalb von 4 Wochen nach dem ersten Öffnen“, „개봉 후 1개월“
   function openAfter(text) {
+    // PDF-Zeilenumbrüche zuerst verbinden / PDF 줄바꿈 먼저 잇기
+    text = unwrap(text);
     const N = '(\\d+|ein|eine|einen|einem|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf|vierzehn|achtzehn|vierundzwanzig)';
     const U = '(Tag|Tage|Tagen|Woche|Wochen|Monat|Monate|Monaten|Jahr|Jahre|Jahren)';
-    const OPEN = '(?:(?:dem|der)\\s+)?(?:ersten\\s+)?(?:Öffnen|Öffnung|Anbruch|Anbrechen|Anbruchs)';
+    const OPEN = '(?:(?:dem|der|des)\\s+)?(?:ersten\\s+|erstmaligen\\s+)?(?:Öffnen|Öffnung|Anbruch|Anbrechen|Anbruchs|Gebrauch|Anwendung|Erstgebrauch|Erstanwendung)';
     const res = [
       new RegExp(`nach\\s+${OPEN}[^.\\n]{0,100}?${N}\\s*${U}`, 'i'),
       new RegExp(`${N}\\s*${U}[^.\\n]{0,60}?nach\\s+${OPEN}`, 'i'),
       new RegExp(`Haltbarkeit\\s+nach\\s+${OPEN}[^.\\n]{0,20}?${N}\\s*${U}`, 'i'),
+      // „Angebrochene Packungen sind 3 Monate haltbar“, „geöffnete Flasche … 4 Wochen“
+      new RegExp(`(?:angebrochen|geöffnet|Anbruch)\\w*[^.\\n]{0,60}?${N}\\s*${U}`, 'i'),
     ];
     for (const re of res) {
       const m = text.match(re);
@@ -74,7 +78,8 @@
         if (n) return { days: unit(n, m[2]), text: sentence(text, m.index) };
       }
     }
-    const k = text.match(/개봉\s*(?:한\s*)?(?:후|뒤)[^.\n]{0,20}?(\d+)\s*(일|주|개월|년)/);
+    const k = text.match(/개봉\s*(?:한\s*|된\s*)?(?:후|뒤|일로부터|일부터|하면|하신 후)[^.\n]{0,25}?(\d+)\s*(일|주|개월|달|년)/);
+    if (k && k[2] === '달') k[2] = '개월';
     if (k) return { days: unit(+k[1], k[2] === '개월' ? 'monat' : k[2]), text: sentence(text, k.index) };
     return null;
   }
