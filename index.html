@@ -60,9 +60,10 @@ button { cursor: pointer; }
 .dot { position: absolute; top: 0; right: 2px; min-width: 30px; height: 30px; padding: 0 4px; border-radius: 15px; color: #fff; display: grid; place-items: center; font: 400 10px var(--jua); box-shadow: 0 2px 3px rgba(0,0,0,.2); transform: rotate(8deg); white-space: nowrap; }
 .dot.bad, .sd.bad { background: var(--bad); } .dot.soon, .sd.soon { background: var(--soon); } .dot.ok, .sd.ok { background: var(--ok); } .dot.none, .sd.none, .dot.gone, .sd.gone { background: var(--none); }
 .stack { position: relative; display: block; height: 58px; }
-.stack svg { position: absolute; left: 50%; transform: translateX(-50%); }
-.stack svg:first-child { transform: translateX(-30%) scale(.92); opacity: .55; }
-.x2 { position: absolute; left: 4px; bottom: 30px; background: var(--ink); color: #fff; border-radius: 6px; font: 400 10px/1.5 var(--jua); padding: 0 4px; }
+.stack svg, .stack .ph { margin: 0 auto; }
+.x2 { position: absolute; left: 0; bottom: -2px; background: #fff; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 8px; font: 400 10px/1.4 var(--jua); padding: 0 4px; box-shadow: 0 1px 2px rgba(0,0,0,.15); white-space: nowrap; }
+.sbars { display: flex; gap: 3px; margin: 2px 8px 0; }
+.sbars .sbar2 { flex: 1; margin: 0; }
 
 /* Leiste: Personen, Suche, Ansicht / 사람·검색·보기 */
 .bar { display: flex; align-items: center; gap: 6px; margin: 14px 0 0; }
@@ -211,11 +212,12 @@ textarea.in { min-height: 76px; resize: vertical; }
 .shopall { margin-left: auto; border: 0; background: #fff; color: var(--red2); border-radius: 10px; padding: 3px 8px; font: 400 12px var(--jua); display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 .shopall .ms { font-size: 16px; color: var(--red2) !important; }
 .basket h5 { flex-wrap: nowrap; }
-.boxes { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 0; scrollbar-width: none; }
+.boxes { display: flex; gap: 2px; overflow-x: auto; margin: 10px 0 0; scrollbar-width: none; border-bottom: 2px solid #e2d4bf; }
 .boxes::-webkit-scrollbar { display: none; }
-.boxes button { flex: none; border: 0; background: #fff; border-radius: 12px; padding: 6px 12px; font: 400 15px var(--jua); color: var(--ink); box-shadow: inset 0 -2px 0 #e7dccb; }
-.boxes button.on { background: var(--red); color: #fff; box-shadow: inset 0 -3px 0 var(--red2); }
-.boxes small { margin-left: 5px; opacity: .75; font-family: -apple-system, sans-serif; font-size: 12px; }
+.boxes button { flex: none; border: 0; background: none; border-radius: 10px 10px 0 0; padding: 7px 10px 6px; margin-bottom: -2px; font: 400 14px var(--jua); color: #8a7a66; display: inline-flex; align-items: center; gap: 4px; border-bottom: 3px solid transparent; }
+.boxes button .ms { font-size: 18px; color: inherit !important; }
+.boxes button.on { color: var(--red2); border-bottom-color: var(--red); background: rgba(255,255,255,.6); }
+.boxes small { margin-left: 1px; opacity: .75; font-family: -apple-system, sans-serif; font-size: 12px; }
 .sbar2 { display: block; height: 5px; border-radius: 3px; background: #eadfcd; margin: 2px 8px 0; overflow: hidden; }
 .sbar2 i { display: block; height: 100%; background: var(--ok); border-radius: 3px; }
 .sbar2.low i { background: var(--soon); }
@@ -462,12 +464,12 @@ const T = {
     bulkBtn: '빠진 사진·설명 찾기', bulkProgress: (i, n) => `찾는 중… ${i}/${n}`, bulkDone: (p, i) => `끝났어요 ✓ 사진 ${p}개, 설명 ${i}개를 채웠어요.`,
     photoFind: '사진 가져오기', photoNotFound: '이 약 사진을 찾지 못했어요. 직접 찍어 주세요.',
     photoTitle: '사진', photoAdd: '사진 찍기·고르기', photoChange: '사진 바꾸기', photoHint: '상자 앞면을 찍어 두면 서랍에서 찾기 쉬워요. 한국 약은 바코드를 찍으면, 다른 약은 설명서 링크를 넣으면 사진을 자동으로 가져와요.',
-    boxDefault: '우리집 약상자', boxAll: '전체', boxesTitle: '약상자 목록', boxesInfo: '거실, 냉장고, 차, 여행 가방처럼 약을 두는 곳을 나눠요. 약마다 어느 약상자에 있는지 고를 수 있어요.', boxNewPh: '새 약상자 이름 (예: 냉장고)', fBox: '어느 약상자에 둘까요',
+    boxDefault: '우리집 약상자', boxAll: '모든 약상자', boxesTitle: '약상자 목록', boxesInfo: '거실, 냉장고, 차, 여행 가방처럼 약을 두는 곳을 나눠요. 약마다 어느 약상자에 있는지 고를 수 있어요.', boxNewPh: '새 약상자 이름 (예: 냉장고)', fBox: '어느 약상자에 둘까요',
     confirmBoxDel: (n, to) => `이 약상자를 지울까요? 안에 있던 약 ${n}개는 "${to}"(으)로 옮겨요.`,
     packStock: '새 통의 남은 양', packNow: s => `지금 있는 통: ${s}`, noStock: '남은 양 안 셈', packExpHint: '지금 통과 같은 날짜로 미리 넣었어요. 새 상자에 찍힌 날짜가 다르면 바꿔 주세요.',
     packDone: (n, sum) => `같은 약 ${n}통이 됐어요${sum ? ` · ${sum}` : ''}`,
     stockTitle: '남은 양', units: { tab: '정', pc: '개', bag: '포', ml: 'ml' }, unitNames: { tab: '알약 수', pc: '개수', bag: '포', ml: 'ml', level: '대충(눈대중)', none: '안 셈' },
-    levels: ['거의 다 씀', '조금 남음', '반쯤 남음', '가득'], qtyTotal: '한 통에', qtyLeft: '지금 남은 양', qtyLeftPh: '비우면 한 통 그대로', lowShort: '부족',
+    levels: ['거의 다 씀', '조금 남음', '반쯤 남음', '가득'], qtyTotal: '한 통에', qtyLeft: '지금 남은 양', qtyLeftPh: '비우면 한 통 그대로', lowShort: '부족', packsShort: n => `${n}통`,
     stockHint: '"먹었어요"로 기록하면 먹은 양만큼 저절로 줄어요.', stockLeft: t => `남은 양 ${t}`, packMore: '같은 약 한 통 더',
     notiTitle: '만료 알림', notiInfo: '약 기한이 30일·7일 남았을 때와 마지막 날 아침 8시에 휴대폰으로 알려 줘요. 약 이름은 서버에 저장되지 않아요.',
     notiEnable: '알림 켜기', notiOnText: '켜져 있어요 · 매일 아침 8시에 필요한 날만 알려요', notiTest: '시험 알림 보내기', notiOff: '끄기',
@@ -561,12 +563,12 @@ const T = {
     bulkBtn: 'Fehlende suchen', bulkProgress: (i, n) => `Suche… ${i}/${n}`, bulkDone: (p, i) => `Fertig ✓ ${p} Fotos, ${i} Beschreibungen ergänzt.`,
     photoFind: 'Foto holen', photoNotFound: 'Kein Foto gefunden. Bitte selbst fotografieren.',
     photoTitle: 'Foto', photoAdd: 'Foto aufnehmen/wählen', photoChange: 'Foto ändern', photoHint: 'Ein Foto der Packung hilft beim Finden. Bei koreanischen Mitteln kommt es mit dem Barcode, sonst mit dem Link zur Produktseite.',
-    boxDefault: 'Hausapotheke', boxAll: 'Alle', boxesTitle: 'Aufbewahrungsorte', boxesInfo: 'Z. B. Wohnzimmer, Kühlschrank, Auto, Reisetasche. Jedes Medikament bekommt seinen Ort.', boxNewPh: 'Neuer Ort (z. B. Kühlschrank)', fBox: 'Wo liegt es?',
+    boxDefault: 'Hausapotheke', boxAll: 'Alle Orte', boxesTitle: 'Aufbewahrungsorte', boxesInfo: 'Z. B. Wohnzimmer, Kühlschrank, Auto, Reisetasche. Jedes Medikament bekommt seinen Ort.', boxNewPh: 'Neuer Ort (z. B. Kühlschrank)', fBox: 'Wo liegt es?',
     confirmBoxDel: (n, to) => `Diesen Ort löschen? ${n} Medikamente kommen nach „${to}“.`,
     packStock: 'Menge der neuen Packung', packNow: s => `Vorhandene Packung: ${s}`, noStock: 'nicht gezählt', packExpHint: 'Datum der vorhandenen Packung übernommen – bei anderem Datum auf der neuen Packung ändern.',
     packDone: (n, sum) => `Jetzt ${n} Packungen${sum ? ` · ${sum}` : ''}`,
     stockTitle: 'Vorrat', units: { tab: 'Tabl.', pc: 'Stück', bag: 'Beutel', ml: 'ml' }, unitNames: { tab: 'Tabletten', pc: 'Stück', bag: 'Beutel', ml: 'ml', level: 'grob', none: 'nicht zählen' },
-    levels: ['fast leer', 'wenig übrig', 'halb voll', 'voll'], qtyTotal: 'Pro Packung', qtyLeft: 'Noch da', qtyLeftPh: 'leer = volle Packung', lowShort: 'knapp',
+    levels: ['fast leer', 'wenig übrig', 'halb voll', 'voll'], qtyTotal: 'Pro Packung', qtyLeft: 'Noch da', qtyLeftPh: 'leer = volle Packung', lowShort: 'knapp', packsShort: n => `${n} Pck.`,
     stockHint: 'Mit „Genommen“ wird die Menge automatisch abgezogen.', stockLeft: t => `Vorrat ${t}`, packMore: 'Noch eine Packung',
     notiTitle: 'Ablauf-Erinnerung', notiInfo: '30 und 7 Tage vor Ablauf und am letzten Tag kommt um 8 Uhr eine Nachricht. Namen der Medikamente werden nicht auf dem Server gespeichert.',
     notiEnable: 'Erinnerungen einschalten', notiOnText: 'Eingeschaltet · täglich 8 Uhr, nur an fälligen Tagen', notiTest: 'Test senden', notiOff: 'Ausschalten',
@@ -719,10 +721,10 @@ function groups(list) {
 }
 function itemHtml(g, low) {
   const m = g[0];
-  const pic = g.length > 1 ? `<span class="stack">${art(m)}${art(m)}<span class="x2">×${g.length}</span></span>` : art(m);
+  const pic = g.length > 1 ? `<span class="stack">${art(m)}<span class="x2">${esc(L().packsShort(g.length))}</span></span>` : art(m);
   // low: wegen knappem Vorrat im Korb / 재고가 적어서 바구니에 있을 때
   const dot = low ? `<span class="dot soon">${esc(L().lowShort)}</span>` : `<span class="dot ${statusOf(m).st}">${esc(stk(m))}</span>`;
-  return `<button class="it" data-act="detail" data-id="${m.id}">${pic}${dot}<span class="lb">${esc(m.name)}</span>${stockBar(m)}</button>`;
+  return `<button class="it" data-act="detail" data-id="${m.id}">${pic}${dot}<span class="lb">${esc(m.name)}</span>${g.length > 1 ? `<span class="sbars">${g.map(stockBar).join('')}</span>` : stockBar(m)}</button>`;
 }
 function rowHtml(m) {
   const l = L(), sub = [m.who ? l.who[m.who] : l.who[''], multiBox() && (ui.box || 'all') === 'all' ? boxName(boxOf(m)) : '', stockText(m), m.opened ? `${l.openedOn} ${fmtShort(m.opened)}` : ''].filter(Boolean).join(' · ');
@@ -1525,7 +1527,7 @@ function boxRowHtml(act) {
   if (!multiBox()) return '';
   const l = L(), cnt = id => act.filter(m => boxOf(m) === id).length;
   const all = [['all', l.boxAll, act.length], ...boxesList().map(b => [b.id, b.name || l.boxDefault, cnt(b.id)])];
-  return `<div class="boxes">${all.map(([id, n, c]) => `<button class="${(ui.box || 'all') === id ? 'on' : ''}" data-act="box" data-v="${esc(id)}">${esc(n)}<small>${c}</small></button>`).join('')}</div>`;
+  return `<div class="boxes">${all.map(([id, n, c]) => `<button class="${(ui.box || 'all') === id ? 'on' : ''}" data-act="box" data-v="${esc(id)}">${id === 'all' ? '' : ms('inventory_2')}${esc(n)}<small>${c}</small></button>`).join('')}</div>`;
 }
 const boxChip = m => multiBox() ? `<span class="boxchip">${ms('inventory_2')}${esc(boxName(boxOf(m)))}</span>` : '';
 function saveBoxes(list) { S.cat['@boxes'] = { list, updated: Date.now() }; keep(); render(); if (window.cloud) window.cloud.push(); }
