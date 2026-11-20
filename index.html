@@ -195,6 +195,9 @@ textarea.in { min-height: 76px; resize: vertical; }
 .info .src { color: var(--mut); font-family: -apple-system, sans-serif; font-size: 12px; }
 .ph { display: block; margin: 0 auto; object-fit: contain; border-radius: 4px; background: #fff; }
 .lr .ph, .mp .ph, .sug .ph { margin: 0; flex: none; }
+.urlrow { display: flex; gap: 6px; margin-top: 10px; }
+.urlrow .in { flex: 1; min-width: 0; }
+.urlrow .btn { flex: none; }
 .phrow { display: flex; gap: 12px; align-items: center; }
 .phbig { width: 110px; height: 110px; object-fit: cover; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.15); flex: none; }
 .phnone { width: 110px; height: 110px; display: grid; place-items: center; background: #f4ece0; border-radius: 14px; flex: none; }
@@ -511,7 +514,7 @@ const T = {
     bulkTitle: '사진·설명 한 번에 찾기', bulkInfo: '이미 저장한 약 중 사진이나 설명이 없는 약을 찾아 채워요. 한국 약은 의약품안전나라, 독일 약은 PZN으로 온라인 약국에서 찾아요. 직접 쓴 칸은 바꾸지 않아요.',
     bulkBtn: '빠진 사진·설명 찾기', bulkProgress: (i, n) => `찾는 중… ${i}/${n}`, bulkDone: (p, i) => `끝났어요 ✓ 사진 ${p}개, 설명 ${i}개를 채웠어요.`,
     photoFind: '사진 가져오기', photoNotFound: '이 약 사진을 찾지 못했어요. 직접 찍어 주세요.',
-    photoTitle: '사진', photoAdd: '사진 찍기·고르기', photoChange: '사진 바꾸기', photoHint: '상자 앞면을 찍어 두면 서랍에서 찾기 쉬워요. 한국 약은 바코드를 찍으면, 다른 약은 설명서 링크를 넣으면 사진을 자동으로 가져와요.',
+    photoTitle: '사진', photoUrlPh: '사진 주소 붙여넣기 (https://…)', photoUrlGo: '가져오기', photoUrlBusy: '가져오는 중…', photoUrlNone: '그 주소에서 사진을 찾지 못했어요.', photoUrlBad: '사진 주소(https://…)를 넣어 주세요.', photoUrlLogin: '이 사이트 사진은 구글 로그인을 해야 가져올 수 있어요.', photoAdd: '사진 찍기·고르기', photoChange: '사진 바꾸기', photoHint: '상자 앞면을 찍어 두면 서랍에서 찾기 쉬워요. 인터넷에서 찾은 사진은 "이미지 주소 복사"한 뒤 위 칸에 붙여넣으세요(제품 페이지 주소도 돼요). 한국 약은 바코드로 자동으로 가져와요.',
     boxDefault: '우리집 약상자', boxAll: '모든 약상자', boxesTitle: '약상자 목록', boxesInfo: '거실, 냉장고, 차, 여행 가방처럼 약을 두는 곳을 나눠요. 약마다 어느 약상자에 있는지 고를 수 있어요.', boxNewPh: '새 약상자 이름 (예: 냉장고)', fBox: '어느 약상자에 둘까요',
     confirmBoxDel: (n, to) => `이 약상자를 지울까요? 안에 있던 약 ${n}개는 "${to}"(으)로 옮겨요.`,
     packStock: '새 통의 남은 양', packNow: s => `지금 있는 통: ${s}`, noStock: '남은 양 안 셈', packExpHint: '지금 통과 같은 날짜로 미리 넣었어요. 새 상자에 찍힌 날짜가 다르면 바꿔 주세요.',
@@ -641,7 +644,7 @@ const T = {
     bulkTitle: 'Fotos und Beschreibungen nachholen', bulkInfo: 'Sucht für gespeicherte Medikamente ohne Foto oder Beschreibung (koreanisch: MFDS, deutsch: über die PZN bei einer Online-Apotheke). Eigene Einträge bleiben.',
     bulkBtn: 'Fehlende suchen', bulkProgress: (i, n) => `Suche… ${i}/${n}`, bulkDone: (p, i) => `Fertig ✓ ${p} Fotos, ${i} Beschreibungen ergänzt.`,
     photoFind: 'Foto holen', photoNotFound: 'Kein Foto gefunden. Bitte selbst fotografieren.',
-    photoTitle: 'Foto', photoAdd: 'Foto aufnehmen/wählen', photoChange: 'Foto ändern', photoHint: 'Ein Foto der Packung hilft beim Finden. Bei koreanischen Mitteln kommt es mit dem Barcode, sonst mit dem Link zur Produktseite.',
+    photoTitle: 'Foto', photoUrlPh: 'Bildadresse einfügen (https://…)', photoUrlGo: 'Laden', photoUrlBusy: 'Lädt …', photoUrlNone: 'Unter dieser Adresse kein Bild gefunden.', photoUrlBad: 'Bitte eine Bildadresse (https://…) einfügen.', photoUrlLogin: 'Bilder von dieser Seite gehen nur mit Google-Anmeldung.', photoAdd: 'Foto aufnehmen/wählen', photoChange: 'Foto ändern', photoHint: 'Ein Foto der Packung hilft beim Finden. Bild im Netz: „Bildadresse kopieren“ und oben einfügen (Produktseite geht auch). Koreanische Mittel: kommt mit dem Barcode.',
     boxDefault: 'Hausapotheke', boxAll: 'Alle Orte', boxesTitle: 'Aufbewahrungsorte', boxesInfo: 'Z. B. Wohnzimmer, Kühlschrank, Auto, Reisetasche. Jedes Medikament bekommt seinen Ort.', boxNewPh: 'Neuer Ort (z. B. Kühlschrank)', fBox: 'Wo liegt es?',
     confirmBoxDel: (n, to) => `Diesen Ort löschen? ${n} Medikamente kommen nach „${to}“.`,
     packStock: 'Menge der neuen Packung', packNow: s => `Vorhandene Packung: ${s}`, noStock: 'nicht gezählt', packExpHint: 'Datum der vorhandenen Packung übernommen – bei anderem Datum auf der neuen Packung ändern.',
@@ -881,6 +884,16 @@ function renderSheet() {
   $('#sheet .sheet').scrollTop = top;
   const ff = $('#findform');
   if (ff) { ff.addEventListener('submit', e => { e.preventDefault(); runFind($('#findq').value); }); if (!ui.find || !ui.find.results) $('#findq').focus(); }
+  const pu = $('#phurl');
+  if (pu) pu.addEventListener('paste', e => {
+    const f = [...((e.clipboardData && e.clipboardData.files) || [])].find(x => /^image\//.test(x.type));
+    if (f) {
+      e.preventDefault();
+      shrink(f).then(d => { if (!ui.draft) return; readForm(); ui.draft.photo = d; ui.draft.photoNew = true; renderSheet(); }).catch(err => { console.warn(err); toast(L().photoUrlNone); });
+      return;
+    }
+    setTimeout(() => { if (/^(https?:|data:image)/i.test(pu.value.trim())) ACT['photo-url'](); }, 0);
+  });
   for (const x of document.querySelectorAll('#medform [name=expText], #pexp')) x.addEventListener('input', () => { const h = $(x.id === 'pexp' ? '#pexphint' : '#exphint'); if (h) h.outerHTML = expHint(x.value).replace('id="exphint"', `id="${x.id === 'pexp' ? 'pexphint' : 'exphint'}"`); });
   const nm = $('#medform [name=name]');
   if (nm) { nm.addEventListener('input', updateSugg); updateSugg(); }
@@ -1794,6 +1807,7 @@ function photoFormHtml(m) {
     <div class="phrow">${src ? `<img class="phbig" src="${src}" alt="">` : `<span class="phnone">${art(m, 70)}</span>`}
       <div class="phbtns"><button type="button" class="btn ghost small" data-act="photo-pick">${ms('photo_camera')}${esc(src ? l.photoChange : l.photoAdd)}</button>
       ${src ? `<button type="button" class="btn ghost small" data-act="photo-del">${ms('delete')}${esc(l.del)}</button>` : ''}</div></div>
+    <div class="urlrow"><input class="in" id="phurl" type="url" inputmode="url" autocomplete="off" placeholder="${esc(l.photoUrlPh)}"><button type="button" class="btn ghost small" data-act="photo-url">${esc(ui.photoBusy ? l.photoUrlBusy : l.photoUrlGo)}</button></div>
     <p class="hint">${esc(l.photoHint)}</p></div>`;
 }
 
@@ -1826,6 +1840,22 @@ function pageImages(html, base) {
   if (pz && MedCode.pznOk(pz)) out.push(dePhotoUrl(pz));
   return [...new Set(out.filter(Boolean).map(u => { try { return new URL(u, base).href; } catch (e) { return ''; } })
     .filter(u => /^https:/.test(u) && !/\.svg(\?|$)|logo|favicon|placeholder/i.test(u)))].slice(0, 4);
+}
+// Erst direkt (viele Bildserver erlauben das), sonst über den Abruf-Server; Seitenlink → Produktbild der Seite
+// 먼저 직접 받아 보고(되는 서버가 많음), 안 되면 가져오기 서버로. 페이지 주소면 그 페이지의 제품 사진
+async function photoFromAny(raw) {
+  const url = String(raw || '').trim();
+  if (/^data:image\//i.test(url)) return shrink(url);
+  if (!/^https?:\/\//i.test(url)) throw new Error('bad');
+  try {
+    const r = await fetch(url, { mode: 'cors' });
+    if (r.ok && /^image\//i.test(r.headers.get('Content-Type') || '')) return await shrink(await r.blob());
+  } catch (e) {}
+  if (!canFetch()) throw new Error('login');
+  const r = await viaWorker(url), type = r.headers.get('Content-Type') || '';
+  if (/^image\//i.test(type) || /\.(jpe?g|png|webp|avif)(\?|$)/i.test(url)) return shrink(await r.blob());
+  if (/html/i.test(type)) return firstPhoto(pageImages(await r.text(), r.headers.get('X-Final-Url') || url));
+  return null;
 }
 async function firstPhoto(urls) {
   for (const u of urls) { const d = await photoFromUrl(u).catch(() => null); if (d) return d; }
@@ -2484,6 +2514,19 @@ const ACT = {
       try { const data = await shrink(f); readForm(); ui.draft.photo = data; ui.draft.photoNew = true; renderSheet(); } catch (e) { console.warn(e); toast(L().noCode); }
     };
     i.click();
+  },
+  async 'photo-url'() {
+    const l = L(), i = $('#phurl'), url = i ? i.value.trim() : '';
+    if (!url || !ui.draft || ui.photoBusy) return;
+    const id = ui.draft.id;
+    ui.photoBusy = true; readForm(); renderSheet();
+    try {
+      const data = await photoFromAny(url);
+      if (!data) toast(l.photoUrlNone);
+      else if (ui.draft && ui.draft.id === id) { readForm(); ui.draft.photo = data; ui.draft.photoNew = true; }
+    } catch (e) { console.warn('photo-url', e); toast(e.message === 'login' ? l.photoUrlLogin : e.message === 'bad' ? l.photoUrlBad : l.photoUrlNone); }
+    ui.photoBusy = false;
+    if (ui.sheet && ui.sheet.type === 'form') renderSheet();
   },
   'photo-del'() { readForm(); ui.draft.photo = ''; ui.draft.photoNew = false; renderSheet(); },
   addlog(el) { openAddLog({ who: el.dataset.who, kind: el.dataset.kind, med: el.dataset.med }); },
