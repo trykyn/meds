@@ -208,6 +208,9 @@ textarea.in { min-height: 76px; resize: vertical; }
 .linkbtn { border: 0; background: none; color: var(--red2); font-weight: 700; font-size: 14px; padding: 6px 0 0; display: inline-flex; align-items: center; gap: 4px; }
 .linkbtn .ms { font-size: 18px; }
 .scan .brow button { font-size: 14px; }
+.shopall { margin-left: auto; border: 0; background: #fff; color: var(--red2); border-radius: 10px; padding: 3px 8px; font: 400 12px var(--jua); display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.shopall .ms { font-size: 16px; color: var(--red2) !important; }
+.basket h5 { flex-wrap: nowrap; }
 .boxes { display: flex; gap: 6px; overflow-x: auto; margin: 12px 0 0; scrollbar-width: none; }
 .boxes::-webkit-scrollbar { display: none; }
 .boxes button { flex: none; border: 0; background: #fff; border-radius: 12px; padding: 6px 12px; font: 400 15px var(--jua); color: var(--ink); box-shadow: inset 0 -2px 0 #e7dccb; }
@@ -422,7 +425,7 @@ const T = {
     uses: [['열·통증', 'pain'], ['감기', 'cold'], ['기침', 'cold'], ['코', 'cold'], ['배탈·설사', 'belly'], ['피부·상처', 'skin'], ['눈', 'eye'], ['귀', 'eye'], ['알레르기', 'etc']],
     newMed: '새 약', editMed: '약 수정', save: '저장', cancel: '취소', close: '닫기',
     fName: '약 이름', fNamePh: '예: Nurofen Saft für Kinder', fKind: '종류', fUse: '어디에 쓰는 약인가요', fUsePh: '예: 열, 통증', fDrawer: '어느 서랍에 넣을까요',
-    fWho: '누구 약', fExp: '유효기간 (상자에 찍힌 날짜)', fExpScan: '바코드에서 읽었어요 ✓', fExpHint: '월까지만 있으면 그 달 마지막 날로 넣으세요.',
+    fWho: '누구 약', fExp: '유효기간 (상자에 찍힌 날짜)', fExpScan: '바코드에서 읽었어요 ✓', fExpHint: '상자에 적힌 대로 숫자로 쓰세요. 월까지만 있으면 그 달 마지막 날로 넣어요.', fExpPh: '예: 08.27 · 2027.08 · 31.08.2027', expBad: '날짜를 읽지 못했어요. 예: 08.27, 2027.08.31',
     fOpened: '개봉일', today: '오늘', fOpenDays: '개봉 후 사용 기간', noneOpen: '없음', days: '일', months: n => `${n}개월`, weeks: n => `${n}주`, custom: '직접',
     fOpenHint: '설명서나 병에서 "Nach Anbruch … haltbar" / "Nach dem Öffnen … verwenden"을 확인하세요.',
     fOpenHintSyrup: '시럽·안약·항생제 물약은 개봉 후 기한이 짧은 경우가 많아요. 꼭 확인하세요.',
@@ -463,8 +466,8 @@ const T = {
     confirmBoxDel: (n, to) => `이 약상자를 지울까요? 안에 있던 약 ${n}개는 "${to}"(으)로 옮겨요.`,
     packStock: '새 통의 남은 양', packNow: s => `지금 있는 통: ${s}`, noStock: '남은 양 안 셈', packExpHint: '지금 통과 같은 날짜로 미리 넣었어요. 새 상자에 찍힌 날짜가 다르면 바꿔 주세요.',
     packDone: (n, sum) => `같은 약 ${n}통이 됐어요${sum ? ` · ${sum}` : ''}`,
-    stockTitle: '남은 양', units: { tab: '정', pc: '개', bag: '포', ml: 'ml' }, unitNames: { tab: '알약 수', pc: '개수', bag: '포', ml: 'ml', level: '대충', none: '안 셈' },
-    levels: ['거의 없음', '조금', '절반', '가득'], qtyTotal: '한 통에', qtyLeft: '지금 남은 양', qtyLeftPh: '비우면 한 통 그대로', lowShort: '부족',
+    stockTitle: '남은 양', units: { tab: '정', pc: '개', bag: '포', ml: 'ml' }, unitNames: { tab: '알약 수', pc: '개수', bag: '포', ml: 'ml', level: '대충(눈대중)', none: '안 셈' },
+    levels: ['거의 다 씀', '조금 남음', '반쯤 남음', '가득'], qtyTotal: '한 통에', qtyLeft: '지금 남은 양', qtyLeftPh: '비우면 한 통 그대로', lowShort: '부족',
     stockHint: '"먹었어요"로 기록하면 먹은 양만큼 저절로 줄어요.', stockLeft: t => `남은 양 ${t}`, packMore: '같은 약 한 통 더',
     notiTitle: '만료 알림', notiInfo: '약 기한이 30일·7일 남았을 때와 마지막 날 아침 8시에 휴대폰으로 알려 줘요. 약 이름은 서버에 저장되지 않아요.',
     notiEnable: '알림 켜기', notiOnText: '켜져 있어요 · 매일 아침 8시에 필요한 날만 알려요', notiTest: '시험 알림 보내기', notiOff: '끄기',
@@ -482,6 +485,8 @@ const T = {
     sameIngr: (ing, names) => `같은 성분(${ing})이 든 약이 또 있어요: ${names}. 함께 먹지 않게 조심하세요.`, ingrIs: ing => `성분: ${ing}`,
     tookIt: '먹었어요', courseTitle: '처방 복용 기간', optional: '(선택)', courseStartL: '시작일', perDayU: '번/일', courseHint: '항생제처럼 정해진 기간 동안 먹는 약: 시작일, 며칠, 하루 몇 번.',
     courseFrom: d => `${d}부터 시작`, courseDone: '복용 기간이 끝났어요', courseEnd: d => `끝나는 날 ${d}`, courseTotal: (n, x) => `지금까지 ${n}/${x}번`,
+    shopLow: n => `장보기에 넣기 (${n})`, shopAskMany: '얼마 안 남은 약을 장보기 목록에 넣을까요? 뺄 약은 ✕를 누르고, 넣을 목록을 고르세요.', shopAddedN: n => `장보기에 ${n}개 넣었어요`,
+    shoppedOn: d => `${d}에 장보기 목록에 넣었어요`, shopNeedLogin: '구글 로그인을 하면 여기서 바로 장보기 목록에 넣을 수 있어요.',
     shopTitle: '장보기에 추가', shopAsk: '다 쓴 약을 장보기 목록에 넣을까요? 넣을 목록을 고르세요.', shopNo: '아니요', shopLoading: '장보기 목록을 불러오는 중…', shopAdded: '장보기에 넣었어요',
     fullOrig: '설명서 원문 전체 보기', more: '전체 보기',
     leafTitle: '설명서로 채우기', leafInfo: '설명서 PDF를 올리거나 설명서가 있는 웹페이지 주소를 넣으면 용도, 먹는 법, 개봉 후 기간을 채워요.',
@@ -519,7 +524,7 @@ const T = {
     uses: [['Fieber/Schmerz', 'pain'], ['Erkältung', 'cold'], ['Husten', 'cold'], ['Nase', 'cold'], ['Magen/Darm', 'belly'], ['Haut/Wunde', 'skin'], ['Augen', 'eye'], ['Ohren', 'eye'], ['Allergie', 'etc']],
     newMed: 'Neues Medikament', editMed: 'Bearbeiten', save: 'Sichern', cancel: 'Abbrechen', close: 'Schließen',
     fName: 'Name', fNamePh: 'z. B. Nurofen Saft für Kinder', fKind: 'Art', fUse: 'Wofür?', fUsePh: 'z. B. Fieber, Schmerzen', fDrawer: 'In welche Schublade?',
-    fWho: 'Für wen', fExp: 'Verfallsdatum (auf der Packung)', fExpScan: 'Aus dem Barcode gelesen ✓', fExpHint: 'Nur Monat angegeben? Dann den letzten Tag des Monats.',
+    fWho: 'Für wen', fExp: 'Verfallsdatum (auf der Packung)', fExpScan: 'Aus dem Barcode gelesen ✓', fExpHint: 'Wie auf der Packung eintippen. Nur Monat → letzter Tag des Monats.', fExpPh: 'z. B. 08.27 · 08/2027 · 31.08.2027', expBad: 'Datum nicht erkannt. Z. B. 08.27 oder 31.08.2027',
     fOpened: 'Angebrochen am', today: 'Heute', fOpenDays: 'Haltbar nach Anbruch', noneOpen: 'keine', days: 'Tage', months: n => `${n} Mon.`, weeks: n => `${n} Wo.`, custom: 'Eigene',
     fOpenHint: 'Steht im Beipackzettel: „Nach Anbruch … haltbar“ / „Nach dem Öffnen … verwenden“.',
     fOpenHintSyrup: 'Säfte, Augentropfen und Antibiotika-Säfte sind nach Anbruch oft nur kurz haltbar.',
@@ -561,7 +566,7 @@ const T = {
     packStock: 'Menge der neuen Packung', packNow: s => `Vorhandene Packung: ${s}`, noStock: 'nicht gezählt', packExpHint: 'Datum der vorhandenen Packung übernommen – bei anderem Datum auf der neuen Packung ändern.',
     packDone: (n, sum) => `Jetzt ${n} Packungen${sum ? ` · ${sum}` : ''}`,
     stockTitle: 'Vorrat', units: { tab: 'Tabl.', pc: 'Stück', bag: 'Beutel', ml: 'ml' }, unitNames: { tab: 'Tabletten', pc: 'Stück', bag: 'Beutel', ml: 'ml', level: 'grob', none: 'nicht zählen' },
-    levels: ['fast leer', 'wenig', 'halb', 'voll'], qtyTotal: 'Pro Packung', qtyLeft: 'Noch da', qtyLeftPh: 'leer = volle Packung', lowShort: 'knapp',
+    levels: ['fast leer', 'wenig übrig', 'halb voll', 'voll'], qtyTotal: 'Pro Packung', qtyLeft: 'Noch da', qtyLeftPh: 'leer = volle Packung', lowShort: 'knapp',
     stockHint: 'Mit „Genommen“ wird die Menge automatisch abgezogen.', stockLeft: t => `Vorrat ${t}`, packMore: 'Noch eine Packung',
     notiTitle: 'Ablauf-Erinnerung', notiInfo: '30 und 7 Tage vor Ablauf und am letzten Tag kommt um 8 Uhr eine Nachricht. Namen der Medikamente werden nicht auf dem Server gespeichert.',
     notiEnable: 'Erinnerungen einschalten', notiOnText: 'Eingeschaltet · täglich 8 Uhr, nur an fälligen Tagen', notiTest: 'Test senden', notiOff: 'Ausschalten',
@@ -579,6 +584,8 @@ const T = {
     sameIngr: (ing, names) => `Gleicher Wirkstoff (${ing}) auch in: ${names}. Nicht zusammen geben.`, ingrIs: ing => `Wirkstoff: ${ing}`,
     tookIt: 'Genommen', courseTitle: 'Behandlungsdauer', optional: '(optional)', courseStartL: 'Beginn', perDayU: '×/Tag', courseHint: 'Für Mittel mit fester Dauer (z. B. Antibiotikum): Beginn, Tage, Gaben pro Tag.',
     courseFrom: d => `Beginn am ${d}`, courseDone: 'Behandlung beendet', courseEnd: d => `letzter Tag ${d}`, courseTotal: (n, x) => `bisher ${n}/${x}`,
+    shopLow: n => `Auf die Einkaufsliste (${n})`, shopAskMany: 'Knappe Medikamente auf die Einkaufsliste setzen? Mit ✕ entfernen, dann Liste wählen.', shopAddedN: n => `${n} auf die Einkaufsliste gesetzt`,
+    shoppedOn: d => `Am ${d} auf die Einkaufsliste gesetzt`, shopNeedLogin: 'Mit Google-Anmeldung direkt auf die Einkaufsliste setzen.',
     shopTitle: 'Auf die Einkaufsliste', shopAsk: 'Aufgebrauchtes Medikament auf die Einkaufsliste setzen? Liste wählen:', shopNo: 'Nein', shopLoading: 'Einkaufslisten werden geladen…', shopAdded: 'Auf der Einkaufsliste',
     fullOrig: 'Ganzen Beipackzettel anzeigen', more: 'Alles anzeigen',
     leafTitle: 'Aus Beipackzettel füllen', leafInfo: 'PDF hochladen oder Adresse einer Seite mit dem Beipackzettel eingeben – Anwendung, Dosierung und Haltbarkeit nach Anbruch werden übernommen.',
@@ -684,6 +691,7 @@ function art(m, h = 58) {
 // ---------- Speichern / 저장 ----------
 function commit(m) {
   m.updated = Date.now();
+  if (m.shopped && !lowStock(m)) delete m.shopped;
   S.meds[m.id] = m;
   keep(); render();
   if (window.cloud) window.cloud.push();
@@ -723,10 +731,11 @@ function rowHtml(m) {
 
 function render() {
   const l = L(), act = active(), vis = act.filter(m => whoMatch(m) && qMatch(m) && boxMatch(m)), searching = !!ui.q.trim();
-  const warn = vis.filter(m => ['bad', 'soon'].includes(statusOf(m).st) || lowStock(m)).sort(byLimit);
+  const warn = vis.filter(m => ['bad', 'soon'].includes(statusOf(m).st) || groupLow(m)).sort(byLimit);
   let top;
+  const lowOnes = warn.filter(m => groupLow(m) && !m.shopped);
   if (!act.length) top = `<div class="post">${ms('qr_code_scanner').replace('class="ms"', 'class="ms" style="color:var(--red)"')}${esc(l.empty)}</div>`;
-  else if (warn.length) top = `<div class="basket"><h5>${ms('error')}${esc(l.basket)} <small>${warn.length}</small></h5><div class="row-x">${warn.map(m => itemHtml([m], !['bad', 'soon'].includes(statusOf(m).st))).join('')}</div></div>`;
+  else if (warn.length) top = `<div class="basket"><h5>${ms('error')}${esc(l.basket)} <small>${warn.length}</small>${lowOnes.length && canFetch() ? `<button class="shopall" data-act="shop-low">${ms('shopping_cart')}${esc(l.shopLow(lowOnes.length))}</button>` : ''}</h5><div class="row-x">${warn.map(m => itemHtml([m], !['bad', 'soon'].includes(statusOf(m).st))).join('')}</div></div>`;
   else if (!searching) top = `<div class="post ok">${ms('check_circle')}${esc(l.allOk(act.length))}</div>`;
   else top = '';
 
@@ -790,6 +799,7 @@ function renderSheet() {
   $('#sheet .sheet').scrollTop = top;
   const ff = $('#findform');
   if (ff) { ff.addEventListener('submit', e => { e.preventDefault(); runFind($('#findq').value); }); if (!ui.find || !ui.find.results) $('#findq').focus(); }
+  for (const x of document.querySelectorAll('#medform [name=expText], #pexp')) x.addEventListener('input', () => { const h = $(x.id === 'pexp' ? '#pexphint' : '#exphint'); if (h) h.outerHTML = expHint(x.value).replace('id="exphint"', `id="${x.id === 'pexp' ? 'pexphint' : 'exphint'}"`); });
   const nm = $('#medform [name=name]');
   if (nm) { nm.addEventListener('input', updateSugg); updateSugg(); }
 }
@@ -889,8 +899,8 @@ function formHtml() {
     ${multiBox() ? `<label class="f">${esc(l.fBox)}</label><div class="wrapchips">${boxesList().map(b => `<button type="button" class="chip ${(m.box || boxesList()[0].id) === b.id ? 'on' : ''}" data-act="set" data-k="box" data-v="${esc(b.id)}">${esc(b.name || l.boxDefault)}</button>`).join('')}</div>` : ''}
   </div>
   <div class="box">
-    <label class="f">${esc(l.fExp)}</label><input class="in" type="date" name="exp" value="${esc(m.exp || '')}">
-    <p class="hint ${m.expScan && m.exp === m.expScan ? 'ok' : ''}">${esc(m.expScan && m.exp === m.expScan ? l.fExpScan : l.fExpHint)}</p>
+    <label class="f">${esc(l.fExp)}</label><input class="in" name="expText" inputmode="decimal" autocomplete="off" value="${esc(m.expText != null ? m.expText : expIn(m.exp))}" placeholder="${esc(l.fExpPh)}">
+    ${expHint(m.expText != null ? m.expText : expIn(m.exp), m.expScan && m.exp === m.expScan && m.expText == null)}
     <label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
     <p class="hint" style="margin-top:4px">${esc(l.openedEmpty)}</p>
     <label class="f">${esc(l.fOpenDays)}</label><div class="wrapchips">${opens}</div>
@@ -1252,11 +1262,27 @@ function openDaysFromInfo(m) {
   const o = MedLeaflet.openAfter([i.open, i.store, i.warn, i.use, i.efcy].filter(Boolean).join('\n'));
   return o ? o.days : 0;
 }
+// Datum fürs Eingabefeld und Rückmeldung darunter / 입력 칸용 날짜와 아래 안내
+const expIn = d => !d ? '' : S.lang === 'de' ? `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 4)}` : `${d.slice(0, 4)}.${d.slice(5, 7)}.${d.slice(8, 10)}`;
+function expHint(text, scanned) {
+  const l = L(), t = String(text || '').trim(), d = MedCode.parseDate(t);
+  if (scanned) return `<p class="hint ok" id="exphint">${esc(l.fExpScan)}</p>`;
+  if (t && d) return `<p class="hint ok" id="exphint">→ ${esc(fmtLong(d))}</p>`;
+  if (t) return `<p class="hint" id="exphint" style="color:var(--bad)">${esc(l.expBad)}</p>`;
+  return `<p class="hint" id="exphint">${esc(l.fExpHint)}</p>`;
+}
+const fmtLong = d => S.lang === 'de' ? `${+d.slice(8, 10)}. ${+d.slice(5, 7)}. ${d.slice(0, 4)}` : `${d.slice(0, 4)}년 ${+d.slice(5, 7)}월 ${+d.slice(8, 10)}일`;
 function saveForm() {
   readForm();
   const l = L(), m = { ...ui.draft };
   m.name = (m.name || '').trim();
   if (!m.name) { toast(l.needName); const n = $('#medform [name=name]'); if (n) n.focus(); return; }
+  if (m.expText != null) {
+    const d = MedCode.parseDate(m.expText);
+    if (String(m.expText).trim() && !d) { toast(l.expBad); const n = $('#medform [name=expText]'); if (n) n.focus(); return; }
+    m.exp = d;
+  }
+  delete m.expText;
   delete m.copied; delete m.expScan; delete m.drawerAuto;
   const photo = m.photo, photoNew = m.photoNew;
   delete m.photo; delete m.photoNew;
@@ -1480,8 +1506,10 @@ function detailCare(m) {
 // ---------- Aufgebraucht → Einkaufsliste / 다 쓴 약 → 장보기 ----------
 function shopHtml() {
   const l = L(), s = ui.sheet;
+  // Mehrere knappe Mittel auf einmal / 여러 개를 한 번에
+  const many = s.ids ? `<p style="margin:0 0 8px">${esc(l.shopAskMany)}</p><div class="shoplist">${s.ids.map((id, i) => S.meds[id] ? `<div class="lrow"><span class="lm">${esc(S.meds[id].name)}</span><button class="lx" data-act="shop-rm" data-i="${i}">${ms('close')}</button></div>` : '').join('')}</div>` : '';
   return `<div class="sbar"><span style="min-width:56px"></span><h2>${esc(l.shopTitle)}</h2><button class="txtbtn r" data-act="close">${esc(l.shopNo)}</button></div>
-  <div class="box"><p style="margin:0 0 8px">${esc(l.shopAsk)}</p><input class="in" id="shopname" value="${esc(s.name || '')}">
+  <div class="box">${many || `<p style="margin:0 0 8px">${esc(l.shopAsk)}</p><input class="in" id="shopname" value="${esc(s.name || '')}">`}
     <div class="btnrow" style="margin-top:10px">${!s.stores ? `<p class="note">${esc(l.shopLoading)}</p>` : s.stores.map(x => `<button class="btn ghost small" data-act="shopadd" data-v="${esc(x.id)}">${ms('add')}${esc(x.label)}</button>`).join('')}</div></div>`;
 }
 
@@ -1529,6 +1557,8 @@ function stockRatio(m) {
   if (m.level != null) return m.level / 3;
   return null;
 }
+// Alle Packungen derselben Sorte knapp? (eine volle Reservepackung = nicht knapp) / 같은 약 모든 통이 부족할 때만
+const groupLow = m => lowStock(m) && active().filter(x => groupKey(x) === groupKey(m)).every(lowStock);
 const lowStock = m => m.level != null ? m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
 function stockText(m) {
   const l = L();
@@ -1555,7 +1585,7 @@ function stockBoxHtml(m) {
     : `<div class="btnrow" style="margin-top:8px"><button class="btn ghost small" data-act="qty-step" data-id="${m.id}" data-v="${-step}">−${step} ${esc(l.units[u])}</button><button class="btn ghost small" data-act="qty-step" data-id="${m.id}" data-v="${step}">+${step} ${esc(l.units[u])}</button></div>`;
   return `<div class="box"><h3>${ms('inventory_2')}${esc(l.stockTitle)}</h3>
     <div class="stk">${stockBar(m)}<b>${esc(stockText(m))}</b></div>${ctl}
-    ${lowStock(m) && canFetch() ? `<button class="btn small" style="margin-top:8px" data-act="shop-open" data-id="${m.id}">${ms('shopping_cart')}${esc(l.shopTitle)}</button>` : ''}</div>`;
+    ${lowStock(m) && m.shopped ? `<p class="hint ok">${esc(l.shoppedOn(fmt(m.shopped)))}</p>` : lowStock(m) && canFetch() ? `<button class="btn small" style="margin-top:8px" data-act="shop-open" data-id="${m.id}">${ms('shopping_cart')}${esc(l.shopTitle)}</button>` : lowStock(m) ? `<p class="hint">${esc(l.shopNeedLogin)}</p>` : ''}</div>`;
 }
 // Formular: Einheit, Menge pro Packung, Rest – oder grob / 양식: 단위, 한 통 양, 남은 양 또는 대충
 function stockFormHtml(m) {
@@ -1885,7 +1915,7 @@ function readPack() {
   if (!p) return;
   if (g('ptotal')) p.total = g('ptotal').value;
   if (g('pleft')) p.left = g('pleft').value;
-  if (g('pexp')) p.exp = g('pexp').value;
+  if (g('pexp')) p.expText = g('pexp').value;
 }
 function packHtml() {
   const l = L(), p = ui.pack, m = S.meds[p.src];
@@ -1900,13 +1930,19 @@ function packHtml() {
   return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.cancel)}</button><h2>${esc(l.packMore)}</h2><button class="txtbtn r" data-act="pack-save">${esc(l.save)}</button></div>
   <div class="hero" style="margin-top:6px">${art(m, 70)}<div style="min-width:0"><h2 style="font-size:18px">${esc(m.name)}</h2><div class="s">${esc(l.packNow(stockText(m) || l.noStock))}</div></div></div>
   <div class="box" style="margin-top:10px"><label class="f">${esc(l.packStock)}</label><div class="wrapchips">${units}</div>${body}</div>
-  <div class="box"><label class="f">${esc(l.fExp)}</label><input class="in" type="date" id="pexp" value="${esc(p.exp)}">
+  <div class="box"><label class="f">${esc(l.fExp)}</label><input class="in" id="pexp" inputmode="decimal" autocomplete="off" value="${esc(p.expText != null ? p.expText : expIn(p.exp))}" placeholder="${esc(l.fExpPh)}">
+    ${expHint(p.expText != null ? p.expText : expIn(p.exp)).replace('id="exphint"', 'id="pexphint"')}
     <p class="hint">${esc(l.packExpHint)}</p>${boxes}</div>`;
 }
 function savePack() {
   readPack();
   const l = L(), p = ui.pack, m = S.meds[p.src];
   if (!m) return;
+  if (p.expText != null) {
+    const d = MedCode.parseDate(p.expText);
+    if (String(p.expText).trim() && !d) { toast(l.expBad); return; }
+    p.exp = d;
+  }
   const e = catOf(m) || {};
   const n = newDraft({ ...fromCat({ ...m, ...e }), code: m.code || '', pzn: m.pzn || '', ean: m.ean || '', box: p.box, exp: p.exp || '' });
   delete n.info; delete n.course; delete n.opened;
@@ -2174,10 +2210,24 @@ const ACT = {
     }
   },
   async shopadd(el) {
-    const name = ($('#shopname').value || '').trim();
-    if (!name) return;
-    try { await window.cloud.addShop(el.dataset.v, name); toast(L().shopAdded); } catch (e) { console.warn(e); toast(L().trFail); }
+    const s = ui.sheet, ids = s.ids || (s.id ? [s.id] : []);
+    const names = s.ids ? ids.map(id => (S.meds[id] || {}).name).filter(Boolean) : [($('#shopname').value || '').trim()].filter(Boolean);
+    if (!names.length) return;
+    try {
+      for (const n of names) await window.cloud.addShop(el.dataset.v, n);
+      // gemerkt, damit derselbe Vorschlag nicht wieder kommt / 다시 제안하지 않게 표시
+      for (const id of ids) if (S.meds[id]) S.meds[id] = { ...S.meds[id], shopped: today(), updated: Date.now() };
+      keep(); render(); if (window.cloud) window.cloud.push();
+      toast(L().shopAddedN(names.length));
+    } catch (e) { console.warn(e); toast(L().trFail); }
     closeSheet();
+  },
+  'shop-rm'(el) { ui.sheet.ids.splice(+el.dataset.i, 1); if (!ui.sheet.ids.length) closeSheet(); else renderSheet(); },
+  'shop-low'() {
+    const ids = active().filter(m => boxMatch(m) && groupLow(m) && !m.shopped).map(m => m.id);
+    if (!ids.length || !window.cloud || !window.cloud.shopStores) return;
+    openSheet({ type: 'shop', ids, stores: null });
+    window.cloud.shopStores(S.lang).then(list => { if (ui.sheet && ui.sheet.type === 'shop') { ui.sheet.stores = list; renderSheet(); } }).catch(e => { console.warn(e); closeSheet(); });
   },
   async 'push-on'() { try { await pushOn(); } catch (e) { console.warn(e); toast(L().notiFail); } renderSheet(); },
   async 'push-off'() { await pushOff(); toast(L().notiOffToast); renderSheet(); },
@@ -2291,7 +2341,7 @@ const ACT = {
   'shop-open'(el) {
     const m = S.meds[el.dataset.id];
     if (!m || !window.cloud || !window.cloud.shopStores) return;
-    openSheet({ type: 'shop', name: m.name, stores: null });
+    openSheet({ type: 'shop', name: m.name, id: m.id, stores: null });
     window.cloud.shopStores(S.lang).then(list => { if (ui.sheet && ui.sheet.type === 'shop') { ui.sheet.stores = list; renderSheet(); } }).catch(e => { console.warn(e); closeSheet(); });
   },
   // Neue Packung derselben Sorte: alles übernehmen außer Verfall, Anbruch und Rest / 같은 약 새 통: 기한·개봉·남은 양만 새로

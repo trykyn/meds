@@ -53,5 +53,23 @@ eq('plain URL QR', pick(parse('https://www.pharm.example.co.kr/elabel/123'), ['k
 eq('URL with Korean barcode', parse(`https://x.kr/p?code=${kr}`).ean, kr);
 eq('key of plain URL', key(parse('https://x.kr/a')).startsWith('raw:'), true);
 
+// Datum als Text / 날짜 숫자 입력
+const { parseDate } = globalThis.MedCode;
+eq('MM.YY', parseDate('08.27'), '2027-08-31');
+eq('MM/YYYY', parseDate('08/2027'), '2027-08-31');
+eq('YYYY.MM', parseDate('2027.08'), '2027-08-31');
+eq('YYYY-MM-DD', parseDate('2027-08-15'), '2027-08-15');
+eq('DD.MM.YYYY', parseDate('15.08.2027'), '2027-08-15');
+eq('DD.MM.YY', parseDate('15.08.27'), '2027-08-15');
+eq('YYYY. MM. DD.', parseDate('2027. 8. 5.'), '2027-08-05');
+eq('8 digits ymd', parseDate('20270815'), '2027-08-15');
+eq('8 digits dmy', parseDate('15082027'), '2027-08-15');
+eq('6 digits yymmdd', parseDate('270815'), '2027-08-15');
+eq('6 digits mmyyyy', parseDate('082027'), '2027-08-31');
+eq('4 digits mmyy', parseDate('0827'), '2027-08-31');
+eq('Feb leap', parseDate('02.28'), '2028-02-29');
+eq('bad month', parseDate('13.27'), '');
+eq('empty', parseDate(''), '');
+
 console.log(fail ? `\n${fail} FAILED` : '\nall passed');
 process.exit(fail ? 1 : 0);
