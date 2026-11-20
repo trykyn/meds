@@ -12,7 +12,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
-<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,sick,thermometer,upload,warning&display=block">
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,checklist,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,sick,thermometer,upload,warning&display=block">
 <style>
 :root {
   --red: #d9443a; --red2: #b8352d; --cream: #f7efe1; --ink: #3a2a20; --mut: #8a7562; --line: #eadfcd; --card: #fff;
@@ -213,6 +213,21 @@ textarea.in { min-height: 76px; resize: vertical; }
 .shopall { margin-left: auto; border: 0; background: #fff; color: var(--red2); border-radius: 10px; padding: 3px 8px; font: 400 12px var(--jua); display: inline-flex; align-items: center; gap: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 .shopall .ms { font-size: 16px; color: var(--red2) !important; }
 .basket h5 { flex-wrap: nowrap; }
+.checkbtn { display: flex; align-items: center; gap: 10px; width: 100%; margin: 12px 0 0; border: 0; background: #fff; border-radius: 16px; padding: 12px 14px; text-align: left; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.1); font: inherit; }
+.checkbtn .ms { font-size: 26px; color: var(--soon) !important; }
+.checkbtn.ok .ms { color: var(--ok) !important; }
+.checkbtn .ct { display: flex; flex-direction: column; font: 400 16px var(--jua); }
+.checkbtn small { font: 600 12px -apple-system, sans-serif; color: #8a7a66; margin-top: 2px; }
+.ck { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #f0e6d6; }
+.box h3 + .ck { border-top: 0; }
+.ckdot { flex: none; width: 26px; height: 26px; border-radius: 13px; display: grid; place-items: center; color: #fff; font: 700 14px sans-serif; background: var(--soon); }
+.ckdot .ms { font-size: 18px; color: #fff !important; }
+.ck-ok .ckdot { background: var(--ok); } .ck-old .ckdot { background: var(--bad); } .ck-skip .ckdot { background: var(--none); }
+.ckb { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ckb b { font-size: 15px; } .ckb small { color: #6f6253; font-size: 12.5px; } .ck-old .ckb small:first-of-type { color: var(--bad); }
+.ckb .ckex { color: var(--ink); }
+.ckbtns { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.ckbtns .txtbtn { border: 0; background: none; font: 600 13px -apple-system, sans-serif; color: #8a7a66; padding: 4px 6px; }
 .boxes { display: flex; gap: 2px; overflow-x: auto; margin: 10px 0 0; scrollbar-width: none; border-bottom: 2px solid #e2d4bf; }
 .boxes::-webkit-scrollbar { display: none; }
 .boxes button { flex: none; border: 0; background: none; border-radius: 10px 10px 0 0; padding: 7px 10px 6px; margin-bottom: -2px; font: 400 14px var(--jua); color: #8a7a66; display: inline-flex; align-items: center; gap: 4px; border-bottom: 3px solid transparent; }
@@ -452,6 +467,37 @@ const T = {
     findTitle: '이름으로 찾기', findShort: '이름', findNet: '인터넷에서 이름으로 찾기', findPh: '약 이름 (예: Fenistil, 타이레놀)',
     findHint: '한글로 쓰면 의약품안전나라, 독일어·영어로 쓰면 독일 온라인 약국에서 찾아요. 고르면 사진과 설명서도 채워져요.', findNeedLogin: '인터넷 검색은 설정에서 구글 로그인을 하면 돼요. 지금은 내 약 사전에서만 찾아요.',
     findMine: '내 약 사전', findMineTitle: '내 약 사전에서', findNetTitle: '인터넷에서', findNone: '찾은 약이 없어요. 다른 이름이나 짧은 이름으로 해 보세요.', itemNo: '품목',
+    checkTitle: '상비약 점검', checkMissN: n => `빠진 것 ${n}개`, checkAll: '독일 상비약 목록이 다 있어요',
+    checkIntro: '독일에서 흔히 권하는 가정 상비약 목록이에요. 집에 있는 약(기한 안 지난 것)과 맞춰 봤어요.',
+    checkMiss: '빠진 약', checkMissThings: '빠진 구급 용품', checkOk: '있는 것', checkSkipped: '안 챙길 것', checkEx: '약국에서:', checkHave: '있어요', checkAuto: '체온 기록이 있어서 있는 걸로 봤어요',
+    checkOld: n => `${n} — 기한이 지났어요. 새로 사야 해요`, checkGot: '있어요', checkUndo: '취소', checkToShop: '장보기', checkShopped: '장보기에 넣었어요',
+    checkSkip: '필요 없어요', checkBack: '다시 넣기',
+    checkNote: '참고용 목록이에요. 아이 약은 나이·몸무게에 맞는 것으로, 무엇을 살지는 약사와 상의하세요.',
+    checkItems: {
+      painA: ['어른 진통·해열제', 'Ibuprofen 400 oder Paracetamol 500 (Tabletten)', '두통, 몸살, 열'],
+      painK: ['아이 해열·진통 시럽', 'Ibuprofen- oder Paracetamol-Saft für Kinder', '아이 열, 통증'],
+      suppK: ['아이 해열 좌약', 'Paracetamol- oder Ibuprofen-Zäpfchen (nach Gewicht)', '토해서 시럽을 못 먹을 때'],
+      nose: ['코막힘 스프레이', 'Abschwellendes Nasenspray (Kinder: 0,025–0,05 %)', '코감기로 코가 막힐 때'],
+      saline: ['바닷물 코 스프레이', 'Meerwasser-Nasenspray', '코 씻기, 아이도 사용'],
+      cough: ['기침·가래약', 'Hustenlöser, z. B. Efeu (Prospan) oder Ambroxol', '기침, 가래'],
+      throat: ['목 아플 때 사탕·스프레이', 'Halstabletten oder Rachenspray', '목 아픔'],
+      ors: ['전해질 보충제', 'Elektrolyt-Lösung, z. B. Oralpädon, Elotrans', '설사·구토로 물이 빠질 때(특히 아이)'],
+      diarr: ['어른 설사약', 'Loperamid (nur Erwachsene)', '어른 설사'],
+      nausea: ['멀미·구토약', 'Mittel gegen Übelkeit/Reisekrankheit, z. B. Vomex', '멀미, 메스꺼움'],
+      allergy: ['먹는 알레르기약', 'Cetirizin (Tabletten) oder Fenistil-Tropfen', '두드러기, 꽃가루 알레르기'],
+      itch: ['벌레 물림·가려움 젤', 'Fenistil Gel oder Kühlgel gegen Insektenstiche', '모기, 벌레 물림'],
+      wound: ['상처 연고', 'Wund- und Heilsalbe, z. B. Bepanthen', '긁힌 상처, 튼 피부'],
+      disinf: ['상처 소독약', 'Wunddesinfektion, z. B. Octenisept', '넘어져 까진 상처'],
+      burn: ['화상·햇볕 화상 젤', 'Brand- und Wundgel oder Aloe-vera-Gel', '데었을 때, 햇볕에 탔을 때'],
+      thermo: ['체온계', 'Fieberthermometer', '열 재기'],
+      plaster: ['반창고', 'Pflaster (verschiedene Größen)', '작은 상처'],
+      bandage: ['거즈·붕대', 'Mullbinden, sterile Kompressen, elastische Binde', '큰 상처, 삔 데'],
+      tweezers: ['핀셋', 'Splitterpinzette', '가시 빼기'],
+      tick: ['진드기 집게', 'Zeckenzange oder Zeckenkarte', '진드기 떼기(독일은 진드기가 많아요)'],
+      gloves: ['일회용 장갑', 'Einmalhandschuhe', '상처 처치할 때'],
+      scissors: ['붕대 가위', 'Verbandschere', '붕대·반창고 자르기'],
+      coldpack: ['냉찜질팩', 'Kühlpack (im Gefrierfach)', '부딪힘, 삠'],
+    },
     sickTitle: '증상으로 약 찾기', sickWho: '누가 아파요?', sickWhat: '어떤 증상이에요? (여러 개 고를 수 있어요)', sickList: '집에 있는 약 · 기한 짧은 것부터',
     sickNone: '맞는 약이 집에 없어요. 약국이나 병원에 물어보세요.', sickPick: '증상을 고르면 집에 있는 약을 기한이 짧은 것부터 보여줘요.', packs: n => `${n}통`,
     sickNote: '약 이름과 설명서 내용으로 고른 참고용 목록이에요. 증상이 심하거나 오래가면 의사·약사와 상의하세요.',
@@ -551,6 +597,37 @@ const T = {
     findTitle: 'Nach Namen suchen', findShort: 'Name', findNet: 'Im Internet nach Namen suchen', findPh: 'Name (z. B. Fenistil, 타이레놀)',
     findHint: 'Koreanisch geschrieben → MFDS, sonst deutsche Online-Apotheke. Nach der Auswahl kommen Foto und Beipackzettel dazu.', findNeedLogin: 'Für die Internetsuche bitte mit Google anmelden. Jetzt nur im eigenen Lexikon.',
     findMine: 'Mein Lexikon', findMineTitle: 'Aus meinem Lexikon', findNetTitle: 'Im Internet', findNone: 'Nichts gefunden. Kürzeren oder anderen Namen versuchen.', itemNo: 'Nr.',
+    checkTitle: 'Hausapotheke-Check', checkMissN: n => `${n} fehlen`, checkAll: 'Alles da, was eine Hausapotheke braucht',
+    checkIntro: 'Übliche Empfehlungen für die Hausapotheke einer Familie, abgeglichen mit den (nicht abgelaufenen) Mitteln im Schrank.',
+    checkMiss: 'Fehlende Mittel', checkMissThings: 'Fehlendes Zubehör', checkOk: 'Vorhanden', checkSkipped: 'Brauchen wir nicht', checkEx: 'In der Apotheke:', checkHave: 'vorhanden', checkAuto: 'Fieber wurde schon gemessen – also vorhanden',
+    checkOld: n => `${n} – abgelaufen, neu kaufen`, checkGot: 'Haben wir', checkUndo: 'Zurück', checkToShop: 'Einkaufsliste', checkShopped: 'Auf der Einkaufsliste',
+    checkSkip: 'Brauchen wir nicht', checkBack: 'Wieder aufnehmen',
+    checkNote: 'Nur eine Orientierung. Kindermittel nach Alter und Gewicht wählen; im Zweifel in der Apotheke fragen.',
+    checkItems: {
+      painA: ['Schmerz-/Fiebermittel Erwachsene', 'Ibuprofen 400 oder Paracetamol 500 (Tabletten)', 'Kopfschmerzen, Fieber'],
+      painK: ['Fiebersaft für Kinder', 'Ibuprofen- oder Paracetamol-Saft für Kinder', 'Fieber, Schmerzen bei Kindern'],
+      suppK: ['Fieberzäpfchen für Kinder', 'Paracetamol- oder Ibuprofen-Zäpfchen (nach Gewicht)', 'wenn der Saft nicht drin bleibt'],
+      nose: ['Abschwellendes Nasenspray', 'Kinder: 0,025–0,05 %', 'verstopfte Nase'],
+      saline: ['Meerwasser-Nasenspray', 'Meerwasser-Nasenspray', 'Nase spülen, auch für Kinder'],
+      cough: ['Hustenmittel', 'z. B. Efeu (Prospan) oder Ambroxol', 'Husten, Schleim'],
+      throat: ['Halstabletten / Rachenspray', 'Halstabletten oder Rachenspray', 'Halsschmerzen'],
+      ors: ['Elektrolyt-Lösung', 'z. B. Oralpädon, Elotrans', 'Flüssigkeitsverlust bei Durchfall/Erbrechen (v. a. Kinder)'],
+      diarr: ['Durchfallmittel Erwachsene', 'Loperamid (nur Erwachsene)', 'Durchfall bei Erwachsenen'],
+      nausea: ['Mittel gegen Übelkeit', 'z. B. Vomex', 'Reisekrankheit, Übelkeit'],
+      allergy: ['Antiallergikum zum Einnehmen', 'Cetirizin (Tabletten) oder Fenistil-Tropfen', 'Nesselsucht, Heuschnupfen'],
+      itch: ['Gel gegen Insektenstiche', 'Fenistil Gel oder Kühlgel', 'Mücken, Juckreiz'],
+      wound: ['Wund- und Heilsalbe', 'z. B. Bepanthen', 'Schürfwunden, rissige Haut'],
+      disinf: ['Wunddesinfektion', 'z. B. Octenisept', 'aufgeschürfte Knie'],
+      burn: ['Gel bei Verbrennungen/Sonnenbrand', 'Brand- und Wundgel oder Aloe-vera-Gel', 'kleine Verbrennungen, Sonnenbrand'],
+      thermo: ['Fieberthermometer', 'Fieberthermometer', 'Fieber messen'],
+      plaster: ['Pflaster', 'verschiedene Größen', 'kleine Wunden'],
+      bandage: ['Verbandmaterial', 'Mullbinden, sterile Kompressen, elastische Binde', 'größere Wunden, Verstauchung'],
+      tweezers: ['Pinzette', 'Splitterpinzette', 'Splitter entfernen'],
+      tick: ['Zeckenzange', 'Zeckenzange oder Zeckenkarte', 'Zecken entfernen'],
+      gloves: ['Einmalhandschuhe', 'Einmalhandschuhe', 'Wundversorgung'],
+      scissors: ['Verbandschere', 'Verbandschere', 'Verband zuschneiden'],
+      coldpack: ['Kühlpack', 'im Gefrierfach', 'Prellungen, Verstauchungen'],
+    },
     sickTitle: 'Was hilft?', sickWho: 'Wer ist krank?', sickWhat: 'Welche Beschwerden? (mehrere möglich)', sickList: 'Im Haus · zuerst ablaufend',
     sickNone: 'Nichts Passendes im Haus. Bitte Apotheke oder Arzt fragen.', sickPick: 'Beschwerden wählen – passende Mittel erscheinen, das zuerst ablaufende oben.', packs: n => `${n} Pack.`,
     sickNote: 'Auswahl nach Name und Beipackzettel, nur als Hilfe. Bei starken oder anhaltenden Beschwerden Arzt oder Apotheke fragen.',
@@ -772,7 +849,7 @@ function render() {
       <button class="lbtn" data-act="loglist" aria-label="${esc(l.diary)}">${ms('thermometer')}</button>
       <button class="lbtn" data-act="lang">${S.lang === 'de' ? '한' : 'DE'}</button>
       <button class="lbtn" data-act="settings" aria-label="${esc(l.settings)}">${window.cloud && window.cloud.user && S.house ? ms('cloud_done') : ms('settings')}</button></div></div>
-    ${careHtml()}${boxRowHtml(act)}${top}${bar}${body}${goneHtml}
+    ${careHtml()}${boxRowHtml(act)}${top}${bar}${body}${act.length ? checkBtnHtml() : ''}${goneHtml}
   </div>
   <div class="dock"><div class="wrap">
     <button class="big" data-act="scan">${ms('barcode_reader')}${esc(l.scan)}</button>
@@ -796,7 +873,7 @@ function closeSheet() { ui.sheet = null; ui.draft = null; ui.krNote = null; ui.l
 function renderSheet() {
   const s = ui.sheet;
   if (!s) { $('#sheet').innerHTML = ''; return; }
-  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : s.type === 'find' ? findHtml() : s.type === 'pack' ? packHtml() : s.type === 'sick' ? sickHtml() : settingsHtml();
+  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : s.type === 'find' ? findHtml() : s.type === 'pack' ? packHtml() : s.type === 'sick' ? sickHtml() : s.type === 'check' ? checkHtml() : settingsHtml();
   if (html == null) return closeSheet();
   const prev = $('#sheet .sheet'), top = prev ? prev.scrollTop : 0;
   $('#sheet').innerHTML = `<div class="sheetbg" data-act="bg"><div class="sheet">${html}</div></div>`;
@@ -1881,6 +1958,83 @@ async function runFind(q) {
   if (ui.sheet && ui.sheet.type === 'find') renderSheet();
 }
 
+// ---------- Hausapotheke-Check: was fehlt? / 상비약 점검: 빠진 것 ----------
+// Angelehnt an übliche Empfehlungen für die Hausapotheke (BBK, Apotheken), für eine Familie mit Kindern.
+// 독일에서 흔히 권하는 가정 상비약 목록(연방재난청·약국 안내)을 아이 있는 집에 맞춤.
+const PAIN_I = ['ibuprofen', 'paracetamol', 'aspirin', 'naproxen', 'dexibuprofen'];
+const ANTIH_I = ['cetirizin', 'levocetirizin', 'loratadin', 'dimetinden', 'chlorphenamin'];
+const hasI = (m, ks) => ingrOf(m).some(k => ks.includes(k));
+const forKids = m => m.who !== 'adult';
+const ckText = m => { const e = catOf(m) || {}, i = e.info || m.info || {}; return [m.name, m.use, e.use, i.efcy, i.ingr].filter(Boolean).join(' '); };
+const CHECK = [
+  { id: 'painA', test: m => hasI(m, PAIN_I) && !['syrup', 'supp', 'cream'].includes(m.kind) && !['kids', 'davin', 'arin'].includes(m.who) },
+  { id: 'painK', test: m => hasI(m, PAIN_I) && m.kind === 'syrup' && forKids(m) },
+  { id: 'suppK', test: m => hasI(m, PAIN_I) && m.kind === 'supp' && forKids(m) },
+  { id: 'nose', test: m => hasI(m, ['xylometazolin', 'oxymetazolin']) || (['spray', 'drops'].includes(m.kind) && /nase|nasal|코|비강/i.test(ckText(m)) && !/meerwasser|salz|해수|식염/i.test(ckText(m))) },
+  { id: 'saline', test: m => /meerwasser|kochsalz|salzlösung|emser|해수|식염수/i.test(ckText(m)) },
+  { id: 'cough', test: m => hasI(m, ['ambroxol', 'acetylcystein', 'efeu', 'guaifenesin', 'dextromethorphan']) || /husten|bronch|기침|가래/i.test(ckText(m)) },
+  { id: 'throat', test: m => /halsschmerz|rachen|angin|dorithricin|lutsch|인후|목 ?아/i.test(ckText(m)) },
+  { id: 'ors', test: m => /elektrolyt|oralpädon|elotrans|rehydr|전해질/i.test(ckText(m)) },
+  { id: 'diarr', test: m => hasI(m, ['loperamid']) || (/durchfall|설사/i.test(ckText(m)) && !/elektrolyt|전해질/i.test(ckText(m))) },
+  { id: 'nausea', test: m => /übelkeit|erbrechen|reisekrank|vomex|dimenhydrinat|멀미|구토/i.test(ckText(m)) },
+  { id: 'allergy', test: m => hasI(m, ANTIH_I) && m.kind !== 'cream' },
+  { id: 'itch', test: m => m.kind === 'cream' && (hasI(m, ['dimetinden']) || /insekt|stich|juck|벌레|가려/i.test(ckText(m))) },
+  { id: 'wound', test: m => m.kind === 'cream' && /wund|heilsalbe|panthenol|bepanthen|상처|재생|후시딘|마데카/i.test(ckText(m)) },
+  { id: 'disinf', test: m => /desinf|octeni|betaisodona|povidon|소독|포비돈/i.test(ckText(m)) },
+  { id: 'burn', test: m => /sonnenbrand|verbrenn|brandgel|brand- und|after.?sun|aloe|화상/i.test(ckText(m)) },
+  // Dinge ohne Barcode: von Hand abhaken / 바코드 없는 물건: 직접 체크
+  { id: 'thermo', thing: true, auto: () => (Array.isArray(S.log) ? S.log : Object.values(S.log || {})).some(x => x.kind === 'temp') },
+  { id: 'plaster', thing: true }, { id: 'bandage', thing: true }, { id: 'tweezers', thing: true },
+  { id: 'tick', thing: true }, { id: 'gloves', thing: true }, { id: 'scissors', thing: true }, { id: 'coldpack', thing: true },
+];
+const checkData = () => S.cat['@check'] || { have: {}, skip: {}, shop: {} };
+function saveCheck(fn) {
+  const d = JSON.parse(JSON.stringify(checkData()));
+  for (const k of ['have', 'skip', 'shop']) d[k] = d[k] || {};
+  fn(d); d.updated = Date.now(); S.cat['@check'] = d;
+  keep(); render(); if (window.cloud) window.cloud.push();
+}
+// Stand je Punkt: ok (Mittel da), old (nur abgelaufene), miss, skip / 항목 상태
+function checkState() {
+  const d = checkData(), act = active();
+  return CHECK.map(c => {
+    if ((d.skip || {})[c.id]) return { c, st: 'skip' };
+    if (c.thing) return { c, st: (d.have || {})[c.id] || (c.auto && c.auto()) ? 'ok' : 'miss' };
+    const hit = act.filter(m => { try { return c.test(m); } catch (e) { return false; } });
+    const good = hit.filter(m => statusOf(m).st !== 'bad');
+    return { c, st: good.length ? 'ok' : hit.length ? 'old' : 'miss', meds: good.length ? good : hit };
+  });
+}
+const checkMissing = () => checkState().filter(x => x.st === 'miss' || x.st === 'old').length;
+function checkBtnHtml() {
+  const l = L(), n = checkMissing();
+  return `<button class="checkbtn ${n ? '' : 'ok'}" data-act="check-open">${ms(n ? 'checklist' : 'check_circle')}<span class="ct">${esc(l.checkTitle)}<small>${esc(n ? l.checkMissN(n) : l.checkAll)}</small></span></button>`;
+}
+function checkHtml() {
+  const l = L(), d = checkData(), rows = checkState(), ci = l.checkItems;
+  const row = ({ c, st, meds }) => {
+    const t = ci[c.id], shopped = (d.shop || {})[c.id], had = (d.have || {})[c.id];
+    const names = meds && meds.length ? [...new Set(meds.map(m => m.name))].slice(0, 2).join(', ') : '';
+    const sub = st === 'ok' ? (names || (c.auto && !had ? l.checkAuto : l.checkHave)) : st === 'old' ? l.checkOld(names) : t[2];
+    let btns = '';
+    if (st === 'skip') btns = `<button class="btn ghost small" data-act="check-unskip" data-v="${c.id}">${esc(l.checkBack)}</button>`;
+    else if (st === 'ok') btns = c.thing && had ? `<button class="txtbtn" data-act="check-have" data-v="${c.id}">${esc(l.checkUndo)}</button>` : '';
+    else btns = (c.thing ? `<button class="btn small" data-act="check-have" data-v="${c.id}">${ms('check')}${esc(l.checkGot)}</button>` : '')
+      + (shopped ? `<small class="ok-t">${esc(l.checkShopped)}</small>` : canFetch() ? `<button class="btn ghost small" data-act="check-shop" data-v="${c.id}">${ms('shopping_cart')}${esc(l.checkToShop)}</button>` : '')
+      + `<button class="txtbtn" data-act="check-skip" data-v="${c.id}">${esc(l.checkSkip)}</button>`;
+    return `<div class="ck ck-${st}"><span class="ckdot">${st === 'ok' ? ms('check') : st === 'skip' ? '–' : '!'}</span>
+      <div class="ckb"><b>${esc(t[0])}</b><small>${esc(sub)}</small>${st === 'miss' || st === 'old' ? `<small class="ckex">${esc(l.checkEx)} ${esc(t[1])}</small>` : ''}
+      ${btns ? `<div class="ckbtns">${btns}</div>` : ''}</div></div>`;
+  };
+  const miss = rows.filter(x => x.st === 'old').concat(rows.filter(x => x.st === 'miss')), ok = rows.filter(x => x.st === 'ok'), skip = rows.filter(x => x.st === 'skip');
+  const part = (title, list) => list.length ? `<div class="box"><h3>${esc(title)} <small>${list.length}</small></h3>${list.map(row).join('')}</div>` : '';
+  return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.close)}</button><h2>${esc(l.checkTitle)}</h2><span style="min-width:56px"></span></div>
+  <p class="note" style="margin-top:0">${esc(l.checkIntro)}</p>
+  ${miss.length ? part(l.checkMiss, miss.filter(x => !x.c.thing)) + part(l.checkMissThings, miss.filter(x => x.c.thing)) : `<div class="post ok">${ms('check_circle')}${esc(l.checkAll)}</div>`}
+  ${part(l.checkOk, ok)}${part(l.checkSkipped, skip)}
+  <p class="note">${esc(l.checkNote)}</p>`;
+}
+
 // ---------- Was hilft? Beschwerden → passende Mittel / 증상으로 약 찾기 ----------
 // Nur nicht abgelaufene Mittel, die zur Person passen; Reihenfolge: passt am besten, dann zuerst ablaufend (FEFO).
 // 기한이 남았고 그 사람에게 맞는 약만. 증상이 많이 맞는 순, 그다음 기한이 빨리 끝나는 것부터.
@@ -2239,10 +2393,11 @@ const ACT = {
       for (const n of names) await window.cloud.addShop(el.dataset.v, n);
       // gemerkt, damit derselbe Vorschlag nicht wieder kommt / 다시 제안하지 않게 표시
       for (const id of ids) if (S.meds[id]) S.meds[id] = { ...S.meds[id], shopped: today(), updated: Date.now() };
+      if (s.check) saveCheck(d => { d.shop[s.check] = today(); });
       keep(); render(); if (window.cloud) window.cloud.push();
       toast(L().shopAddedN(names.length));
     } catch (e) { console.warn(e); toast(L().trFail); }
-    closeSheet();
+    if (s.check) openSheet({ type: 'check' }); else closeSheet();
   },
   'shop-rm'(el) { ui.sheet.ids.splice(+el.dataset.i, 1); if (!ui.sheet.ids.length) closeSheet(); else renderSheet(); },
   'shop-low'() {
@@ -2302,6 +2457,16 @@ const ACT = {
     ui.customDays = false; ui.leafNote = null; ui.krNote = null;
     openSheet({ type: 'form' });
     if (!(prev && prev.info)) fillKorean(ui.draft.id, '', { itemSeq: x.itemSeq, name: x.name, entp: '' });
+  },
+  'check-open'() { openSheet({ type: 'check' }); },
+  'check-have'(el) { const id = el.dataset.v; saveCheck(d => { if (d.have[id]) delete d.have[id]; else d.have[id] = today(); }); },
+  'check-skip'(el) { const id = el.dataset.v; saveCheck(d => { d.skip[id] = today(); }); },
+  'check-unskip'(el) { const id = el.dataset.v; saveCheck(d => { delete d.skip[id]; }); },
+  'check-shop'(el) {
+    const id = el.dataset.v, t = L().checkItems[id];
+    if (!t || !window.cloud || !window.cloud.shopStores) return;
+    openSheet({ type: 'shop', name: S.lang === 'de' ? t[0] : t[0] + ' (' + t[1] + ')', check: id, stores: null });
+    window.cloud.shopStores(S.lang).then(list => { if (ui.sheet && ui.sheet.type === 'shop') { ui.sheet.stores = list; renderSheet(); } }).catch(e => { console.warn(e); closeSheet(); });
   },
   'sick-open'() {
     const recent = PEOPLE.find(w => logs(w, Date.now() - 48 * 36e5).length);
