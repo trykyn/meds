@@ -2067,7 +2067,7 @@ const PAIN_I = ['ibuprofen', 'paracetamol', 'aspirin', 'naproxen', 'dexibuprofen
 const ANTIH_I = ['cetirizin', 'levocetirizin', 'loratadin', 'dimetinden', 'chlorphenamin'];
 const hasI = (m, ks) => ingrOf(m).some(k => ks.includes(k));
 const forKids = m => m.who !== 'adult';
-const ckText = m => { const e = catOf(m) || {}, i = e.info || m.info || {}; return [m.name, m.use, e.use, i.efcy, i.ingr].filter(Boolean).join(' '); };
+const ckText = m => { const e = catOf(m) || {}, i = e.info || m.info || {}; return [m.name, m.use, e.use, formPart(i.efcy, m.kind), i.ingr].filter(Boolean).join(' '); };
 const CHECK = [
   { id: 'painA', test: m => hasI(m, PAIN_I) && !['syrup', 'supp', 'cream'].includes(m.kind) && !['kids', 'k1', 'k2'].includes(m.who) },
   { id: 'painK', test: m => hasI(m, PAIN_I) && m.kind === 'syrup' && forKids(m) },
@@ -2142,15 +2142,40 @@ function checkHtml() {
 // 기한이 남았고 그 사람에게 맞는 약만. 증상이 많이 맞는 순, 그다음 기한이 빨리 끝나는 것부터.
 const SYMPTOMS = [
   ['fever', /fieber|temperatur|열|해열|발열/i], ['pain', /schmerz|kopf|glieder|zahn|통증|두통|진통|치통|몸살|생리통/i],
-  ['cough', /husten|bronch|schleim|기침|가래|기관지/i], ['nose', /schnupfen|nase|nasal|rhinitis|코막힘|콧물|비염|코감기/i],
+  ['cough', /husten|bronch|schleimlös|verschleim|erkältungsbalsam|vaporub|기침|가래|기관지/i], ['nose', /schnupfen|nase|nasal|rhinitis|erkältungsbalsam|vaporub|코막힘|콧물|비염|코감기/i],
   ['throat', /hals|rachen|schluck|인후|목 ?아|편도/i], ['belly', /durchfall|magen|darm|bauch|blähung|설사|소화|복통|위장|배탈/i],
   ['constip', /verstopf|abführ|변비|배변/i], ['nausea', /übelkeit|erbrechen|reise|구토|멀미|메스꺼/i],
-  ['allergy', /allerg|juck|heuschnupfen|알레르기|가려|두드러기/i], ['wound', /wunde|verbrenn|schürf|haut|상처|화상|피부|찰과/i],
+  ['allergy', /allerg|juck|heuschnupfen|알레르기|가려|두드러기/i], ['wound', /wunde|verbrenn|schürf|(?<!schleim)haut|상처|화상|피부|찰과/i],
   ['insect', /insekt|stich|mücke|벌레|모기|물림/i], ['eye', /auge|bindehaut|눈|결막|안구/i], ['ear', /\bohr|귀|중이/i],
 ];
+// Ein Text für mehrere Formen („(정제) … (연고제) …“): nur den Teil dieser Form, sonst passt z. B. eine Salbe zu Husten
+// 한 설명에 여러 제형이 있으면("(정제) … (연고제) …") 이 약 제형 부분만. 안 그러면 연고가 정제 효능(기관지 폐렴)으로 기침에 걸림
+const FORM_RE = { tab: /정|캡슐|tablet|kapsel/i, cream: /연고|크림|겔|로션|외용|salbe|creme|gel/i, syrup: /시럽|액|현탁|saft|lösung/i, spray: /스프레이|분무|spray/i, drops: /점안|점비|점이|tropfen/i, supp: /좌|zäpfchen/i };
+function formPart(text, kind) {
+  const t = String(text || ''), re = FORM_RE[kind];
+  const parts = t.split(/(?=\((?:[^()]{1,12}제|정|캡슐|[^()]{1,14}(?:salbe|creme|tabletten|saft))\))/i);
+  if (parts.length < 2 || !re) return t;
+  const head = /^\(/.test(parts[0]) ? '' : parts[0];
+  const mine = parts.filter(p => { const h = (p.match(/^\(([^()]{1,16})\)/) || [])[1]; return h && re.test(h); });
+  return mine.length ? head + ' ' + mine.join(' ') : t;
+}
 function medText(m) {
   const e = catOf(m) || {}, i = e.info || m.info || {};
-  return [m.name, m.use, e.use, L().drawers[drawerOf(m)], i.efcy].filter(Boolean).join(' ');
+  return [m.name, m.use, e.use, L().drawers[drawerOf(m)], formPart(i.efcy, m.kind)].filter(Boolean).join(' ');
+}
+// Grobe Plausibilität nach Wirkstoffgruppe (ATC) und Form / 성분 분류(ATC)와 제형으로 한 번 더 거르기
+// D… Haut, S01 Auge, S02 Ohr; Salben nur für Haut, Schmerz (Gel) und Erkältungsbalsam
+// D… 피부약, S01 눈, S02 귀. 연고는 피부·통증(겔)·가슴에 바르는 감기약만
+function symFit(m, k) {
+  const e = catOf(m) || {}, atc = String(e.atc || m.atc || '');
+  if (/^D/.test(atc)) return ['wound', 'insect', 'allergy'].includes(k);
+  if (/^S01/.test(atc)) return k === 'eye' || k === 'allergy';
+  if (/^S02/.test(atc)) return k === 'ear';
+  if (m.kind === 'cream') {
+    if (['wound', 'insect', 'allergy', 'pain'].includes(k)) return true;
+    return ['cough', 'nose'].includes(k) && /balsam|vaporub|erkältung|einreib|nase|nasal|가슴|감기|코/i.test([m.name, m.use, e.use].join(' '));
+  }
+  return true;
 }
 const kidOk = (m, w) => !['k1', 'k2'].includes(w) || (m.who !== 'adult' && !/^⚠/.test(doseFor(m, w) || ''));
 function sickHtml() {
@@ -2161,7 +2186,7 @@ function sickHtml() {
   if (s.sym.length) {
     const fits = m => !m.who || m.who === s.who || (m.who === 'kids' && ['k1', 'k2'].includes(s.who)) || (m.who === 'adult' && ['mom', 'dad'].includes(s.who));
     const scored = groups(active().filter(m => statusOf(m).st !== 'bad' && fits(m) && kidOk(m, s.who)))
-      .map(g => { const t = medText(g[0]); return { g, n: s.sym.filter(k => SYMPTOMS.find(x => x[0] === k)[1].test(t)).length }; })
+      .map(g => { const t = medText(g[0]); return { g, n: s.sym.filter(k => symFit(g[0], k) && SYMPTOMS.find(x => x[0] === k)[1].test(t)).length }; })
       .filter(x => x.n).sort((a, b) => b.n - a.n || byLimit(a.g[0], b.g[0]));
     list = scored.map(({ g }) => {
       const m = g[0], st = doseState(m, s.who), clash = ingrClash(m, s.who), kd = doseFor(m, s.who);
