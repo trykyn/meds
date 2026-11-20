@@ -461,6 +461,8 @@ const T = {
     photoTitle: '사진', photoAdd: '사진 찍기·고르기', photoChange: '사진 바꾸기', photoHint: '상자 앞면을 찍어 두면 서랍에서 찾기 쉬워요. 한국 약은 바코드를 찍으면, 다른 약은 설명서 링크를 넣으면 사진을 자동으로 가져와요.',
     boxDefault: '우리집 약상자', boxAll: '전체', boxesTitle: '약상자 목록', boxesInfo: '거실, 냉장고, 차, 여행 가방처럼 약을 두는 곳을 나눠요. 약마다 어느 약상자에 있는지 고를 수 있어요.', boxNewPh: '새 약상자 이름 (예: 냉장고)', fBox: '어느 약상자에 둘까요',
     confirmBoxDel: (n, to) => `이 약상자를 지울까요? 안에 있던 약 ${n}개는 "${to}"(으)로 옮겨요.`,
+    packStock: '새 통의 남은 양', packNow: s => `지금 있는 통: ${s}`, noStock: '남은 양 안 셈', packExpHint: '지금 통과 같은 날짜로 미리 넣었어요. 새 상자에 찍힌 날짜가 다르면 바꿔 주세요.',
+    packDone: (n, sum) => `같은 약 ${n}통이 됐어요${sum ? ` · ${sum}` : ''}`,
     stockTitle: '남은 양', units: { tab: '정', pc: '개', bag: '포', ml: 'ml' }, unitNames: { tab: '알약 수', pc: '개수', bag: '포', ml: 'ml', level: '대충', none: '안 셈' },
     levels: ['거의 없음', '조금', '절반', '가득'], qtyTotal: '한 통에', qtyLeft: '지금 남은 양', qtyLeftPh: '비우면 한 통 그대로', lowShort: '부족',
     stockHint: '"먹었어요"로 기록하면 먹은 양만큼 저절로 줄어요.', stockLeft: t => `남은 양 ${t}`, packMore: '같은 약 한 통 더',
@@ -556,6 +558,8 @@ const T = {
     photoTitle: 'Foto', photoAdd: 'Foto aufnehmen/wählen', photoChange: 'Foto ändern', photoHint: 'Ein Foto der Packung hilft beim Finden. Bei koreanischen Mitteln kommt es mit dem Barcode, sonst mit dem Link zur Produktseite.',
     boxDefault: 'Hausapotheke', boxAll: 'Alle', boxesTitle: 'Aufbewahrungsorte', boxesInfo: 'Z. B. Wohnzimmer, Kühlschrank, Auto, Reisetasche. Jedes Medikament bekommt seinen Ort.', boxNewPh: 'Neuer Ort (z. B. Kühlschrank)', fBox: 'Wo liegt es?',
     confirmBoxDel: (n, to) => `Diesen Ort löschen? ${n} Medikamente kommen nach „${to}“.`,
+    packStock: 'Menge der neuen Packung', packNow: s => `Vorhandene Packung: ${s}`, noStock: 'nicht gezählt', packExpHint: 'Datum der vorhandenen Packung übernommen – bei anderem Datum auf der neuen Packung ändern.',
+    packDone: (n, sum) => `Jetzt ${n} Packungen${sum ? ` · ${sum}` : ''}`,
     stockTitle: 'Vorrat', units: { tab: 'Tabl.', pc: 'Stück', bag: 'Beutel', ml: 'ml' }, unitNames: { tab: 'Tabletten', pc: 'Stück', bag: 'Beutel', ml: 'ml', level: 'grob', none: 'nicht zählen' },
     levels: ['fast leer', 'wenig', 'halb', 'voll'], qtyTotal: 'Pro Packung', qtyLeft: 'Noch da', qtyLeftPh: 'leer = volle Packung', lowShort: 'knapp',
     stockHint: 'Mit „Genommen“ wird die Menge automatisch abgezogen.', stockLeft: t => `Vorrat ${t}`, packMore: 'Noch eine Packung',
@@ -767,7 +771,7 @@ function render() {
     q.addEventListener('input', () => { ui.q = q.value; render(); });
     if (hadFocus) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
-  if (ui.sheet && !['form', 'addlog'].includes(ui.sheet.type)) renderSheet();
+  if (ui.sheet && !['form', 'addlog', 'pack'].includes(ui.sheet.type)) renderSheet();
   syncAlerts();
   document.documentElement.lang = S.lang === 'de' ? 'de' : 'ko';
   document.title = l.title;
@@ -779,7 +783,7 @@ function closeSheet() { ui.sheet = null; ui.draft = null; ui.krNote = null; ui.l
 function renderSheet() {
   const s = ui.sheet;
   if (!s) { $('#sheet').innerHTML = ''; return; }
-  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : s.type === 'find' ? findHtml() : s.type === 'sick' ? sickHtml() : settingsHtml();
+  const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : s.type === 'find' ? findHtml() : s.type === 'pack' ? packHtml() : s.type === 'sick' ? sickHtml() : settingsHtml();
   if (html == null) return closeSheet();
   const prev = $('#sheet .sheet'), top = prev ? prev.scrollTop : 0;
   $('#sheet').innerHTML = `<div class="sheetbg" data-act="bg"><div class="sheet">${html}</div></div>`;
@@ -1870,6 +1874,54 @@ function sickHtml() {
   <p class="note">${esc(l.sickNote)}</p>`;
 }
 
+// ---------- Noch eine Packung (kleines Blatt: zuerst Menge, dann Verfall) / 같은 약 한 통 더(작은 화면: 남은 양 먼저) ----------
+function openPack(m) {
+  const u = unitOf(m) || unitDefault(m.kind);
+  ui.pack = { src: m.id, unit: u, total: m.qty ? m.qty.total : '', left: '', level: 3, exp: m.exp || '', box: boxOf(m) };
+  openSheet({ type: 'pack' });
+}
+function readPack() {
+  const p = ui.pack, g = id => document.getElementById(id);
+  if (!p) return;
+  if (g('ptotal')) p.total = g('ptotal').value;
+  if (g('pleft')) p.left = g('pleft').value;
+  if (g('pexp')) p.exp = g('pexp').value;
+}
+function packHtml() {
+  const l = L(), p = ui.pack, m = S.meds[p.src];
+  if (!m) return null;
+  const units = [...COUNT_UNITS, 'level', ''].map(k => `<button type="button" class="chip ${p.unit === k ? 'on' : ''}" data-act="pset" data-k="unit" data-v="${k}">${esc(l.unitNames[k || 'none'])}</button>`).join('');
+  const body = p.unit === 'level'
+    ? `<div class="wrapchips" style="margin-top:8px">${[3, 2, 1, 0].map(v => `<button type="button" class="chip ${+p.level === v ? 'on' : ''}" data-act="pset" data-k="level" data-v="${v}">${esc(v === 3 ? l.unopened : l.levels[v])}</button>`).join('')}</div>`
+    : p.unit ? `<div class="wrapchips" style="margin-top:8px">${(p.unit === 'ml' ? [50, 100, 150, 200] : [10, 20, 30, 50, 100]).map(n => `<button type="button" class="chip ${+p.total === n ? 'on' : ''}" data-act="pset" data-k="total" data-v="${n}">${n} ${esc(l.units[p.unit])}</button>`).join('')}</div>
+      <div class="row2" style="margin-top:8px"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" id="ptotal" type="number" inputmode="decimal" min="0" step="any" value="${esc(p.total)}"><span>${esc(l.units[p.unit])}</span></div></div>
+        <div><label class="f">${esc(l.qtyLeft)}</label><div class="inrow"><input class="in" id="pleft" type="number" inputmode="decimal" min="0" step="any" value="${esc(p.left)}" placeholder="${esc(l.qtyLeftPh)}"><span>${esc(l.units[p.unit])}</span></div></div></div>` : '';
+  const boxes = multiBox() ? `<label class="f">${esc(l.fBox)}</label><div class="wrapchips">${boxesList().map(b => `<button type="button" class="chip ${p.box === b.id ? 'on' : ''}" data-act="pset" data-k="box" data-v="${esc(b.id)}">${esc(b.name || l.boxDefault)}</button>`).join('')}</div>` : '';
+  return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.cancel)}</button><h2>${esc(l.packMore)}</h2><button class="txtbtn r" data-act="pack-save">${esc(l.save)}</button></div>
+  <div class="hero" style="margin-top:6px">${art(m, 70)}<div style="min-width:0"><h2 style="font-size:18px">${esc(m.name)}</h2><div class="s">${esc(l.packNow(stockText(m) || l.noStock))}</div></div></div>
+  <div class="box" style="margin-top:10px"><label class="f">${esc(l.packStock)}</label><div class="wrapchips">${units}</div>${body}</div>
+  <div class="box"><label class="f">${esc(l.fExp)}</label><input class="in" type="date" id="pexp" value="${esc(p.exp)}">
+    <p class="hint">${esc(l.packExpHint)}</p>${boxes}</div>`;
+}
+function savePack() {
+  readPack();
+  const l = L(), p = ui.pack, m = S.meds[p.src];
+  if (!m) return;
+  const e = catOf(m) || {};
+  const n = newDraft({ ...fromCat({ ...m, ...e }), code: m.code || '', pzn: m.pzn || '', ean: m.ean || '', box: p.box, exp: p.exp || '' });
+  delete n.info; delete n.course; delete n.opened;
+  if (COUNT_UNITS.includes(p.unit) && +p.total > 0) n.qty = { unit: p.unit, total: +p.total, left: p.left === '' ? +p.total : Math.min(+p.total, +p.left) };
+  else if (p.unit === 'level') n.level = +p.level;
+  if (m.ingr) n.ingr = m.ingr;
+  n.openDays = m.openDays || 0;
+  for (const k of Object.keys(n)) if (n[k] === '' || n[k] == null) delete n[k];
+  commit(n);
+  ui.pack = null;
+  openSheet({ type: 'detail', id: m.id });
+  const all = active().filter(x => groupKey(x) === groupKey(m));
+  toast(l.packDone(all.length, packSum(all)));
+}
+
 // ---------- Ablauf-Erinnerung (Web Push) / 만료 알림 ----------
 // Das Handy rechnet die Tage aus (30 und 7 Tage vorher, am letzten Tag; angebrochene Kurzläufer 3 Tage vorher)
 // und schickt dem Server nur diese Tage. Den Text legt es in den Cache „meds-alerts“, den sw.js beim Push liest.
@@ -2243,16 +2295,15 @@ const ACT = {
     window.cloud.shopStores(S.lang).then(list => { if (ui.sheet && ui.sheet.type === 'shop') { ui.sheet.stores = list; renderSheet(); } }).catch(e => { console.warn(e); closeSheet(); });
   },
   // Neue Packung derselben Sorte: alles übernehmen außer Verfall, Anbruch und Rest / 같은 약 새 통: 기한·개봉·남은 양만 새로
-  'pack-more'(el) {
-    const m = S.meds[el.dataset.id];
-    if (!m) return;
-    const e = catOf(m) || {};
-    ui.draft = newDraft({ ...fromCat({ ...m, ...e }), code: m.code || '', pzn: m.pzn || '', ean: m.ean || '', box: boxOf(m), copied: true,
-      ...(m.qty ? { qtyUnit: m.qty.unit, qtyTotal: m.qty.total, qtyLeft: m.qty.total } : m.level != null ? { qtyUnit: 'level', level: 3 } : {}) });
-    delete ui.draft.course;
-    ui.customDays = false; ui.leafNote = null; ui.krNote = null;
-    openSheet({ type: 'form' });
+  'pack-more'(el) { const m = S.meds[el.dataset.id]; if (m) openPack(m); },
+  pset(el) {
+    readPack();
+    const p = ui.pack, k = el.dataset.k, v = el.dataset.v;
+    p[k] = v;
+    if (k === 'total') p.left = '';
+    renderSheet();
   },
+  'pack-save'() { savePack(); },
   box(el) { ui.box = el.dataset.v; keepUi(); render(); },
   'box-add'() {
     const name = ($('#bx-new').value || '').trim();
