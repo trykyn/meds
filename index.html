@@ -471,7 +471,7 @@ const T = {
     packDone: (n, sum) => `같은 약 ${n}통이 됐어요${sum ? ` · ${sum}` : ''}`,
     stockTitle: '남은 양', units: { tab: '정', pc: '개', bag: '포', ml: 'ml' }, unitNames: { tab: '알약 수', pc: '개수', bag: '포', ml: 'ml', level: '대충(눈대중)', none: '안 셈' },
     levels: ['거의 다 씀', '조금 남음', '반쯤 남음', '가득'], qtyTotal: '한 통에', qtyLeft: '지금 남은 양', qtyLeftPh: '비우면 한 통 그대로', lowShort: '부족', packsShort: n => `${n}통`,
-    stockHint: '"먹었어요"로 기록하면 먹은 양만큼 저절로 줄어요.', stockLeft: t => `남은 양 ${t}`, packMore: '같은 약 한 통 더',
+    stockHint: '"먹었어요"로 기록하면 먹은 양만큼 저절로 줄어요. 상자를 버려서 한 통에 몇 개인지 모르면 "한 통에"는 비워 두고 남은 양만 쓰세요.', qtyTotalPh: '모르면 비워 두기', looseLeft: t => `${t} 남음`, stockLeft: t => `남은 양 ${t}`, packMore: '같은 약 한 통 더',
     notiTitle: '만료 알림', notiInfo: '약 기한이 30일·7일 남았을 때와 마지막 날 아침 8시에 휴대폰으로 알려 줘요. 약 이름은 서버에 저장되지 않아요.',
     notiEnable: '알림 켜기', notiOnText: '켜져 있어요 · 매일 아침 8시에 필요한 날만 알려요', notiTest: '시험 알림 보내기', notiOff: '끄기',
     notiNoSupport: '이 화면에서는 알림을 쓸 수 없어요. 아이폰은 Safari에서 "홈 화면에 추가"한 앱으로 열어야 켤 수 있어요.', notiNeedLogin: '위의 "가족과 함께 쓰기"에서 구글 로그인을 하면 켤 수 있어요.',
@@ -570,7 +570,7 @@ const T = {
     packDone: (n, sum) => `Jetzt ${n} Packungen${sum ? ` · ${sum}` : ''}`,
     stockTitle: 'Vorrat', units: { tab: 'Tabl.', pc: 'Stück', bag: 'Beutel', ml: 'ml' }, unitNames: { tab: 'Tabletten', pc: 'Stück', bag: 'Beutel', ml: 'ml', level: 'grob', none: 'nicht zählen' },
     levels: ['fast leer', 'wenig übrig', 'halb voll', 'voll'], qtyTotal: 'Pro Packung', qtyLeft: 'Noch da', qtyLeftPh: 'leer = volle Packung', lowShort: 'knapp', packsShort: n => `${n} Pck.`,
-    stockHint: 'Mit „Genommen“ wird die Menge automatisch abgezogen.', stockLeft: t => `Vorrat ${t}`, packMore: 'Noch eine Packung',
+    stockHint: 'Mit „Genommen“ wird die Menge automatisch abgezogen. Packung schon weg? „Pro Packung“ leer lassen und nur den Rest eintragen.', qtyTotalPh: 'unbekannt? leer lassen', looseLeft: t => `noch ${t}`, stockLeft: t => `Vorrat ${t}`, packMore: 'Noch eine Packung',
     notiTitle: 'Ablauf-Erinnerung', notiInfo: '30 und 7 Tage vor Ablauf und am letzten Tag kommt um 8 Uhr eine Nachricht. Namen der Medikamente werden nicht auf dem Server gespeichert.',
     notiEnable: 'Erinnerungen einschalten', notiOnText: 'Eingeschaltet · täglich 8 Uhr, nur an fälligen Tagen', notiTest: 'Test senden', notiOff: 'Ausschalten',
     notiNoSupport: 'Hier gehen keine Mitteilungen. Auf dem iPhone die App über Safari → „Zum Home-Bildschirm“ öffnen.', notiNeedLogin: 'Bitte oben unter „Mit der Familie teilen“ mit Google anmelden.',
@@ -1561,6 +1561,14 @@ const COUNT_UNITS = ['tab', 'pc', 'bag', 'ml'];
 const unitDefault = k => k === 'tab' ? 'tab' : k === 'supp' ? 'pc' : k === 'syrup' ? 'ml' : 'level';
 const unitOf = m => m.qty && m.qty.unit ? m.qty.unit : m.level != null ? 'level' : '';
 const fmtNum = n => String(Math.round(n * 10) / 10).replace('.', S.lang === 'de' ? ',' : '.');
+// Packungsgröße unbekannt (Schachtel weg): nur den Rest zählen, Maßstab = höchster gezählter Stand
+// 상자를 버려 한 통 양을 모르면 남은 양만 셈. 기준은 지금까지 센 가장 많은 양
+function qtyFrom(u, total, left, prev) {
+  const T = +total > 0 ? +total : 0, n = left === '' || left == null ? null : +left, same = prev && prev.unit === u;
+  if (T) return { unit: u, total: T, left: Math.max(0, Math.min(T, n == null ? (same ? prev.left : T) : n)) };
+  if (n != null && n > 0) return { unit: u, total: Math.max(n, same && prev.loose ? prev.total : 0), left: n, loose: true };
+  return null;
+}
 function stockRatio(m) {
   if (m.qty && m.qty.total > 0) return Math.max(0, Math.min(1, m.qty.left / m.qty.total));
   if (m.level != null) return m.opened ? [0.05, 0.25, 0.5, 1][m.level] ?? 1 : 1;
@@ -1572,6 +1580,7 @@ const groupLow = m => lowStock(m) && active().filter(x => groupKey(x) === groupK
 const lowStock = m => m.level != null ? !!m.opened && m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
 function stockText(m) {
   const l = L();
+  if (m.qty && m.qty.loose) return l.looseLeft(`${fmtNum(m.qty.left)} ${l.units[m.qty.unit]}`);
   if (!m.opened && ((m.qty && m.qty.total > 0 && m.qty.left >= m.qty.total) || m.level != null)) return l.unopened;
   if (m.qty && m.qty.total > 0) return `${fmtNum(m.qty.left)}/${fmtNum(m.qty.total)} ${l.units[m.qty.unit]}`;
   if (m.level != null) return l.levels[m.level];
@@ -1601,13 +1610,13 @@ function stockBoxHtml(m) {
 function stockFormHtml(m) {
   const l = L();
   const u = m.qtyUnit != null ? m.qtyUnit : m.qty ? m.qty.unit : m.level != null ? 'level' : unitDefault(m.kind);
-  const total = m.qtyTotal != null ? m.qtyTotal : (m.qty || {}).total || '';
+  const total = m.qtyTotal != null ? m.qtyTotal : m.qty && !m.qty.loose ? m.qty.total : '';
   const left = m.qtyLeft != null ? m.qtyLeft : m.qty ? m.qty.left : '';
   const lv = m.level != null ? +m.level : 3;
   const chips = [...COUNT_UNITS, 'level', 'none'].map(k => `<button type="button" class="chip ${u === k || (k === 'none' && !u) ? 'on' : ''}" data-act="set" data-k="qtyUnit" data-v="${k === 'none' ? '' : k}">${esc(l.unitNames[k])}</button>`).join('');
   const body = u === 'level'
     ? `<div class="wrapchips" style="margin-top:8px">${[3, 2, 1, 0].map(v => `<button type="button" class="chip ${lv === v ? 'on' : ''}" data-act="set" data-k="level" data-v="${v}">${esc(l.levels[v])}</button>`).join('')}</div>`
-    : u ? `<div class="row2" style="margin-top:8px;flex-wrap:wrap"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" type="number" inputmode="decimal" min="0" step="any" name="qtyTotal" value="${esc(total)}" placeholder="${u === 'ml' ? '100' : '20'}"><span>${esc(l.units[u])}</span></div></div>
+    : u ? `<div class="row2" style="margin-top:8px;flex-wrap:wrap"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" type="number" inputmode="decimal" min="0" step="any" name="qtyTotal" value="${esc(total)}" placeholder="${esc(l.qtyTotalPh)}"><span>${esc(l.units[u])}</span></div></div>
         <div class="wrapchips" style="flex:0 0 100%">${(u === 'ml' ? [50, 100, 150, 200] : [10, 20, 30, 50, 100]).map(n => `<button type="button" class="chip ${+total === n ? 'on' : ''}" data-act="set" data-k="qtyTotal" data-v="${n}">${n} ${esc(l.units[u])}</button>`).join('')}</div>
         <div><label class="f">${esc(l.qtyLeft)}</label><div class="inrow"><input class="in" type="number" inputmode="decimal" min="0" step="any" name="qtyLeft" value="${esc(left)}" placeholder="${esc(l.qtyLeftPh)}"><span>${esc(l.units[u])}</span></div></div></div>` : '';
   return `<div class="box"><label class="f">${esc(l.stockTitle)}</label><div class="wrapchips">${chips}</div>${body}
@@ -1616,9 +1625,9 @@ function stockFormHtml(m) {
 // Formularwerte → m.qty / m.level / 양식 값 → 재고
 function stockFromForm(m) {
   const u = m.qtyUnit != null ? m.qtyUnit : m.qty ? m.qty.unit : m.level != null ? 'level' : unitDefault(m.kind);
-  if (COUNT_UNITS.includes(u) && +m.qtyTotal > 0) {
-    const total = +m.qtyTotal, left = m.qtyLeft === '' || m.qtyLeft == null ? (m.qty && m.qty.unit === u ? m.qty.left : total) : +m.qtyLeft;
-    m.qty = { unit: u, total, left: Math.max(0, Math.min(total, left)) };
+  const q = COUNT_UNITS.includes(u) ? qtyFrom(u, m.qtyTotal, m.qtyLeft, m.qty) : null;
+  if (q) {
+    m.qty = q;
     delete m.level;
   } else if (u === 'level') {
     m.level = m.level != null && m.level !== '' ? +m.level : 3;
@@ -1918,7 +1927,7 @@ function sickHtml() {
 // ---------- Noch eine Packung (kleines Blatt: zuerst Menge, dann Verfall) / 같은 약 한 통 더(작은 화면: 남은 양 먼저) ----------
 function openPack(m) {
   const u = unitOf(m) || unitDefault(m.kind);
-  ui.pack = { src: m.id, unit: u, total: m.qty ? m.qty.total : '', left: '', level: 3, exp: m.exp || '', box: boxOf(m) };
+  ui.pack = { src: m.id, unit: u, total: m.qty && !m.qty.loose ? m.qty.total : '', left: '', level: 3, exp: m.exp || '', box: boxOf(m) };
   openSheet({ type: 'pack' });
 }
 function readPack() {
@@ -1935,7 +1944,7 @@ function packHtml() {
   const body = p.unit === 'level'
     ? `<div class="wrapchips" style="margin-top:8px">${[3, 2, 1, 0].map(v => `<button type="button" class="chip ${+p.level === v ? 'on' : ''}" data-act="pset" data-k="level" data-v="${v}">${esc(v === 3 ? l.unopened : l.levels[v])}</button>`).join('')}</div>`
     : p.unit ? `<div class="wrapchips" style="margin-top:8px">${(p.unit === 'ml' ? [50, 100, 150, 200] : [10, 20, 30, 50, 100]).map(n => `<button type="button" class="chip ${+p.total === n ? 'on' : ''}" data-act="pset" data-k="total" data-v="${n}">${n} ${esc(l.units[p.unit])}</button>`).join('')}</div>
-      <div class="row2" style="margin-top:8px"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" id="ptotal" type="number" inputmode="decimal" min="0" step="any" value="${esc(p.total)}"><span>${esc(l.units[p.unit])}</span></div></div>
+      <div class="row2" style="margin-top:8px"><div><label class="f">${esc(l.qtyTotal)}</label><div class="inrow"><input class="in" id="ptotal" type="number" inputmode="decimal" min="0" step="any" value="${esc(p.total)}" placeholder="${esc(l.qtyTotalPh)}"><span>${esc(l.units[p.unit])}</span></div></div>
         <div><label class="f">${esc(l.qtyLeft)}</label><div class="inrow"><input class="in" id="pleft" type="number" inputmode="decimal" min="0" step="any" value="${esc(p.left)}" placeholder="${esc(l.qtyLeftPh)}"><span>${esc(l.units[p.unit])}</span></div></div></div>` : '';
   const boxes = multiBox() ? `<label class="f">${esc(l.fBox)}</label><div class="wrapchips">${boxesList().map(b => `<button type="button" class="chip ${p.box === b.id ? 'on' : ''}" data-act="pset" data-k="box" data-v="${esc(b.id)}">${esc(b.name || l.boxDefault)}</button>`).join('')}</div>` : '';
   return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.cancel)}</button><h2>${esc(l.packMore)}</h2><button class="txtbtn r" data-act="pack-save">${esc(l.save)}</button></div>
@@ -1957,7 +1966,8 @@ function savePack() {
   const e = catOf(m) || {};
   const n = newDraft({ ...fromCat({ ...m, ...e }), code: m.code || '', pzn: m.pzn || '', ean: m.ean || '', box: p.box, exp: p.exp || '' });
   delete n.info; delete n.course; delete n.opened;
-  if (COUNT_UNITS.includes(p.unit) && +p.total > 0) n.qty = { unit: p.unit, total: +p.total, left: p.left === '' ? +p.total : Math.min(+p.total, +p.left) };
+  const q = COUNT_UNITS.includes(p.unit) ? qtyFrom(p.unit, p.total, p.left, null) : null;
+  if (q) n.qty = q;
   else if (p.unit === 'level') n.level = +p.level;
   if ((n.level != null && n.level < 3) || (n.qty && n.qty.left < n.qty.total)) n.opened = today();
   if (m.ingr) n.ingr = m.ingr;
@@ -2334,7 +2344,7 @@ const ACT = {
       if (n > 0) { e.dec = n; S.meds[m.id] = { ...m, opened: m.opened || dayOf(e.t), qty: { ...m.qty, left: Math.max(0, m.qty.left - n) }, updated: Date.now() }; left = stockText(S.meds[m.id]); }
     }
     S.log[e.id] = e;
-    keep(); ui.logDraft = null; closeSheet(); render(); toast(left ? `${l.logged} · ${l.stockLeft(left)}` : l.logged);
+    keep(); ui.logDraft = null; closeSheet(); render(); toast(left ? `${l.logged} · ${S.meds[d.med] && S.meds[d.med].qty && S.meds[d.med].qty.loose ? left : l.stockLeft(left)}` : l.logged);
     if (window.cloud) window.cloud.push();
   },
   dellog(el) {
@@ -2347,7 +2357,8 @@ const ACT = {
   'qty-step'(el) {
     const m = S.meds[el.dataset.id];
     if (!m || !m.qty) return;
-    commit({ ...m, qty: { ...m.qty, left: Math.max(0, Math.min(m.qty.total, m.qty.left + +el.dataset.v)) } });
+    const nl = Math.max(0, m.qty.left + +el.dataset.v);
+    commit({ ...m, qty: m.qty.loose ? { ...m.qty, left: nl, total: Math.max(m.qty.total, nl) } : { ...m.qty, left: Math.min(m.qty.total, nl) } });
   },
   'level-set'(el) {
     const m = S.meds[el.dataset.id], v = +el.dataset.v;
