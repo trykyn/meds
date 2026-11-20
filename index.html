@@ -1554,15 +1554,15 @@ const unitOf = m => m.qty && m.qty.unit ? m.qty.unit : m.level != null ? 'level'
 const fmtNum = n => String(Math.round(n * 10) / 10).replace('.', S.lang === 'de' ? ',' : '.');
 function stockRatio(m) {
   if (m.qty && m.qty.total > 0) return Math.max(0, Math.min(1, m.qty.left / m.qty.total));
-  if (m.level != null) return m.level / 3;
+  if (m.level != null) return m.opened ? m.level / 3 : 1;
   return null;
 }
 // Alle Packungen derselben Sorte knapp? (eine volle Reservepackung = nicht knapp) / 같은 약 모든 통이 부족할 때만
 const groupLow = m => lowStock(m) && active().filter(x => groupKey(x) === groupKey(m)).every(lowStock);
-const lowStock = m => m.level != null ? m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
+const lowStock = m => m.level != null ? !!m.opened && m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
 function stockText(m) {
   const l = L();
-  if (!m.opened && ((m.qty && m.qty.total > 0 && m.qty.left >= m.qty.total) || m.level === 3)) return l.unopened;
+  if (!m.opened && ((m.qty && m.qty.total > 0 && m.qty.left >= m.qty.total) || m.level != null)) return l.unopened;
   if (m.qty && m.qty.total > 0) return `${fmtNum(m.qty.left)}/${fmtNum(m.qty.total)} ${l.units[m.qty.unit]}`;
   if (m.level != null) return l.levels[m.level];
   return '';
@@ -1612,6 +1612,7 @@ function stockFromForm(m) {
     delete m.level;
   } else if (u === 'level') {
     m.level = m.level != null && m.level !== '' ? +m.level : 3;
+    if (m.level < 3 && !m.opened) m.opened = today();
     delete m.qty;
   } else if (!u) { delete m.qty; delete m.level; }
   delete m.qtyUnit; delete m.qtyTotal; delete m.qtyLeft;
@@ -2319,7 +2320,7 @@ const ACT = {
     let left = '';
     if (m && m.qty && m.qty.total > 0) {
       const n = amountIn(e.amt, m.qty.unit);
-      if (n > 0) { e.dec = n; S.meds[m.id] = { ...m, qty: { ...m.qty, left: Math.max(0, m.qty.left - n) }, updated: Date.now() }; left = stockText(S.meds[m.id]); }
+      if (n > 0) { e.dec = n; S.meds[m.id] = { ...m, opened: m.opened || dayOf(e.t), qty: { ...m.qty, left: Math.max(0, m.qty.left - n) }, updated: Date.now() }; left = stockText(S.meds[m.id]); }
     }
     S.log[e.id] = e;
     keep(); ui.logDraft = null; closeSheet(); render(); toast(left ? `${l.logged} · ${l.stockLeft(left)}` : l.logged);
@@ -2337,7 +2338,10 @@ const ACT = {
     if (!m || !m.qty) return;
     commit({ ...m, qty: { ...m.qty, left: Math.max(0, Math.min(m.qty.total, m.qty.left + +el.dataset.v)) } });
   },
-  'level-set'(el) { const m = S.meds[el.dataset.id]; if (m) commit({ ...m, level: +el.dataset.v }); },
+  'level-set'(el) {
+    const m = S.meds[el.dataset.id], v = +el.dataset.v;
+    if (m) commit({ ...m, level: v, ...(v < 3 && !m.opened ? { opened: today() } : {}) });
+  },
   'shop-open'(el) {
     const m = S.meds[el.dataset.id];
     if (!m || !window.cloud || !window.cloud.shopStores) return;
