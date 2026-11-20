@@ -152,5 +152,37 @@
   // Schlüssel, unter dem dasselbe Produkt wiedererkannt wird. / 같은 제품을 알아보는 열쇠.
   const key = c => !c ? '' : c.pzn ? 'pzn:' + c.pzn : c.ean ? 'ean:' + c.ean : c.raw ? 'raw:' + c.raw.slice(0, 60) : '';
 
-  root.MedCode = { parse, key, pznOk, gtinOk, ymd };
+  // Verfallsdatum, wie es auf der Packung steht, als Text eingeben: „08.27“, „08/2027“, „2027.08“, „31.08.2027“,
+  // „2027-08-31“, „270831“ … Nur Monat → letzter Tag des Monats. Liefert JJJJ-MM-TT oder ''.
+  // 상자에 적힌 대로 숫자 입력: '08.27', '08/2027', '2027.08', '31.08.2027', '2027-08-31', '270831' … 월까지만이면 그 달 마지막 날.
+  function parseDate(s) {
+    s = String(s || '').trim();
+    if (!s) return '';
+    const y4 = y => (y.length === 2 ? 2000 + +y : +y), out = (y, m, d) => {
+      y = y4(String(y)); m = +m;
+      if (m < 1 || m > 12 || y < 2000 || y > 2099) return '';
+      const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      d = d == null ? last : +d;
+      if (d < 1 || d > last) return '';
+      return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    };
+    const p = s.split(/[^\d]+/).filter(Boolean);
+    if (p.length === 3) {
+      if (p[0].length === 4) return out(p[0], p[1], p[2]);          // 2027.08.31
+      return out(p[2], p[1], p[0]);                                  // 31.08.2027 / 31.08.27
+    }
+    if (p.length === 2) {
+      if (p[0].length === 4) return out(p[0], p[1]);                 // 2027.08
+      return out(p[1], p[0]);                                        // 08.27 / 08/2027
+    }
+    if (p.length === 1) {
+      const d = p[0];
+      if (d.length === 8) return /^20/.test(d) ? out(d.slice(0, 4), d.slice(4, 6), d.slice(6)) : out(d.slice(4), d.slice(2, 4), d.slice(0, 2));
+      if (d.length === 6) return /^20/.test(d.slice(2)) && +d.slice(0, 2) <= 12 ? out(d.slice(2), d.slice(0, 2)) : out(d.slice(0, 2), d.slice(2, 4), d.slice(4));
+      if (d.length === 4) return out(d.slice(2), d.slice(0, 2));     // 0827 = MM YY
+    }
+    return '';
+  }
+
+  root.MedCode = { parse, key, pznOk, gtinOk, ymd, parseDate };
 })(typeof window !== 'undefined' ? window : globalThis);
