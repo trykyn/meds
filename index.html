@@ -4,27 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>약상자 · Hausapotheke</title>
-<meta name="theme-color" content="#f7efe1">
+<meta name="theme-color" content="#f6efe4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="약상자">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Jua&display=swap">
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,checklist,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,sick,thermometer,upload,warning&display=block">
 <style>
 :root {
-  --red: #d9443a; --red2: #b8352d; --cream: #f7efe1; --ink: #3a2a20; --mut: #8a7562; --line: #eadfcd; --card: #fff;
-  --wood: #d0a46c; --wood2: #b4834e; --cab: #a87a47; --cab2: #8c6235;
-  --bad: #e5484d; --soon: #f0a020; --ok: #3aa76d; --none: #b3a796;
+  --red: #dc4a3f; --red2: #b93a31; --cream: #f6efe4; --ink: #3b2c22; --mut: #8f7c69; --line: #ece2d3; --card: #fff;
+  --wood: #d6ad7a; --wood2: #bb8c56; --cab: #a9794a; --cab2: #8a5f34;
+  --bad: #d94a40; --soon: #e5952b; --ok: #3f9e6c; --none: #b3a796;
+  --sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", sans-serif;
   --k1: #ffe27a; --k1k: #7a5b00; --k2: #e8c6f5; --k2k: #8a3fb0;
   --jua: "Jua", -apple-system, "Apple SD Gothic Neo", sans-serif;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 /* Kein Zoom durch Doppeltippen / 두 번 터치해도 확대되지 않게 */
 html, body, button, a, input, label, select, textarea, .sheet, .tray, .row-x { touch-action: manipulation; }
-html, body { margin: 0; background: var(--cream); color: var(--ink); font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Noto Sans KR", Roboto, sans-serif; }
+html, body { margin: 0; background: var(--cream); color: var(--ink); font: 16px/1.45 var(--sans); }
 body { padding: env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom)); }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -331,6 +334,70 @@ details.orig p { color: var(--mut); font-size: 13px; }
 .scan form input { flex: 1; min-width: 0; height: 48px; border-radius: 14px; border: 0; padding: 0 14px; color: #000; }
 .scan form button { flex: none; height: 48px; padding: 0 18px; border: 0; border-radius: 14px; background: #4ade80; color: #000; font-weight: 700; }
 .scan .err { background: rgba(229,72,77,.9); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+
+/* ===== C+ 다듬기 (2026-11) – überschreibt die alten Regeln / 예전 규칙을 덮어씀 ===== */
+/* Schild unter dem Namen / 이름 아래 꼬리표 */
+.it { padding-top: 6px; }
+.it .lb { margin-top: 3px; font-weight: 700; }
+.tag { display: inline-block; margin-top: 1px; border-radius: 7px; padding: 0 6px; font: 600 10.5px/1.6 var(--mono), var(--sans); letter-spacing: -.02em; white-space: nowrap; }
+.tag.ok { background: #e4f3ea; color: #2c7a51; } .tag.soon { background: #fcefd9; color: #a5650e; } .tag.bad { background: #fbe4e2; color: #b4372e; }
+.tag.none, .tag.gone { background: #efe9e0; color: var(--mut); }
+.sbar2 { margin-top: 4px; height: 3px; } .sbars { margin-top: 4px; } .sbars .sbar2 { margin: 0; }
+.sbar2 { background: #efe6d8; }
+.x2 { bottom: 0; font: 700 9.5px/1.45 var(--sans); }
+/* Liste: gleiche Farben / 목록도 같은 색 */
+.sd { font: 600 12px/22px var(--mono), var(--sans); }
+.sd.ok { background: #e4f3ea; color: #2c7a51; } .sd.soon { background: #fcefd9; color: #a5650e; } .sd.bad { background: #fbe4e2; color: #b4372e; }
+.sd.none, .sd.gone { background: #efe9e0; color: var(--mut); }
+/* Korb / 바구니 */
+.basket { border-radius: 16px; border-top: 0; padding: 7px 6px 6px; background: repeating-linear-gradient(90deg, #e9cf9f 0 6px, #e0c08a 6px 12px); box-shadow: inset 0 -3px 0 #c9a46b; }
+.basket .row-x { box-shadow: none; padding: 2px 4px 6px; }
+/* Schublade mit Fenster / 들여다보는 서랍 */
+.cab { border-radius: 16px; }
+.dr { height: auto; min-height: 48px; padding: 6px 8px 7px 10px; border-radius: 11px; background: linear-gradient(#e6c597, #d9b27f); box-shadow: inset 0 -3px 0 var(--wood2), inset 0 1px 0 rgba(255,255,255,.45); }
+.dr.open { border-radius: 11px 11px 0 0; }
+.plate { border: 0; border-radius: 6px; min-width: 78px; font: 400 13.5px/1.5 var(--jua); box-shadow: inset 0 0 0 1.5px #b88d5a; }
+.win { flex: 1; min-width: 0; height: 36px; background: rgba(255,255,255,.9); border-radius: 8px; box-shadow: inset 0 2px 3px rgba(90,60,30,.25); display: flex; align-items: center; gap: 3px; padding: 0 7px; overflow: hidden; }
+.win svg { height: 26px; width: auto; flex: none; margin: 0; }
+.win .ph { flex: none; margin: 0; border-radius: 3px; }
+.win .n { margin-left: auto; padding-left: 4px; font: 700 11.5px var(--sans); color: var(--mut); }
+.win .w { width: 9px; height: 9px; border-radius: 50%; flex: none; margin-left: 3px; display: block; }
+.win .w.bad { background: var(--bad); } .win .w.soon { background: var(--soon); }
+.knob, .dr.open .knob { width: 18px; height: 8px; border-radius: 4px; background: linear-gradient(#f3e0b8, #b98e55); box-shadow: 0 1px 1px rgba(0,0,0,.3); }
+.tray { border-radius: 0 0 11px 11px; padding: 6px 6px 6px; }
+/* Kranke / 아픈 사람 카드 */
+.care { box-shadow: 0 1px 0 var(--line); }
+.tp { font: 600 14px/1.4 var(--mono), var(--sans); }
+.nx { font: 600 12px var(--sans); }
+.nx.ok { background: #e4f3ea; color: #2c7a51; } .nx.soon { background: #fcefd9; color: #a5650e; } .nx.bad { background: #fbe4e2; color: #b4372e; }
+/* Detail im Stil D / 약 상세 (D 스타일) */
+.hero { flex-direction: column; text-align: center; gap: 0; padding: 18px 14px 16px; border-radius: 24px; margin-top: 6px; box-shadow: 0 1px 0 var(--line); }
+.hero > svg, .hero > .ph { height: 110px; margin: 0 auto 8px; }
+.hero h2 { padding: 0; font: 400 21px/1.25 var(--jua); }
+.hero .s { justify-content: center; margin-top: 4px; }
+.bigd { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 4px 10px; margin-top: 10px; }
+.bigd b { font: 600 32px/1.1 var(--mono), var(--jua); letter-spacing: -.04em; }
+.bigd span { font-size: 13px; color: var(--mut); }
+.bigd.ok b { color: var(--ok); } .bigd.soon b { color: #c77c00; } .bigd.bad b { color: var(--bad); } .bigd.none b, .bigd.gone b { color: var(--mut); }
+.box.tl { padding: 14px 10px 12px; }
+.tln { display: flex; justify-content: space-around; position: relative; }
+.tln::before { content: ''; position: absolute; left: 18%; right: 18%; top: 7px; height: 2px; background: var(--line); }
+.tln > div { position: relative; flex: 1; text-align: center; min-width: 0; }
+.tln i { display: block; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid #d8ccbb; margin: 0 auto 4px; }
+.tln span { display: block; font-size: 11.5px; color: var(--mut); }
+.tln b { display: block; font: 600 12.5px var(--mono), var(--sans); }
+.tln .off b { color: var(--mut); font-family: var(--sans); font-weight: 600; }
+.tln .main.ok i { border-color: var(--ok); background: var(--ok); } .tln .main.ok b { color: var(--ok); }
+.tln .main.soon i { border-color: var(--soon); background: var(--soon); } .tln .main.soon b { color: #c77c00; }
+.tln .main.bad i { border-color: var(--bad); background: var(--bad); } .tln .main.bad b { color: var(--bad); }
+.tln .main i { border-color: var(--ink); }
+.tlh { margin: 10px 0 0; font-size: 12px; color: var(--mut); text-align: center; }
+.tlh.warn { color: #c77c00; font-weight: 700; } .tlh .ms { font-size: 15px; }
+.kc div { text-align: left; padding: 10px 14px; border-top: 4px solid var(--line); box-shadow: 0 1px 0 var(--line); }
+.kc div.k1 { border-top-color: #f4c430; } .kc div.k2 { border-top-color: #b98ad6; }
+.kc small { display: block; font: 400 14px var(--jua); color: var(--mut); }
+.kc b { font: 600 19px/1.3 var(--mono), var(--jua); letter-spacing: -.02em; }
+.box { box-shadow: 0 1px 0 var(--line); }
 </style>
 </head>
 <body>
@@ -456,7 +523,7 @@ const T = {
     findName: 'PZN으로 찾기', findLeaflet: '설명서 찾기', findNaver: '네이버에서 찾기', findGoogle: '구글에서 찾기',
     needName: '약 이름을 넣어 주세요.', saved: '저장했어요', deleted: '삭제했어요',
     sameBox: '이미 등록된 약이에요', copied: '전에 등록한 같은 약의 정보를 가져왔어요',
-    lPrinted: '상자에 찍힌 기한', lOpened: '개봉한 날', lAfter: '개봉 후', lReal: '실제로 쓸 수 있는 날',
+    tlBox: '상자 기한', tlOpen: '개봉한 날', tlReal: '실제 기한', lPrinted: '상자에 찍힌 기한', lOpened: '개봉한 날', lAfter: '개봉 후', lReal: '실제로 쓸 수 있는 날',
     until: d => `${d}까지`, whyOpen: '개봉 후 기한이 더 빨라요', noOpenDays: '개봉 후 사용 기간이 입력되지 않았어요',
     once: '한 번에', same: n => `같은 약 ${n}통`, openedOn: '개봉',
     openToday: '오늘 개봉했어요', edit: '수정', gone: '다 썼어요 / 버렸어요', restore: '다시 꺼내기', del: '삭제',
@@ -586,7 +653,7 @@ const T = {
     findName: 'PZN suchen', findLeaflet: 'Beipackzettel suchen', findNaver: 'Bei Naver suchen', findGoogle: 'Bei Google suchen',
     needName: 'Bitte einen Namen eingeben.', saved: 'Gespeichert', deleted: 'Gelöscht',
     sameBox: 'Diese Packung ist schon eingetragen', copied: 'Angaben von derselben Sorte übernommen',
-    lPrinted: 'Verfall laut Packung', lOpened: 'Angebrochen', lAfter: 'Haltbar nach Anbruch', lReal: 'Wirklich verwendbar bis',
+    tlBox: 'Packung', tlOpen: 'Angebrochen', tlReal: 'Verwendbar bis', lPrinted: 'Verfall laut Packung', lOpened: 'Angebrochen', lAfter: 'Haltbar nach Anbruch', lReal: 'Wirklich verwendbar bis',
     until: d => `bis ${d}`, whyOpen: 'Die Frist nach Anbruch endet früher', noOpenDays: 'Haltbarkeit nach Anbruch fehlt',
     once: 'pro Gabe', same: n => `${n} Packungen dieser Sorte`, openedOn: 'Auf',
     openToday: 'Heute angebrochen', edit: 'Bearbeiten', gone: 'Aufgebraucht / entsorgt', restore: 'Zurückholen', del: 'Löschen',
@@ -805,8 +872,8 @@ function itemHtml(g, low) {
   const m = g[0];
   const pic = g.length > 1 ? `<span class="stack">${art(m)}<span class="x2">${esc(L().packsShort(g.length))}</span></span>` : art(m);
   // low: wegen knappem Vorrat im Korb / 재고가 적어서 바구니에 있을 때
-  const dot = low ? `<span class="dot soon">${esc(L().lowShort)}</span>` : `<span class="dot ${statusOf(m).st}">${esc(stk(m))}</span>`;
-  return `<button class="it" data-act="detail" data-id="${m.id}">${pic}${dot}<span class="lb">${esc(m.name)}</span>${g.length > 1 ? `<span class="sbars">${g.map(stockBar).join('')}</span>` : stockBar(m)}</button>`;
+  const tag = low ? `<span class="tag soon">${esc(L().lowShort)}</span>` : `<span class="tag ${statusOf(m).st}">${esc(stk(m))}</span>`;
+  return `<button class="it" data-act="detail" data-id="${m.id}">${pic}<span class="lb">${esc(m.name)}</span>${tag}${g.length > 1 ? `<span class="sbars">${g.map(stockBar).join('')}</span>` : stockBar(m)}</button>`;
 }
 function rowHtml(m) {
   const l = L(), sub = [m.who ? l.who[m.who] : l.who[''], multiBox() && (ui.box || 'all') === 'all' ? boxName(boxOf(m)) : '', stockText(m), m.opened ? `${l.openedOn} ${fmtShort(m.opened)}` : ''].filter(Boolean).join(' · ');
@@ -837,8 +904,10 @@ function render() {
   } else if (per.length) {
     body = `<div class="cab">${per.map(([id, list]) => {
       const open = searching || ui.open.includes(id);
-      const pips = list.slice().sort(byLimit).map(m => `<i style="background:var(--${statusOf(m).st})"></i>`).join('');
-      return `<button class="dr ${open ? 'open' : ''}" data-act="drawer" data-v="${id}"><span class="plate">${esc(l.drawers[id])}</span><span class="cnt">${esc(l.cnt(list.length))}</span><span class="pips">${pips}</span><span class="knob"></span></button>${open ? `<div class="tray row-x">${groups(list).map(g => itemHtml(g)).join('')}</div>` : ''}`;
+      const gs = groups(list), sts = list.map(m => statusOf(m).st);
+      const warn = sts.includes('bad') ? 'bad' : sts.includes('soon') || list.some(groupLow) ? 'soon' : '';
+      const win = `<span class="win">${gs.slice(0, 6).map(g => art(g[0], 26)).join('')}<span class="n">${list.length}</span>${warn ? `<i class="w ${warn}"></i>` : ''}</span>`;
+      return `<button class="dr ${open ? 'open' : ''}" data-act="drawer" data-v="${id}" aria-label="${esc(l.drawers[id])} ${esc(l.cnt(list.length))}"><span class="plate">${esc(l.drawers[id])}</span>${win}<span class="knob"></span></button>${open ? `<div class="tray row-x">${groups(list).map(g => itemHtml(g)).join('')}</div>` : ''}`;
     }).join('')}</div>`;
   }
 
@@ -932,21 +1001,23 @@ function detailHtml(id) {
   const m = S.meds[id];
   if (!m) return null;
   const l = L(), lim = limitOf(m), { st } = statusOf(m);
-  const rows = [];
-  if (m.exp) rows.push(['', l.lPrinted, fmt(m.exp)]);
-  rows.push(['', l.lOpened, m.opened ? fmt(m.opened) : l.notOpened]);
-  if (m.opened && m.openDays) rows.push(['', l.lAfter, openLabel(m.openDays)]);
-  if (lim.end) rows.push([`main ${m.gone ? '' : st}`, l.lReal, fmt(lim.end)]);
+  // Zeitstrahl: Packung → Anbruch → wirklich bis / 선: 상자 기한 → 개봉 → 실제 기한
+  const real = m.opened && m.openDays && lim.end;
+  const nodes = [];
+  if (m.exp) nodes.push({ t: l.tlBox, d: fmt(m.exp), main: !real });
+  nodes.push({ t: l.tlOpen, d: m.opened ? fmt(m.opened) : l.notOpened, off: !m.opened });
+  if (real) nodes.push({ t: l.tlReal, d: fmt(lim.end), main: true });
+  const tlNote = lim.by === 'open' ? l.whyOpen : m.opened && m.openDays ? `${l.lAfter} ${openLabel(m.openDays)}` : '';
   const kids = [['k1', m.doseK1], ['k2', m.doseK2]].filter(x => x[1]);
   const same = active().filter(x => x.id !== m.id && groupKey(x) === groupKey(m)).sort(byLimit);
   return `<div class="sbar"><button class="txtbtn l" data-act="close">${esc(l.close)}</button><h2></h2><button class="txtbtn r" data-act="edit" data-id="${id}">${esc(l.edit)}</button></div>
-  <div class="hero">${art(m, 110)}<div style="min-width:0"><h2>${esc(m.name)}</h2><div class="s">${[m.kind ? l.kinds[m.kind] : '', m.use].filter(Boolean).map(esc).join(' · ')} ${whoChip(m.who)} ${boxChip(m)}</div></div>
-    <div class="bigdot ${st}"><div><b>${esc(stk(m))}</b>${lim.end && !m.gone ? esc(l.until(fmtShort(lim.end))) : ''}</div></div></div>
-  ${rows.length || (m.opened && !m.openDays) ? `<div class="tagc">${rows.map(([c, a, b]) => `<div class="r ${c}"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join('')}
-    ${lim.by === 'open' ? `<div class="why">${esc(l.whyOpen)}</div>` : ''}
-    ${m.opened && !m.openDays ? `<div class="warn">${ms('info').replace('class="ms"', 'class="ms" style="font-size:15px"')} ${esc(l.noOpenDays)}</div>` : ''}</div>` : ''}
+  <div class="hero">${art(m, 110)}<h2>${esc(m.name)}</h2><div class="s">${[m.kind ? l.kinds[m.kind] : '', m.use].filter(Boolean).map(esc).join(' · ')} ${whoChip(m.who)} ${boxChip(m)}</div>
+    <div class="bigd ${m.gone ? 'gone' : st}"><b>${esc(stk(m))}</b>${lim.end && !m.gone ? `<span>${esc(l.until(fmtLong(lim.end)))}</span>` : ''}</div></div>
+  <div class="box tl"><div class="tln">${nodes.map(n => `<div class="${n.main ? 'main ' + (m.gone ? '' : st) : ''} ${n.off ? 'off' : ''}"><i></i><span>${esc(n.t)}</span><b>${esc(n.d)}</b></div>`).join('')}</div>
+    ${tlNote ? `<p class="tlh">${esc(tlNote)}</p>` : ''}
+    ${m.opened && !m.openDays ? `<p class="tlh warn">${ms('info')} ${esc(l.noOpenDays)}</p>` : ''}</div>
   ${m.gone ? '' : detailCare(m)}
-  ${kids.length ? `<div class="kc">${kids.map(([w, t]) => `<div><div class="face ${w}">${esc(l.who[w])}</div><b>${esc(t)}</b></div>`).join('')}</div>` : ''}
+  ${kids.length ? `<div class="kc">${kids.map(([w, t]) => `<div class="${w}"><small>${esc(l.who[w])}</small><b>${esc(t)}</b></div>`).join('')}</div>` : ''}
   ${stockBoxHtml(m)}
   ${m.dose ? `<div class="box"><h3>${esc(l.fDose)}</h3>${doseHtml(m)}</div>` : ''}
   ${m.note ? `<div class="box"><h3>${esc(l.memo)}</h3><p class="pre">${esc(m.note)}</p></div>` : ''}
