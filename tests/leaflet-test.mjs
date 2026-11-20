@@ -173,5 +173,12 @@ eq('pdf table 4 J.', (kidDose(pl.use, { months: 56 }) || {}).amount, '3,75 ml');
 eq('pdf table baby', (kidDose(pl.use, { months: 10 }) || {}).amount, '1,25 ml');
 eq('pdf max per day from table', schedule(kidDose(pl.use, { months: 83 }).freq).maxPerDay, 3);
 
+// halbe Tablette / 반 알
+const { amountOf } = globalThis.MedLeaflet;
+eq('half tablet', amountOf('1/2 Tablette'), '0,5 Tablette');
+eq('half tablet ko', amountOf('1/2정'), '0,5 정');
+eq('half sign', amountOf('½ Tablette'), '0,5 Tablette');
+eq('mg per ml untouched', amountOf('5 ml (250 mg/5 ml)'), '5 ml');
+
 console.log(fail ? `\n${fail} FAILED` : '\nall passed');
 process.exit(fail ? 1 : 0);

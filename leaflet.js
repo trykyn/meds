@@ -232,7 +232,10 @@
     return m ? [num(m[1]), num(m[2]), m[0]] : null;
   }
   // Menge des Arzneimittels (ml/Tabletten vor mg, weil mg oft die Wirkstoffmenge ist) / 약의 양(mg보다 ml·정 우선)
+  // „1/2“, „½“ → „0,5“ / 분수를 소수로
+  const fractions = x => String(x || '').replace(/½/g, '0,5').replace(/¼/g, '0,25').replace(/¾/g, '0,75').replace(/\b([1-3])\s*\/\s*([2-4])\b/g, (_, a, b) => String(+a / +b).replace('.', ','));
   function amountOf(line) {
+    line = fractions(line);
     const units = ['ml|mL|Milliliter|Messlöffel|Dosierspritze', 'Tabletten?|Filmtabletten?|Kapseln?|Zäpfchen|Beutel|Brausetabletten?|Hub|Hübe|Sprühstoß|Sprühstöße|Tropfen|정|캡슐|포|방울|좌제|개|회분', 'mg'];
     const clean = line.replace(new RegExp(`${NUMW}${DASH}${NUMW}\\s*kg`, 'gi'), ' ').replace(/\d+(?:[.,]\d+)?\s*mg\s*\/\s*kg/gi, ' ');
     for (const u of units) {
@@ -346,5 +349,5 @@
     return { minHours, maxPerDay };
   }
 
-  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, brief, briefDose, ingredients, ingrText, ingrName, schedule, INGR, ageRange, amountOf, split: t => split(tidy(t), DE) };
+  root.MedLeaflet = { parse, openAfter, kindOf, kidDose, brief, briefDose, ingredients, ingrText, ingrName, schedule, INGR, ageRange, amountOf, fractions, split: t => split(tidy(t), DE) };
 })(typeof window !== 'undefined' ? window : globalThis);

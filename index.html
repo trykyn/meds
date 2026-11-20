@@ -11,8 +11,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,sick,thermometer,upload,warning&display=block">
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&icon_names=add,barcode_reader,check,check_circle,child_care,close,cloud_done,delete,download,edit,error,event,flashlight_off,flashlight_on,history,image,info,inventory_2,keyboard,notifications,open_in_new,photo_camera,pill,qr_code_scanner,restore,schedule,search,settings,shopping_cart,sick,thermometer,upload,warning&display=block">
 <style>
 :root {
   --red: #d9443a; --red2: #b8352d; --cream: #f7efe1; --ink: #3a2a20; --mut: #8a7562; --line: #eadfcd; --card: #fff;
@@ -66,10 +66,10 @@ button { cursor: pointer; }
 .sbars .sbar2 { flex: 1; margin: 0; }
 
 /* Leiste: Personen, Suche, Ansicht / 사람·검색·보기 */
-.bar { display: flex; align-items: center; gap: 6px; margin: 14px 0 0; }
-.who { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.bar { display: flex; align-items: center; gap: 4px; margin: 14px 0 0; }
+.who { flex: 1; min-width: 0; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .who::-webkit-scrollbar { display: none; }
-.who button { flex: none; border: 0; background: #fff; border-radius: 999px; padding: 5px 11px; font-size: 13px; font-weight: 700; box-shadow: inset 0 -2px 0 #e7dccb; }
+.who button { flex: none; border: 0; background: #fff; border-radius: 999px; padding: 5px 8px; font-size: 13px; font-weight: 700; box-shadow: inset 0 -2px 0 #e7dccb; }
 .who button.on { background: var(--ink); color: #fff; box-shadow: none; }
 .ib { flex: none; border: 0; width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: inset 0 -2px 0 #e7dccb; }
 .ib.on { background: var(--ink); color: #fff; }
@@ -205,6 +205,7 @@ textarea.in { min-height: 76px; resize: vertical; }
 .rec .ph, .rec svg { flex: none; }
 .rb { flex: 1; min-width: 0; } .rb b { display: block; font-size: 14px; }
 .rb small { display: block; font-size: 12px; color: var(--mut); margin-top: 1px; }
+.mp .bad-t { color: var(--bad); font-weight: 700; }
 .rb .kdl { color: var(--ink); } .rb .bad-t { color: var(--bad); font-weight: 700; } .rb .soon-t { color: #c77c00; font-weight: 700; }
 .linkbtn { border: 0; background: none; color: var(--red2); font-weight: 700; font-size: 14px; padding: 6px 0 0; display: inline-flex; align-items: center; gap: 4px; }
 .linkbtn .ms { font-size: 18px; }
@@ -483,7 +484,7 @@ const T = {
     tTemp: '체온', tDose: '먹은 약', newLog: '새 기록', amount: '먹은 양', amountPh: '예: 5 ml, 1정', date: '날짜', time: '시간', logNotePh: '예: 토함, 땀 남, 잠듦',
     wFull: (n, x) => `24시간 안에 벌써 ${n}번 먹었어요(최대 ${x}번).`, wEarly: (last, next) => `마지막으로 ${last}에 먹었어요. 설명서 간격으로는 ${next}부터예요.`,
     wIngr: (ing, name, t) => `같은 성분(${ing})을 ${t}에 ${name}(으)로 먹었어요. 겹치지 않게 조심하세요.`,
-    noMeds: '이 사람에게 맞는 약이 아직 없어요.', pickMed: '먹은 약을 골라 주세요.', logged: '기록했어요', noLogs: '아직 기록이 없어요.', confirmDelLog: '이 기록을 지울까요?',
+    noMeds: '이 사람에게 맞는 약이 아직 없어요.', wExpired: '기한이 지난 약이에요. 먹지 말고 버려 주세요.', expiredShort: '기한 지남', pickMed: '먹은 약을 골라 주세요.', logged: '기록했어요', noLogs: '아직 기록이 없어요.', confirmDelLog: '이 기록을 지울까요?',
     sameIngr: (ing, names) => `같은 성분(${ing})이 든 약이 또 있어요: ${names}. 함께 먹지 않게 조심하세요.`, ingrIs: ing => `성분: ${ing}`,
     tookIt: '먹었어요', courseTitle: '처방 복용 기간', optional: '(선택)', courseStartL: '시작일', perDayU: '번/일', courseHint: '항생제처럼 정해진 기간 동안 먹는 약: 시작일, 며칠, 하루 몇 번.',
     courseFrom: d => `${d}부터 시작`, courseDone: '복용 기간이 끝났어요', courseEnd: d => `끝나는 날 ${d}`, courseTotal: (n, x) => `지금까지 ${n}/${x}번`,
@@ -521,7 +522,7 @@ const T = {
     cnt: n => `${n}`, emptyList: 'Nichts gefunden', showGone: n => `${n} aufgebrauchte anzeigen`, hideGone: 'Aufgebrauchte ausblenden', goneTitle: 'Aufgebraucht',
     toss: 'weg', dShort: d => d > 999 ? '999+ T.' : `${d} T.`, todayShort: 'heute', none: '?',
     dLeft: n => `noch ${n} T.`, dToday: 'heute', dPast: n => `seit ${n} T.`, noExp: 'kein Datum',
-    who: { '': 'Alle', adult: 'Erwachsene', kids: 'Kinder', k1: 'K1', k2: 'K2' },
+    who: { '': 'Alle', adult: 'Erwachsene', kids: 'Kinder', k1: 'K1', k2: 'K2' }, whoChip: { adult: 'Eltern' },
     kinds: { tab: 'Tabletten/Kapseln', syrup: 'Saft/Lösung', drops: 'Tropfen', spray: 'Spray', cream: 'Salbe/Creme', supp: 'Zäpfchen', etc: 'Sonstiges' },
     uses: [['Fieber/Schmerz', 'pain'], ['Erkältung', 'cold'], ['Husten', 'cold'], ['Nase', 'cold'], ['Magen/Darm', 'belly'], ['Haut/Wunde', 'skin'], ['Augen', 'eye'], ['Ohren', 'eye'], ['Allergie', 'etc']],
     newMed: 'Neues Medikament', editMed: 'Bearbeiten', save: 'Sichern', cancel: 'Abbrechen', close: 'Schließen',
@@ -582,7 +583,7 @@ const T = {
     tTemp: 'Temperatur', tDose: 'Medikament', newLog: 'Neuer Eintrag', amount: 'Menge', amountPh: 'z. B. 5 ml, 1 Tablette', date: 'Datum', time: 'Uhrzeit', logNotePh: 'z. B. erbrochen, geschwitzt, schläft',
     wFull: (n, x) => `In 24 Stunden schon ${n}× gegeben (höchstens ${x}×).`, wEarly: (last, next) => `Zuletzt um ${last} gegeben. Laut Abstand erst ab ${next}.`,
     wIngr: (ing, name, t) => `Gleicher Wirkstoff (${ing}) um ${t} mit ${name} gegeben. Nicht doppelt geben!`,
-    noMeds: 'Noch kein passendes Medikament für diese Person.', pickMed: 'Bitte das Medikament wählen.', logged: 'Eingetragen', noLogs: 'Noch keine Einträge.', confirmDelLog: 'Diesen Eintrag löschen?',
+    noMeds: 'Noch kein passendes Medikament für diese Person.', wExpired: 'Abgelaufen – bitte nicht mehr verwenden.', expiredShort: 'abgelaufen', pickMed: 'Bitte das Medikament wählen.', logged: 'Eingetragen', noLogs: 'Noch keine Einträge.', confirmDelLog: 'Diesen Eintrag löschen?',
     sameIngr: (ing, names) => `Gleicher Wirkstoff (${ing}) auch in: ${names}. Nicht zusammen geben.`, ingrIs: ing => `Wirkstoff: ${ing}`,
     tookIt: 'Genommen', courseTitle: 'Behandlungsdauer', optional: '(optional)', courseStartL: 'Beginn', perDayU: '×/Tag', courseHint: 'Für Mittel mit fester Dauer (z. B. Antibiotikum): Beginn, Tage, Gaben pro Tag.',
     courseFrom: d => `Beginn am ${d}`, courseDone: 'Behandlung beendet', courseEnd: d => `letzter Tag ${d}`, courseTotal: (n, x) => `bisher ${n}/${x}`,
@@ -735,13 +736,13 @@ function render() {
   const l = L(), act = active(), vis = act.filter(m => whoMatch(m) && qMatch(m) && boxMatch(m)), searching = !!ui.q.trim();
   const warn = vis.filter(m => ['bad', 'soon'].includes(statusOf(m).st) || groupLow(m)).sort(byLimit);
   let top;
-  const lowOnes = warn.filter(m => groupLow(m) && !m.shopped);
+  const lowOnes = lowToShop(vis);
   if (!act.length) top = `<div class="post">${ms('qr_code_scanner').replace('class="ms"', 'class="ms" style="color:var(--red)"')}${esc(l.empty)}</div>`;
   else if (warn.length) top = `<div class="basket"><h5>${ms('error')}${esc(l.basket)} <small>${warn.length}</small>${lowOnes.length && canFetch() ? `<button class="shopall" data-act="shop-low">${ms('shopping_cart')}${esc(l.shopLow(lowOnes.length))}</button>` : ''}</h5><div class="row-x">${warn.map(m => itemHtml([m], !['bad', 'soon'].includes(statusOf(m).st))).join('')}</div></div>`;
   else if (!searching) top = `<div class="post ok">${ms('check_circle')}${esc(l.allOk(act.length))}</div>`;
   else top = '';
 
-  const whoBtns = ['all', 'k1', 'k2', 'adult'].map(w => `<button class="${ui.who === w ? 'on' : ''}" data-act="who" data-v="${w}">${esc(w === 'all' ? l.whoAll(act.length) : l.who[w])}</button>`).join('');
+  const whoBtns = ['all', 'k1', 'k2', 'adult'].map(w => `<button class="${ui.who === w ? 'on' : ''}" data-act="who" data-v="${w}">${esc(w === 'all' ? l.whoAll(act.length) : (l.whoChip || {})[w] || l.who[w])}</button>`).join('');
   const bar = act.length ? `<div class="bar"><div class="who">${whoBtns}</div>
     <button class="ib ${ui.searching ? 'on' : ''}" data-act="search" aria-label="${esc(l.search)}">${ms('search')}</button>
     <div class="vt"><button class="${ui.view !== 'list' ? 'on' : ''}" data-act="view" data-v="shelf">${esc(l.shelf)}</button><button class="${ui.view === 'list' ? 'on' : ''}" data-act="view" data-v="list">${esc(l.list)}</button></div></div>
@@ -782,7 +783,8 @@ function render() {
     q.addEventListener('input', () => { ui.q = q.value; render(); });
     if (hadFocus) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
-  if (ui.sheet && !['form', 'addlog', 'pack'].includes(ui.sheet.type)) renderSheet();
+  const typing = document.activeElement && document.activeElement.matches('input, textarea') && document.activeElement.closest('#sheet');
+  if (ui.sheet && !typing && !['form', 'addlog', 'pack'].includes(ui.sheet.type)) renderSheet();
   syncAlerts();
   document.documentElement.lang = S.lang === 'de' ? 'de' : 'ko';
   document.title = l.title;
@@ -1357,8 +1359,9 @@ function schedFor(m, who) {
 function doseState(m, who, at = Date.now()) {
   const { minHours, maxPerDay } = schedFor(m, who);
   const mine = logs(who, at - 864e5).filter(x => x.kind === 'dose' && x.med === m.id && x.t <= at);
-  const last = mine[0], next = last && minHours ? last.t + minHours * 36e5 : 0;
-  return { last, count: mine.length, minHours, maxPerDay, next, early: next > at, full: !!maxPerDay && mine.length >= maxPerDay };
+  const gap = minHours || (maxPerDay ? Math.floor(24 / maxPerDay) : 0);
+  const last = mine[0], next = last && gap ? last.t + gap * 36e5 : 0;
+  return { last, count: mine.length, minHours, maxPerDay, gap, next, early: next > at, full: !!maxPerDay && mine.length >= maxPerDay };
 }
 // Wirkstoffe eines Mittels (Lexikon, sonst aus Name/ATC) / 약의 성분(사전, 없으면 이름·ATC로)
 const ingrOf = m => {
@@ -1404,10 +1407,10 @@ function careHtml() {
     const ls = logs(w, since), t = ls.find(x => x.kind === 'temp');
     const meds = [...new Set(ls.filter(x => x.kind === 'dose').map(x => x.med))].map(id => S.meds[id]).filter(Boolean);
     const rows = meds.map(m => {
-      const s = doseState(m, w);
+      const s = doseState(m, w), lastT = (s.last || ls.find(x => x.kind === 'dose' && x.med === m.id)).t;
       const nx = s.full ? `<span class="nx bad">${esc(l.maxReached(s.count, s.maxPerDay))}</span>`
-        : s.early ? `<span class="nx soon">${esc(l.nextAt(whenText(s.next)))}</span>` : `<span class="nx ok">${esc(l.canNow)}</span>`;
-      return `<button class="crow" data-act="addlog" data-who="${w}" data-med="${m.id}"><span class="cn">${esc(m.name)}<small>${esc(l.lastAt(hhmm(s.last.t)))}${s.maxPerDay ? ` · ${esc(l.in24(s.count, s.maxPerDay))}` : ''}</small></span>${nx}</button>`;
+        : s.early ? `<span class="nx soon">${esc(l.nextAt(whenText(s.next)))}</span>` : s.gap ? `<span class="nx ok">${esc(l.canNow)}</span>` : '';
+      return `<button class="crow" data-act="addlog" data-who="${w}" data-med="${m.id}"><span class="cn">${esc(m.name)}<small>${esc(l.lastAt(hhmm(lastT)))}${s.maxPerDay ? ` · ${esc(l.in24(s.count, s.maxPerDay))}` : ''}</small></span>${nx}</button>`;
     }).join('');
     return `<div class="care p-${w}"><div class="ch"><b>${esc(pName(w))}</b>
       ${t ? `<span class="tp ${tempCls(t.temp)}">${t.temp.toFixed(1)}℃</span><small>${esc(ago(t.t))}</small>` : ''}
@@ -1455,15 +1458,19 @@ function addlogHtml() {
   } else {
     const fits = m => !m.who || m.who === d.who || (m.who === 'kids' && ['k1', 'k2'].includes(d.who)) || (m.who === 'adult' && ['mom', 'dad'].includes(d.who));
     const lastUse = id => (logs(d.who).find(x => x.med === id) || {}).t || 0;
-    const list = active().filter(fits).sort((a, b) => lastUse(b.id) - lastUse(a.id) || String(a.name).localeCompare(String(b.name)));
+    const old = x => statusOf(x).st === 'bad';
+    const seen = new Set(S.meds[d.med] ? [groupKey(S.meds[d.med])] : []);
+    const list = active().filter(fits).sort((a, b) => old(a) - old(b) || lastUse(b.id) - lastUse(a.id) || !!b.opened - !!a.opened || String(a.name).localeCompare(String(b.name)) || byLimit(a, b))
+      .filter(x => x.id === d.med || !seen.has(groupKey(x)) && !!seen.add(groupKey(x)));
     const m = S.meds[d.med], warn = [];
+    if (m && old(m)) warn.push(l.wExpired);
     if (m) {
       const at = logAt(d), s = doseState(m, d.who, at), c = ingrClash(m, d.who, at);
       if (s.full) warn.push(l.wFull(s.count, s.maxPerDay));
       else if (s.early) warn.push(l.wEarly(hhmm(s.last.t), whenText(s.next)));
       if (c) warn.push(l.wIngr(ingrNames(c.k), c.log.name, hhmm(c.log.t)));
     }
-    body = `<div class="medpick">${list.map(x => `<button type="button" class="mp ${d.med === x.id ? 'on' : ''}" data-act="lset" data-k="med" data-v="${x.id}">${art(x, 30)}<span>${esc(x.name)}${doseFor(x, d.who) ? `<small>${esc(doseFor(x, d.who))}</small>` : ''}</span></button>`).join('') || `<p class="note">${esc(l.noMeds)}</p>`}</div>
+    body = `<div class="medpick">${list.map(x => `<button type="button" class="mp ${d.med === x.id ? 'on' : ''}" data-act="lset" data-k="med" data-v="${x.id}">${art(x, 30)}<span>${esc(x.name)}${old(x) ? `<small class="bad-t">${esc(l.expiredShort)}</small>` : doseFor(x, d.who) ? `<small>${esc(doseFor(x, d.who))}</small>` : ''}</span></button>`).join('') || `<p class="note">${esc(l.noMeds)}</p>`}</div>
       ${m ? `<label class="f">${esc(l.amount)}</label><input class="in" id="lamt" value="${esc(d.amt)}" placeholder="${esc(l.amountPh)}">` : ''}
       ${warn.map(w => `<p class="lwarn">${ms('warning')} ${esc(w)}</p>`).join('')}`;
   }
@@ -1556,10 +1563,11 @@ const unitOf = m => m.qty && m.qty.unit ? m.qty.unit : m.level != null ? 'level'
 const fmtNum = n => String(Math.round(n * 10) / 10).replace('.', S.lang === 'de' ? ',' : '.');
 function stockRatio(m) {
   if (m.qty && m.qty.total > 0) return Math.max(0, Math.min(1, m.qty.left / m.qty.total));
-  if (m.level != null) return m.opened ? m.level / 3 : 1;
+  if (m.level != null) return m.opened ? [0.05, 0.25, 0.5, 1][m.level] ?? 1 : 1;
   return null;
 }
 // Alle Packungen derselben Sorte knapp? (eine volle Reservepackung = nicht knapp) / 같은 약 모든 통이 부족할 때만
+const lowToShop = list => { const seen = new Set(); return list.filter(m => groupLow(m) && !m.shopped && !seen.has(groupKey(m)) && !!seen.add(groupKey(m))); };
 const groupLow = m => lowStock(m) && active().filter(x => groupKey(x) === groupKey(m)).every(lowStock);
 const lowStock = m => m.level != null ? !!m.opened && m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
 function stockText(m) {
@@ -1572,7 +1580,7 @@ function stockText(m) {
 const stockBar = m => { const r = stockRatio(m); return r == null ? '' : `<span class="sbar2 ${r <= 0.25 ? 'low' : ''}"><i style="width:${Math.round(r * 100)}%"></i></span>`; };
 // Menge aus „7,5 ml“, „1–2 Tabletten“ in der Einheit des Vorrats, sonst 0 / 먹은 양 글 → 재고 단위 숫자(안 맞으면 0)
 function amountIn(text, unit) {
-  const m = String(text || '').match(/(\d+(?:[.,]\d+)?)(?:\s*[-–~]\s*\d+(?:[.,]\d+)?)?\s*(ml|mL|Milliliter|Filmtabletten?|Tabletten?|Kapseln?|정|캡슐|Beutel|포|Zäpfchen|좌제|Stück|개)/i);
+  const m = MedLeaflet.fractions(text).match(/(\d+(?:[.,]\d+)?)(?:\s*[-–~]\s*\d+(?:[.,]\d+)?)?\s*(ml|mL|Milliliter|Filmtabletten?|Tabletten?|Kapseln?|정|캡슐|Beutel|포|Zäpfchen|좌제|Stück|개)/i);
   if (!m) return 0;
   const u = /ml|milliliter/i.test(m[2]) ? 'ml' : /tablet|kapsel|정|캡슐/i.test(m[2]) ? 'tab' : /beutel|포/i.test(m[2]) ? 'bag' : 'pc';
   return u === unit ? parseFloat(m[1].replace(',', '.')) : 0;
@@ -1951,6 +1959,7 @@ function savePack() {
   delete n.info; delete n.course; delete n.opened;
   if (COUNT_UNITS.includes(p.unit) && +p.total > 0) n.qty = { unit: p.unit, total: +p.total, left: p.left === '' ? +p.total : Math.min(+p.total, +p.left) };
   else if (p.unit === 'level') n.level = +p.level;
+  if ((n.level != null && n.level < 3) || (n.qty && n.qty.left < n.qty.total)) n.opened = today();
   if (m.ingr) n.ingr = m.ingr;
   n.openDays = m.openDays || 0;
   for (const k of Object.keys(n)) if (n[k] === '' || n[k] == null) delete n[k];
@@ -2227,7 +2236,7 @@ const ACT = {
   },
   'shop-rm'(el) { ui.sheet.ids.splice(+el.dataset.i, 1); if (!ui.sheet.ids.length) closeSheet(); else renderSheet(); },
   'shop-low'() {
-    const ids = active().filter(m => boxMatch(m) && groupLow(m) && !m.shopped).map(m => m.id);
+    const ids = lowToShop(active().filter(m => whoMatch(m) && qMatch(m) && boxMatch(m))).map(m => m.id);
     if (!ids.length || !window.cloud || !window.cloud.shopStores) return;
     openSheet({ type: 'shop', ids, stores: null });
     window.cloud.shopStores(S.lang).then(list => { if (ui.sheet && ui.sheet.type === 'shop') { ui.sheet.stores = list; renderSheet(); } }).catch(e => { console.warn(e); closeSheet(); });
@@ -2514,13 +2523,16 @@ if (cfg) {
 
   function changes(c) {
     const out = {}, s = S(), base = (s.remote && s.remote[c.field]) || {}, local = s[c.field] || {};
-    for (const id in local) if (!base[id] || sig(local[id]) !== sig(base[id])) out[`${c.field}.${id}`] = local[id];
-    for (const id in base) if (!local[id]) out[`${c.field}.${id}`] = F.deleteField();
+    for (const id in local) if (!base[id] || sig(local[id]) !== sig(base[id])) out[id] = JSON.parse(JSON.stringify(local[id]));
+    for (const id in base) if (!local[id]) out[id] = F.deleteField();
     return out;
   }
   function send(c) {
-    const ch = changes(c), any = Object.keys(ch).length > 0;
-    if (any) F.updateDoc(c.ref(), ch).catch(warn);
+    const ch = changes(c), ids = Object.keys(ch), any = ids.length > 0;
+    if (any) try {
+      const args = ids.flatMap(id => [new F.FieldPath(c.field, id), ch[id]]);
+      F.updateDoc(c.ref(), ...args).catch(warn);
+    } catch (e) { warn(e); }
     return any;
   }
   function push() { for (const c of CH) if (c.unsub && !c.first && S().house) send(c); }
@@ -2536,7 +2548,7 @@ if (cfg) {
       if (c.first) { c.first = false; if (send(c)) return; }
       const d = snap.data(), s = S();
       s.remote = s.remote || {};
-      s.remote[c.field] = JSON.parse(JSON.stringify(d[c.field] || {}));
+      s.remote[c.field] = JSON.parse(JSON.stringify(d[c.field] || {})); s.remoteOf = s.house;
       s[c.field] = JSON.parse(JSON.stringify(d[c.field] || {}));
       keep();
       window.meds.render();
@@ -2546,7 +2558,7 @@ if (cfg) {
   function stop() { for (const c of CH) { if (c.unsub) c.unsub(); c.unsub = null; } }
   const listening = () => CH.some(c => c.unsub);
   async function link(code) {
-    const s = S(); s.house = code; s.remote = null; keep();
+    const s = S(); s.house = code; if (s.remoteOf !== code) s.remote = null; s.remoteOf = code; keep();
     await F.setDoc(F.doc(db, "users", auth.currentUser.uid), { house: code }, { merge: true });
     listen(); window.meds.render();
   }
@@ -2570,7 +2582,7 @@ if (cfg) {
       await F.updateDoc(house(S().house), { [`items.${id}`]: { id, store, name } });
     },
     signIn: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()),
-    async signOut() { stop(); const s = S(); delete s.house; delete s.remote; keep(); await A.signOut(auth); },
+    async signOut() { stop(); const s = S(); delete s.house; keep(); await A.signOut(auth); },
     async create() {
       const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       const code = [...crypto.getRandomValues(new Uint8Array(10))].map(n => abc[n % abc.length]).join('');
@@ -2592,7 +2604,7 @@ if (cfg) {
     else {
       if (!s.house) try {
         const u = await F.getDoc(F.doc(db, 'users', user.uid));
-        if (u.exists() && u.data().house) { s.house = u.data().house; s.remote = null; keep(); }
+        if (u.exists() && u.data().house) { s.house = u.data().house; if (s.remoteOf !== s.house) s.remote = null; keep(); }
       } catch (e) { warn(e); }
       if (s.house && !listening()) listen();
     }
