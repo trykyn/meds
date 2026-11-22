@@ -339,6 +339,7 @@ details.orig p { color: var(--mut); font-size: 13px; }
 /* Schild unter dem Namen / 이름 아래 꼬리표 */
 .it { padding-top: 6px; }
 .it .lb { margin-top: 3px; font-weight: 700; }
+.rec .rb small { word-break: keep-all; }
 .tag { display: inline-block; margin-top: 1px; border-radius: 7px; padding: 0 6px; font: 600 10.5px/1.6 var(--mono), var(--sans); letter-spacing: -.02em; white-space: nowrap; }
 .tag.ok { background: #e4f3ea; color: #2c7a51; } .tag.soon { background: #fcefd9; color: #a5650e; } .tag.bad { background: #fbe4e2; color: #b4372e; }
 .tag.none, .tag.gone { background: #efe9e0; color: var(--mut); }
@@ -398,6 +399,12 @@ details.orig p { color: var(--mut); font-size: 13px; }
 .kc small { display: block; font: 400 14px var(--jua); color: var(--mut); }
 .kc b { font: 700 17px/1.35 var(--sans); letter-spacing: -.01em; word-break: keep-all; overflow-wrap: anywhere; }
 .box { box-shadow: 0 1px 0 var(--line); }
+/* Mehr in der Reihe → rechts ausblenden / 옆에 더 있으면 오른쪽을 흐리게 */
+.row-x.more { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent); }
+/* Hinter dem Blatt weich zeichnen, damit halbe Schrift oben nicht stört / 시트 뒤를 흐리게: 반쯤 가려진 제목이 덜 지저분하게 */
+.sheetbg { -webkit-backdrop-filter: blur(5px) saturate(.9); backdrop-filter: blur(5px) saturate(.9); }
+/* Deutsch: „15 T.“ nicht in Festbreite / 독일어 '15 T.'는 고정폭 글꼴 말고 */
+html[lang=de] .tag { font-family: var(--sans); font-weight: 700; letter-spacing: 0; }
 </style>
 </head>
 <body>
@@ -441,6 +448,47 @@ S.cat = S.cat || {};
 // 생년월과 몸무게(선택)는 설정에서 넣고, 가족만 보는 Firebase 문서(사전의 '@kids')에만 저장. 공개 코드에는 넣지 않음.
 const KIDS = ['k1', 'k2'];
 const kidsData = () => S.cat['@kids'] || S.kids || {};
+// Anzeigenamen stehen nur im Familien-Dokument (@kids.k1.name), im Code nur „첫째/둘째“
+// 화면에 보일 이름은 가족 문서(@kids.k1.name)에만. 코드에는 '첫째/둘째'만
+const KID_DEF = { ko: { k1: '첫째', k2: '둘째' }, de: { k1: 'Kind 1', k2: 'Kind 2' } };
+function applyKidNames() {
+  for (const lg in KID_DEF) for (const w of KIDS) {
+    const n = String(kidOf(w).name || '').trim() || KID_DEF[lg][w];
+    T[lg].who[w] = n; T[lg].people[w] = n;
+  }
+}
+// Einmalig: alte Kinder-Schlüssel (frühere Namen) → k1/k2. Der alphabetisch spätere war das erste Kind.
+// 한 번만: 예전 아이 열쇠(이름이었음) → k1/k2. 알파벳 순서가 뒤인 쪽이 첫째였음.
+const KNOWN_WHO = ['', 'adult', 'kids', 'k1', 'k2', 'mom', 'dad'];
+function migrateKids() {
+  const old = new Set(), meds = Object.values(S.meds || {}), cats = Object.keys(S.cat || {}).filter(k => k[0] !== '@').map(k => S.cat[k]);
+  const logs = Object.values(S.log || {}), kd = [S.cat && S.cat['@kids'], S.kids].filter(Boolean);
+  for (const m of [...meds, ...cats]) {
+    if (!m || typeof m !== 'object') continue;
+    if (m.who && !KNOWN_WHO.includes(m.who)) old.add(m.who);
+    for (const f in m) if (/^dose[A-Z]/.test(f) && !/^doseK[12]$/.test(f)) old.add(f.slice(4).toLowerCase());
+  }
+  for (const e of logs) if (e && e.who && !KNOWN_WHO.includes(e.who)) old.add(e.who);
+  for (const k of kd) for (const w in k) if (w !== 'updated' && !KIDS.includes(w)) old.add(w);
+  if (!old.size || old.size > 2) return false;
+  const order = [...old].sort().reverse(), map = Object.fromEntries(order.map((w, i) => [w, KIDS[i]]));
+  for (const m of [...meds, ...cats]) {
+    if (!m || typeof m !== 'object') continue;
+    if (map[m.who]) m.who = map[m.who];
+    for (const f of Object.keys(m)) {
+      const w = /^dose[A-Z]/.test(f) && map[f.slice(4).toLowerCase()];
+      if (!w) continue;
+      const nf = 'dose' + w.toUpperCase();
+      if (m[nf] == null || m[nf] === '') m[nf] = m[f];
+      delete m[f];
+    }
+  }
+  for (const e of logs) if (e && map[e.who]) e.who = map[e.who];
+  for (const k of kd) for (const w of Object.keys(k)) if (map[w]) { k[map[w]] = { ...k[w], ...(k[map[w]] || {}) }; delete k[w]; }
+  if (S.cat && S.cat['@kids']) S.cat['@kids'].updated = Date.now();
+  keep();
+  return true;
+}
 const kidOf = w => kidsData()[w] || {};
 function kidMonths(w) {
   const b = kidOf(w).birth;
@@ -538,7 +586,7 @@ const T = {
     findTitle: '이름으로 찾기', findShort: '이름', findNet: '인터넷에서 이름으로 찾기', findPh: '약 이름 (예: Fenistil, 타이레놀)',
     findHint: '한글로 쓰면 의약품안전나라, 독일어·영어로 쓰면 독일 온라인 약국에서 찾아요. 고르면 사진과 설명서도 채워져요.', findNeedLogin: '인터넷 검색은 설정에서 구글 로그인을 하면 돼요. 지금은 내 약 사전에서만 찾아요.',
     findMine: '내 약 사전', findMineTitle: '내 약 사전에서', findNetTitle: '인터넷에서', findNone: '찾은 약이 없어요. 다른 이름이나 짧은 이름으로 해 보세요.', itemNo: '품목',
-    checkTitle: '상비약 점검', checkMissN: n => `빠진 것 ${n}개`, checkAll: '독일 상비약 목록이 다 있어요',
+    checkTitle: '상비약 점검', checkMissSplit: (a, b) => [a ? `빠진 약 ${a}개` : '', b ? `물품 ${b}개` : ''].filter(Boolean).join(' · '), checkMissN: n => `빠진 것 ${n}개`, checkAll: '독일 상비약 목록이 다 있어요',
     checkIntro: '독일에서 흔히 권하는 가정 상비약 목록이에요. 집에 있는 약(기한 안 지난 것)과 맞춰 봤어요.',
     checkMiss: '빠진 약', checkMissThings: '빠진 구급 용품', checkOk: '있는 것', checkSkipped: '안 챙길 것', checkEx: '약국에서:', checkHave: '있어요', checkAuto: '체온 기록이 있어서 있는 걸로 봤어요',
     checkOld: n => `${n} — 기한이 지났어요. 새로 사야 해요`, checkGot: '있어요', checkUndo: '취소', checkToShop: '장보기', checkShopped: '장보기에 넣었어요',
@@ -573,7 +621,7 @@ const T = {
     sickNone: '맞는 약이 집에 없어요. 약국이나 병원에 물어보세요.', sickPick: '증상을 고르면 집에 있는 약을 기한이 짧은 것부터 보여줘요.', packs: n => `${n}통`,
     sickNote: '약 이름과 설명서 내용으로 고른 참고용 목록이에요. 증상이 심하거나 오래가면 의사·약사와 상의하세요.',
     sym: { fever: '열', pain: '통증·두통', cough: '기침', nose: '콧물·코막힘', throat: '목 아픔', belly: '배탈·설사', constip: '변비', nausea: '구토·멀미', allergy: '알레르기·가려움', wound: '상처·화상', insect: '벌레 물림', eye: '눈', ear: '귀' },
-    openedEmpty: '개봉일을 비워 두면 아직 안 연 것(미개봉)이에요.', notOpened: '아직 안 열었어요', sealedNote: '하나씩 포장된 약(포·알약 판·좌약)은 개봉일이 필요 없어요. 상자에 찍힌 기한까지 써요.', jarBtn: '병이나 통에 든 약이에요 → 개봉일 쓰기', unopened: '새것(미개봉)',
+    openedEmpty: '개봉일을 비워 두면 아직 안 연 것(미개봉)이에요.', notOpened: '아직 안 열었어요', sealedNote: '하나씩 포장된 약(포·알약 판·좌약)은 개봉일이 필요 없어요. 상자에 찍힌 기한까지 써요.', jarBtn: '병이나 통에 든 약이에요 → 개봉일 쓰기', jarOff: '하나씩 포장된 약이에요 → 개봉일 빼기', unopened: '새것(미개봉)',
     openAuto: s => `설명서대로 개봉 후 ${s}로 계산했어요`, sumLeft: s => `모두 합쳐 ${s}`,
     stockHint: '상자에 적힌 개수(예: 20정)를 한 번 넣으면, "먹었어요"를 누를 때마다 저절로 줄어요. 새 상자는 "지금 남은 양"을 비워 두세요.',
     stockHintLevel: '연고·안약처럼 세기 어려운 약은 대충 고르세요. 아직 안 연 약은 "가득"으로 두면 "새것(미개봉)"으로 보여요.', stockHintNone: '남은 양을 세지 않아요.',
@@ -616,7 +664,7 @@ const T = {
     leafLogin: '링크로 가져오려면 설정에서 구글 로그인(가족 코드 연결)이 필요해요. PDF 올리기는 로그인 없이 돼요.', leafSrc: '설명서 원문',
     nedrugOk: '의약품안전나라에서 효능·용법·주의사항을 가져왔어요 ✓',
     translate: '한국어로 번역', translating: '번역 중…', trQuota: '오늘 무료 번역 사용량을 다 썼어요. 내일 다시 눌러 주세요.', trFail: '번역하지 못했어요. 인터넷을 확인해 주세요.', orig: '원문', trNote: '기계 번역이에요. 중요한 내용은 원문을 확인하세요.',
-    kidsTitle: '아이 정보', kidsInfo: '설명서 용량표에서 나이(몸무게를 넣으면 몸무게)에 맞는 용량을 찾아 첫째·둘째 칸을 채워요. 가족만 보는 곳에 저장돼요.', kidBirth: '생년월', kidKg: '몸무게 kg (선택)', kidsSaved: '아이 정보를 저장했어요',
+    kidsTitle: '아이 정보', kidsInfo: '설명서 용량표에서 나이(몸무게를 넣으면 몸무게)에 맞는 용량을 찾아 아이 칸을 채워요. 이름·생년월은 가족만 보는 곳에 저장돼요.', kidName: '이름', kidNamePh: '앱에 보일 이름', kidBirth: '생년월', kidKg: '몸무게 kg (선택)', kidsSaved: '아이 정보를 저장했어요',
     kidNo: '이 나이에는 쓰지 않는 약이에요', kidCalc: '나이로 다시 계산', kidCalcNone: '설명서에서 이 나이에 맞는 용량을 찾지 못했어요', kidCalcNeed: '먼저 위의 "설명서로 채우기"로 설명서를 읽어 주세요', kidNeedBirth: '설정의 "아이 정보"에 생년월을 먼저 넣어 주세요', kidCalcDone: n => `${n} 용량을 계산했어요 ✓ 설명서와 꼭 한 번 비교해 주세요`,
     catTitle: '약 사전', catInfo: n => `약 ${n}개를 기억하고 있어요. 같은 약을 다시 넣으면 자동으로 채워져요(삭제한 약도 남아요).`,
     scanHint: '약 상자의 바코드나 작은 네모 코드를 네모 안에 비춰 주세요', scanSub: '10~15cm 떨어지면 초점이 잘 맞아요',
@@ -639,7 +687,7 @@ const T = {
     cnt: n => `${n}`, emptyList: 'Nichts gefunden', showGone: n => `${n} aufgebrauchte anzeigen`, hideGone: 'Aufgebrauchte ausblenden', goneTitle: 'Aufgebraucht',
     toss: 'weg', dShort: d => d > 999 ? '999+ T.' : `${d} T.`, todayShort: 'heute', none: '?',
     dLeft: n => `noch ${n} T.`, dToday: 'heute', dPast: n => `seit ${n} T.`, noExp: 'kein Datum',
-    who: { '': 'Alle', adult: 'Erwachsene', kids: 'Kinder', k1: 'K1', k2: 'K2' }, whoChip: { adult: 'Eltern' },
+    who: { '': 'Alle', adult: 'Erwachsene', kids: 'Kinder', k1: 'Kind 1', k2: 'Kind 2' }, whoChip: { adult: 'Eltern' },
     kinds: { tab: 'Tabletten/Kapseln', syrup: 'Saft/Lösung', drops: 'Tropfen', spray: 'Spray', cream: 'Salbe/Creme', supp: 'Zäpfchen', etc: 'Sonstiges' },
     uses: [['Fieber/Schmerz', 'pain'], ['Erkältung', 'cold'], ['Husten', 'cold'], ['Nase', 'cold'], ['Magen/Darm', 'belly'], ['Haut/Wunde', 'skin'], ['Augen', 'eye'], ['Ohren', 'eye'], ['Allergie', 'etc']],
     newMed: 'Neues Medikament', editMed: 'Bearbeiten', save: 'Sichern', cancel: 'Abbrechen', close: 'Schließen',
@@ -668,7 +716,7 @@ const T = {
     findTitle: 'Nach Namen suchen', findShort: 'Name', findNet: 'Im Internet nach Namen suchen', findPh: 'Name (z. B. Fenistil, 타이레놀)',
     findHint: 'Koreanisch geschrieben → MFDS, sonst deutsche Online-Apotheke. Nach der Auswahl kommen Foto und Beipackzettel dazu.', findNeedLogin: 'Für die Internetsuche bitte mit Google anmelden. Jetzt nur im eigenen Lexikon.',
     findMine: 'Mein Lexikon', findMineTitle: 'Aus meinem Lexikon', findNetTitle: 'Im Internet', findNone: 'Nichts gefunden. Kürzeren oder anderen Namen versuchen.', itemNo: 'Nr.',
-    checkTitle: 'Hausapotheke-Check', checkMissN: n => `${n} fehlen`, checkAll: 'Alles da, was eine Hausapotheke braucht',
+    checkTitle: 'Hausapotheke-Check', checkMissSplit: (a, b) => [a ? `${a} Mittel` : '', b ? `${b} Zubehör` : ''].filter(Boolean).join(' · ') + ' fehlen', checkMissN: n => `${n} fehlen`, checkAll: 'Alles da, was eine Hausapotheke braucht',
     checkIntro: 'Übliche Empfehlungen für die Hausapotheke einer Familie, abgeglichen mit den (nicht abgelaufenen) Mitteln im Schrank.',
     checkMiss: 'Fehlende Mittel', checkMissThings: 'Fehlendes Zubehör', checkOk: 'Vorhanden', checkSkipped: 'Brauchen wir nicht', checkEx: 'In der Apotheke:', checkHave: 'vorhanden', checkAuto: 'Fieber wurde schon gemessen – also vorhanden',
     checkOld: n => `${n} – abgelaufen, neu kaufen`, checkGot: 'Haben wir', checkUndo: 'Zurück', checkToShop: 'Einkaufsliste', checkShopped: 'Auf der Einkaufsliste',
@@ -703,7 +751,7 @@ const T = {
     sickNone: 'Nichts Passendes im Haus. Bitte Apotheke oder Arzt fragen.', sickPick: 'Beschwerden wählen – passende Mittel erscheinen, das zuerst ablaufende oben.', packs: n => `${n} Pack.`,
     sickNote: 'Auswahl nach Name und Beipackzettel, nur als Hilfe. Bei starken oder anhaltenden Beschwerden Arzt oder Apotheke fragen.',
     sym: { fever: 'Fieber', pain: 'Schmerzen', cough: 'Husten', nose: 'Schnupfen', throat: 'Halsweh', belly: 'Magen/Darm', constip: 'Verstopfung', nausea: 'Übelkeit', allergy: 'Allergie/Juckreiz', wound: 'Wunde/Verbrennung', insect: 'Insektenstich', eye: 'Augen', ear: 'Ohren' },
-    openedEmpty: 'Leer lassen = noch ungeöffnet.', notOpened: 'noch nicht geöffnet', sealedNote: 'Einzeln verpackt (Beutel, Blister, Zäpfchen) – kein Anbruchdatum nötig, es gilt das Verfallsdatum.', jarBtn: 'In Dose oder Flasche → Anbruch eintragen', unopened: 'neu (ungeöffnet)',
+    openedEmpty: 'Leer lassen = noch ungeöffnet.', notOpened: 'noch nicht geöffnet', sealedNote: 'Einzeln verpackt (Beutel, Blister, Zäpfchen) – kein Anbruchdatum nötig, es gilt das Verfallsdatum.', jarBtn: 'In Dose oder Flasche → Anbruch eintragen', jarOff: 'Einzeln verpackt → kein Anbruchdatum', unopened: 'neu (ungeöffnet)',
     openAuto: s => `Laut Beipackzettel ${s} nach Anbruch eingetragen`, sumLeft: s => `zusammen ${s}`,
     stockHint: 'Anzahl laut Packung (z. B. 20 Tabletten) einmal eingeben – mit „Genommen“ wird automatisch abgezogen. Bei neuer Packung „Noch da“ leer lassen.',
     stockHintLevel: 'Für Salben, Tropfen usw. grob wählen. Ungeöffnet auf „voll“ lassen – dann steht „neu (ungeöffnet)“.', stockHintNone: 'Vorrat wird nicht gezählt.',
@@ -724,7 +772,7 @@ const T = {
     notiNoSupport: 'Hier gehen keine Mitteilungen. Auf dem iPhone die App über Safari → „Zum Home-Bildschirm“ öffnen.', notiNeedLogin: 'Bitte oben unter „Mit der Familie teilen“ mit Google anmelden.',
     notiDenied: 'Mitteilungen sind nicht erlaubt. Bitte in den Einstellungen des Handys erlauben.', notiFail: 'Erinnerung konnte nicht eingerichtet werden. Bitte später erneut.', notiOnToast: 'Erinnerungen an', notiOffToast: 'Erinnerungen aus', notiTestSent: 'Test gesendet – kommt gleich.',
     a30: (n, d) => `${n}: noch 30 Tage (bis ${d})`, a7: (n, d) => `${n}: noch 1 Woche (bis ${d})`, a3: (n, d) => `${n}: nach Anbruch nur noch 3 Tage (bis ${d})`, a0: n => `${n}: heute letzter Tag`,
-    people: { k1: 'K1', k2: 'K2', mom: 'Mama', dad: 'Papa' },
+    people: { k1: 'Kind 1', k2: 'Kind 2', mom: 'Mama', dad: 'Papa' },
     justNow: 'gerade', minAgo: n => `vor ${n} Min.`, hAgo: n => `vor ${n} Std.`, dAgo: n => `vor ${n} T.`, tomorrow: 'morgen', todayW: 'Heute',
     maxReached: (n, x) => `heute ${n}/${x} – genug`, nextAt: t => `ab ${t}`, canNow: 'jetzt möglich', lastAt: t => `zuletzt ${t}`, in24: (n, x) => `24 h: ${n}/${x}`,
     diary: 'Krankheitstagebuch', addTemp: 'Fieber', addDose: 'Medikament', courseNow: 'Laufende Behandlung', courseDay: (d, n) => `Tag ${d} von ${n}`, todayN: (n, p) => `heute ${n}/${p}`,
@@ -746,7 +794,7 @@ const T = {
     leafLogin: 'Für Links bitte in den Einstellungen mit Google anmelden (Familiencode). PDF geht auch ohne.', leafSrc: 'Beipackzettel (Original)',
     nedrugOk: 'Wirkung, Anwendung und Hinweise vom MFDS übernommen ✓',
     translate: 'Auf Koreanisch übersetzen', translating: 'Übersetze…', trQuota: 'Tageslimit der kostenlosen Übersetzung erreicht. Morgen wieder.', trFail: 'Übersetzung fehlgeschlagen.', orig: 'Original', trNote: 'Maschinelle Übersetzung – Wichtiges im Original prüfen.',
-    kidsTitle: 'Kinder', kidsInfo: 'Aus der Dosierungstabelle wird die Dosis nach Alter (oder Gewicht, falls angegeben) für K1 und K2 eingetragen.', kidBirth: 'Geburtsmonat', kidKg: 'Gewicht kg (optional)', kidsSaved: 'Gespeichert',
+    kidsTitle: 'Kinder', kidsInfo: 'Aus der Dosierungstabelle wird die Dosis nach Alter (oder Gewicht, falls angegeben) für jedes Kind eingetragen. Namen und Geburtsmonat liegen nur im Familien-Dokument.', kidName: 'Name', kidNamePh: 'Name in der App', kidBirth: 'Geburtsmonat', kidKg: 'Gewicht kg (optional)', kidsSaved: 'Gespeichert',
     kidNo: 'In diesem Alter nicht anwenden', kidCalc: 'Nach Alter neu berechnen', kidCalcNone: 'Keine passende Dosis für dieses Alter gefunden', kidCalcNeed: 'Bitte zuerst den Beipackzettel einlesen', kidNeedBirth: 'Bitte zuerst in den Einstellungen die Geburtsmonate eintragen', kidCalcDone: n => `Dosis für ${n} berechnet ✓ Bitte mit dem Beipackzettel vergleichen`,
     catTitle: 'Arzneimittel-Lexikon', catInfo: n => `${n} Medikamente gemerkt. Beim nächsten Eintragen wird alles übernommen (auch nach dem Löschen).`,
     scanHint: 'Barcode oder den kleinen quadratischen Code in den Rahmen halten', scanSub: 'Mit 10–15 cm Abstand wird es scharf',
@@ -887,6 +935,8 @@ function rowHtml(m) {
 }
 
 function render() {
+  applyKidNames();
+  requestAnimationFrame(markMore);
   const l = L(), act = active(), vis = act.filter(m => whoMatch(m) && qMatch(m) && boxMatch(m)), searching = !!ui.q.trim();
   const warn = vis.filter(m => ['bad', 'soon'].includes(statusOf(m).st) || groupLow(m)).sort(byLimit);
   let top;
@@ -949,7 +999,13 @@ function render() {
 // ---------- Blätter / 시트 ----------
 function openSheet(s) { ui.sheet = s; renderSheet(); }
 function closeSheet() { ui.sheet = null; ui.draft = null; ui.krNote = null; ui.leafNote = null; $('#sheet').innerHTML = ''; }
+// Reihe hat rechts noch mehr? / 줄 오른쪽에 더 있나
+const moreOne = r => r.classList.toggle('more', r.scrollLeft + r.clientWidth < r.scrollWidth - 4);
+function markMore() { for (const r of document.querySelectorAll('.row-x')) moreOne(r); }
+document.addEventListener('scroll', e => { const t = e.target; if (t && t.classList && t.classList.contains('row-x')) moreOne(t); }, true);
+addEventListener('resize', () => requestAnimationFrame(markMore));
 function renderSheet() {
+  applyKidNames();
   const s = ui.sheet;
   if (!s) { $('#sheet').innerHTML = ''; return; }
   const html = s.type === 'detail' ? detailHtml(s.id) : s.type === 'form' ? formHtml() : s.type === 'addlog' ? addlogHtml() : s.type === 'loglist' ? loglistHtml() : s.type === 'shop' ? shopHtml() : s.type === 'find' ? findHtml() : s.type === 'pack' ? packHtml() : s.type === 'sick' ? sickHtml() : s.type === 'check' ? checkHtml() : settingsHtml();
@@ -1073,7 +1129,7 @@ function formHtml() {
   <div class="box">
     <label class="f">${esc(l.fExp)}</label><input class="in" name="expText" inputmode="decimal" autocomplete="off" value="${esc(m.expText != null ? m.expText : expIn(m.exp))}" placeholder="${esc(l.fExpPh)}">
     ${expHint(m.expText != null ? m.expText : expIn(m.exp), m.expScan && m.exp === m.expScan && m.expText == null)}
-    ${sealed(m) ? `<p class="hint ok" style="margin-top:10px">${esc(l.sealedNote)}</p>${(m.qtyUnit != null ? m.qtyUnit : (m.qty || {}).unit) !== 'bag' ? `<button type="button" class="linkbtn" data-act="set" data-k="jar" data-v="1">${esc(l.jarBtn)}</button>` : ''}` : `<label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
+    ${sealed(m) ? `<p class="hint ok" style="margin-top:10px">${esc(l.sealedNote)}</p>${(m.qtyUnit != null ? m.qtyUnit : (m.qty || {}).unit) !== 'bag' ? `<button type="button" class="linkbtn" data-act="set" data-k="jar" data-v="1">${esc(l.jarBtn)}</button>` : ''}` : `${m.jar && sealed({ ...m, jar: '' }) ? `<button type="button" class="linkbtn" data-act="set" data-k="jar" data-v="">${esc(l.jarOff)}</button>` : ''}<label class="f">${esc(l.fOpened)}</label><div class="inrow"><input class="in" type="date" name="opened" value="${esc(m.opened || '')}">${m.opened ? '' : `<button type="button" class="mini" data-act="opened-today">${esc(l.today)}</button>`}</div>
     <p class="hint" style="margin-top:4px">${esc(l.openedEmpty)}</p>
     <label class="f">${esc(l.fOpenDays)}</label><div class="wrapchips">${opens}</div>
     ${custom || ui.customDays ? `<div class="inrow" style="margin-top:8px"><input class="in" type="number" inputmode="numeric" min="1" max="3650" name="openDays" value="${od || ''}" style="max-width:120px"><span>${esc(l.days)}</span></div>` : ''}
@@ -1113,7 +1169,7 @@ function settingsHtml() {
   ${bulkHtml()}
   ${boxesHtml()}
   <div class="box"><h3>${esc(l.kidsTitle)}</h3><p class="note" style="margin:0 0 6px">${esc(l.kidsInfo)}</p>
-    ${KIDS.map(w => `<div class="row2" style="align-items:flex-end;margin-top:6px"><div><label class="f">${whoChip(w)} ${esc(l.kidBirth)}${kidMonths(w) >= 0 ? ' · ' + esc(kidAgeText(kidMonths(w))) : ''}</label><input class="in" type="month" id="kb-${w}" value="${esc(kidOf(w).birth || '')}"></div><div><label class="f">${esc(l.kidKg)}</label><input class="in" type="number" inputmode="decimal" step="0.1" min="0" id="kk-${w}" value="${+kidOf(w).kg || ''}"></div></div>`).join('')}
+    ${KIDS.map(w => `<div class="row2" style="align-items:flex-end;margin-top:10px"><div><label class="f">${esc(KID_DEF[S.lang === 'de' ? 'de' : 'ko'][w])} · ${esc(l.kidName)}</label><input class="in" id="kn-${w}" value="${esc(kidOf(w).name || '')}" placeholder="${esc(l.kidNamePh)}" autocomplete="off"></div></div><div class="row2" style="align-items:flex-end;margin-top:6px"><div><label class="f">${whoChip(w)} ${esc(l.kidBirth)}${kidMonths(w) >= 0 ? ' · ' + esc(kidAgeText(kidMonths(w))) : ''}</label><input class="in" type="month" id="kb-${w}" value="${esc(kidOf(w).birth || '')}"></div><div><label class="f">${esc(l.kidKg)}</label><input class="in" type="number" inputmode="decimal" step="0.1" min="0" id="kk-${w}" value="${+kidOf(w).kg || ''}"></div></div>`).join('')}
     <div class="leafrow"><button class="btn ghost small" data-act="save-kids">${esc(l.save)}</button></div></div>
   <div class="box"><h3>${esc(l.catTitle)}</h3><p class="note" style="margin:0">${esc(l.catInfo(Object.keys(S.cat).filter(k => k[0] !== '@').length))}</p>
     <p class="note">한국 약 이름: 건강보험심사평가원 「약가마스터_의약품표준코드」 2026.08 · 한국 약 설명: 식품의약품안전처 의약품안전나라 · 공공누리 제1유형(출처표시)</p></div>
@@ -1740,13 +1796,13 @@ function qtyFrom(u, total, left, prev) {
 }
 function stockRatio(m) {
   if (m.qty && m.qty.total > 0) return Math.max(0, Math.min(1, m.qty.left / m.qty.total));
-  if (m.level != null) return m.opened ? [0.05, 0.25, 0.5, 1][m.level] ?? 1 : 1;
+  if (m.level != null) return m.opened || sealed(m) ? [0.05, 0.25, 0.5, 1][m.level] ?? 1 : 1;
   return null;
 }
 // Alle Packungen derselben Sorte knapp? (eine volle Reservepackung = nicht knapp) / 같은 약 모든 통이 부족할 때만
 const lowToShop = list => { const seen = new Set(); return list.filter(m => groupLow(m) && !m.shopped && !seen.has(groupKey(m)) && !!seen.add(groupKey(m))); };
 const groupLow = m => lowStock(m) && active().filter(x => groupKey(x) === groupKey(m)).every(lowStock);
-const lowStock = m => m.level != null ? !!m.opened && m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
+const lowStock = m => m.level != null ? (!!m.opened || sealed(m)) && m.level <= 1 : (m.qty && m.qty.total > 0 ? m.qty.left / m.qty.total <= 0.25 : false);
 function stockText(m) {
   const l = L();
   if (m.qty && m.qty.loose) return l.looseLeft(`${fmtNum(m.qty.left)} ${l.units[m.qty.unit]}`);
@@ -2115,9 +2171,10 @@ function checkState() {
   });
 }
 const checkMissing = () => checkState().filter(x => x.st === 'miss' || x.st === 'old').length;
+const checkMissSplit = () => { const r = checkState().filter(x => x.st === 'miss' || x.st === 'old'); return [r.filter(x => !x.c.thing).length, r.filter(x => x.c.thing).length]; };
 function checkBtnHtml() {
-  const l = L(), n = checkMissing();
-  return `<button class="checkbtn ${n ? '' : 'ok'}" data-act="check-open">${ms(n ? 'checklist' : 'check_circle')}<span class="ct">${esc(l.checkTitle)}<small>${esc(n ? l.checkMissN(n) : l.checkAll)}</small></span></button>`;
+  const l = L(), [a, b] = checkMissSplit(), n = a + b;
+  return `<button class="checkbtn ${n ? '' : 'ok'}" data-act="check-open">${ms(n ? 'checklist' : 'check_circle')}<span class="ct">${esc(l.checkTitle)}<small>${esc(n ? l.checkMissSplit(a, b) : l.checkAll)}</small></span></button>`;
 }
 function checkHtml() {
   const l = L(), d = checkData(), rows = checkState(), ci = l.checkItems;
@@ -2761,7 +2818,7 @@ const ACT = {
   },
   'save-kids'() {
     const k = { updated: Date.now() };
-    for (const w of KIDS) k[w] = { birth: $('#kb-' + w).value || '', kg: +$('#kk-' + w).value || 0 };
+    for (const w of KIDS) k[w] = { name: ($('#kn-' + w).value || '').trim(), birth: $('#kb-' + w).value || '', kg: +$('#kk-' + w).value || 0 };
     S.cat['@kids'] = k;
     keep(); toast(L().kidsSaved); renderSheet(); render();
     if (window.cloud) window.cloud.push();
@@ -2805,7 +2862,8 @@ let lastDay = today();
 setInterval(() => { if (today() !== lastDay) { lastDay = today(); render(); } }, 60000);
 // Scanner im Leerlauf vorladen / 쉴 때 스캐너 미리 불러오기
 setTimeout(() => getDetector().catch(() => {}), 2500);
-window.meds = { S: () => S, handleCode, parse: MedCode.parse, render, _t: { htmlText, pdfText, leafRun, MedLeaflet, shrink, storePhoto, photoOf } };
+migrateKids();
+window.meds = { migrate: migrateKids, S: () => S, handleCode, parse: MedCode.parse, render, _t: { htmlText, pdfText, leafRun, MedLeaflet, shrink, storePhoto, photoOf } };
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   let reloaded = false;
@@ -2874,6 +2932,8 @@ if (cfg) {
       s.remote = s.remote || {};
       s.remote[c.field] = JSON.parse(JSON.stringify(d[c.field] || {})); s.remoteOf = s.house;
       s[c.field] = JSON.parse(JSON.stringify(d[c.field] || {}));
+      // Alte Kinder-Schlüssel von einem nicht aktualisierten Handy / 업데이트 안 된 폰이 쓴 예전 열쇠
+      if (window.meds.migrate()) send(c);
       keep();
       window.meds.render();
     }, warn);
